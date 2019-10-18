@@ -1,7 +1,10 @@
 package main
 
 const (
-	red   = 0x00ff0000
-	green = 0x0000ff00
-	blue  = 0x000000ff
+	Red   = 0x00ff0000
+	Green = 0x0000ff00
+	Blue  = 0x000000ff
+
+	WindowWidth  = 1000
+	WindowHeight = 600
 )

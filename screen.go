@@ -2,13 +2,14 @@ package main
 
 import "github.com/veandco/go-sdl2/sdl"
 
-type screen_t struct {
+type Screen_t struct {
 	Window *sdl.Window
 }
 
-func createScreen() (screen screen_t, err error) {
+func CreateScreen() (screen *Screen_t, err error) {
+	screen = &Screen_t{}
 	screen.Window, err = sdl.CreateWindow("shootingame", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		800, 600, sdl.WINDOW_SHOWN)
+		WindowWidth, WindowHeight, sdl.WINDOW_SHOWN)
 	if err != nil {
 		return
 	}
@@ -16,10 +17,23 @@ func createScreen() (screen screen_t, err error) {
 	return
 }
 
-func (screen screen_t) destroy() {
+func (screen *Screen_t) Destroy() {
 	screen.Window.Destroy()
 }
 
-func (screen screen_t) update() {
+func (screen *Screen_t) Update() {
+
+	//Test space
+	surface, err := screen.Window.GetSurface()
+	if err != nil {
+		panic(err)
+	}
+	surface.FillRect(nil, 0)
+
+	rect := sdl.Rect{X: 0, Y: 0, W: 200, H: 200}
+	surface.FillRect(&rect, FromRGB(255, 255, 0))
+
+	//Test space end
+
 	screen.Window.UpdateSurface()
 }

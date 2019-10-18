@@ -8,38 +8,20 @@ func main() {
 	}
 	defer sdl.Quit()
 
-	screen, err := createScreen()
+	screen, err := CreateScreen()
 	if err != nil {
 		panic(err)
 	}
-	defer screen.destroy()
-
-	//Test space
-	surface, err := screen.Window.GetSurface()
-	if err != nil {
-		panic(err)
-	}
-	surface.FillRect(nil, 0)
-
-	rect := sdl.Rect{X: 0, Y: 0, W: 200, H: 200}
-	surface.FillRect(&rect, fromRGB(255, 255, 0))
-
-	//Test space end
+	defer screen.Destroy()
 
 	running := true
 	for running {
-		screen.update()
+		screen.Update()
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
-				popup := popup_t{
-					Text: "Do you really want to quit?",
-					Options: {
-						"Yes",
-						"No",
-					},
-				}
-				if screen.pop(popup) == "Yes" {
+				popup := PopupInit("Do you really want to quit?", "Yes", "No")
+				if popup.Pop(screen) == "Yes" {
 					running = false
 				}
 				break
