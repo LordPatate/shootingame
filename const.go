@@ -5,6 +5,6 @@ const (
 	Green = 0x0000ff00
 	Blue  = 0x000000ff
 
-	WindowWidth  = 1000
-	WindowHeight = 600
+	WindowWidth  = 1120
+	WindowHeight = 630
 )
