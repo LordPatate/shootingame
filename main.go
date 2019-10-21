@@ -24,15 +24,22 @@ func main() {
 	defer screen.Destroy()
 
 	running := true
+	askQuit := func() {
+		popup := screen.PopupInit([]string{"Do you really want to quit?"}, "Yes", "No")
+		if popup.Pop(screen) == "Yes" {
+			running = false
+		}
+	}
 	for running {
 		screen.Update()
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch event.(type) {
-			case *sdl.QuitEvent:
-				popup := screen.PopupInit([]string{"Do you really want to quit?"}, "Yes", "No")
-				if popup.Pop(screen) == "Yes" {
-					running = false
+			switch e := event.(type) {
+			case *sdl.KeyboardEvent:
+				if e.Keysym.Sym == sdl.K_ESCAPE {
+					askQuit()
 				}
+			case *sdl.QuitEvent:
+				askQuit()
 				break
 			}
 		}
