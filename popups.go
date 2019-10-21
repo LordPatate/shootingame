@@ -44,8 +44,7 @@ func (screen *Screen_t) PopupInit(text []string, options ...string) (popup *Popu
 		popup.Options[i].Text = options[i]
 	}
 
-	popup.createMainTexture(screen)
-	popup.createButtonTextures(screen)
+	popup.createTextures(screen)
 
 	return
 }
