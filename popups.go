@@ -1,8 +1,6 @@
 package main
 
 import (
-	"errors"
-
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -97,7 +95,7 @@ func (popup *Popup_t) Pop(screen *Screen_t) (option string) {
 	return
 }
 
-func (popup *Popup_t) createMainTexture(screen *Screen_t) {
+func (popup *Popup_t) createTextures(screen *Screen_t) {
 	var err error
 	popup.Texture, err = screen.Renderer.CreateTexture(sdl.PIXELFORMAT_RGBA8888, sdl.TEXTUREACCESS_TARGET, popup.Rect.W, popup.Rect.H)
 	if err != nil {
@@ -121,9 +119,8 @@ func (popup *Popup_t) createMainTexture(screen *Screen_t) {
 		rect := &sdl.Rect{Y: yPos + int32(i*20), W: popup.Rect.W, H: 20}
 		screen.CopyText(line, rect, sdl.Color{0, 0, 0, 255}, sdl.Color{200, 200, 200, 255})
 	}
-}
 
-func (popup *Popup_t) createButtonTextures(screen *Screen_t) {
+	// buttons
 	if err := screen.Renderer.SetDrawColor(0, 0, 255, 255); err != nil {
 		panic(err)
 	}
@@ -132,9 +129,6 @@ func (popup *Popup_t) createButtonTextures(screen *Screen_t) {
 		popup.Options[i].Texture, err = screen.Renderer.CreateTexture(sdl.PIXELFORMAT_RGBA8888, sdl.TEXTUREACCESS_TARGET, option.Rect.W, option.Rect.H)
 		if err != nil {
 			panic(err)
-		}
-		if popup.Options[i].Texture == nil {
-			panic(errors.New("Failed to create texture"))
 		}
 		if err := screen.Renderer.SetRenderTarget(popup.Options[i].Texture); err != nil {
 			panic(err)
