@@ -46,24 +46,29 @@ func PopupInit(text []string, options ...string) (popup *Popup_t) {
 }
 
 func (popup *Popup_t) display(screen *Screen_t) {
-	surface, err := screen.Window.GetSurface()
-	if err != nil {
+	if err := screen.Renderer.Copy(screen.Background, nil, nil); err != nil {
 		panic(err)
 	}
 
 	// frame
-	if err := surface.FillRect(popup.Rect, FromRGB(200, 200, 200)); err != nil {
+	if err := screen.Renderer.SetDrawColor(200, 200, 200, 255); err != nil {
+		panic(err)
+	}
+	if err := screen.Renderer.FillRect(popup.Rect); err != nil {
 		panic(err)
 	}
 
 	// buttons
+	if err := screen.Renderer.SetDrawColor(0, 0, 255, 255); err != nil {
+		panic(err)
+	}
 	for _, option := range popup.Options {
-		if err := surface.FillRect(option.Rect, FromRGB(0, 0, 255)); err != nil {
+		if err := screen.Renderer.FillRect(option.Rect); err != nil {
 			panic(err)
 		}
 	}
 
-	screen.Window.UpdateSurface()
+	screen.Renderer.Present()
 }
 
 func (popup *Popup_t) Pop(screen *Screen_t) (option string) {
