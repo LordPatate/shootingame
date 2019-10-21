@@ -1,21 +1,25 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 type Popup_t struct {
 	Text    []string
+	Texture *sdl.Texture
 	Rect    *sdl.Rect
 	Options []PopupOption
 }
 
 type PopupOption struct {
-	Text string
-	Rect *sdl.Rect
+	Text    string
+	Texture *sdl.Texture
+	Rect    *sdl.Rect
 }
 
-func PopupInit(text []string, options ...string) (popup *Popup_t) {
+func (screen *Screen_t) PopupInit(text []string, options ...string) (popup *Popup_t) {
 	optionNB := len(options)
 	popup = &Popup_t{
 		Text:    text,
@@ -42,39 +46,10 @@ func PopupInit(text []string, options ...string) (popup *Popup_t) {
 		popup.Options[i].Text = options[i]
 	}
 
+	popup.createMainTexture(screen)
+	popup.createButtonTextures(screen)
+
 	return
-}
-
-func (popup *Popup_t) display(screen *Screen_t) {
-	if err := screen.Renderer.Copy(screen.Background, nil, nil); err != nil {
-		panic(err)
-	}
-
-	// frame
-	if err := screen.Renderer.SetDrawColor(200, 200, 200, 255); err != nil {
-		panic(err)
-	}
-	if err := screen.Renderer.FillRect(popup.Rect); err != nil {
-		panic(err)
-	}
-
-	// text body
-	for _, line := range popup.Text {
-		screen.CopyText(line, popup.Rect, sdl.Color{0, 0, 0, 255}, sdl.Color{200, 200, 200, 255})
-	}
-
-	// buttons
-	if err := screen.Renderer.SetDrawColor(0, 0, 255, 255); err != nil {
-		panic(err)
-	}
-	for _, option := range popup.Options {
-		if err := screen.Renderer.FillRect(option.Rect); err != nil {
-			panic(err)
-		}
-		screen.CopyText(option.Text, option.Rect, sdl.Color{255, 255, 255, 255}, sdl.Color{0, 0, 255, 255})
-	}
-
-	screen.Renderer.Present()
 }
 
 func (popup *Popup_t) Pop(screen *Screen_t) (option string) {
@@ -117,5 +92,87 @@ func (popup *Popup_t) Pop(screen *Screen_t) (option string) {
 			}
 		}()
 	}
+
+	popup.destroy()
 	return
+}
+
+func (popup *Popup_t) createMainTexture(screen *Screen_t) {
+	var err error
+	popup.Texture, err = screen.Renderer.CreateTexture(sdl.PIXELFORMAT_RGBA8888, sdl.TEXTUREACCESS_TARGET, popup.Rect.W, popup.Rect.H)
+	if err != nil {
+		panic(err)
+	}
+	if err := screen.Renderer.SetRenderTarget(popup.Texture); err != nil {
+		panic(err)
+	}
+
+	// frame
+	if err := screen.Renderer.SetDrawColor(200, 200, 200, 255); err != nil {
+		panic(err)
+	}
+	if err := screen.Renderer.FillRect(nil); err != nil {
+		panic(err)
+	}
+
+	// text body
+	yPos := (popup.Rect.H*80/100)/2 - int32(len(popup.Text)*20/2)
+	for i, line := range popup.Text {
+		rect := &sdl.Rect{Y: yPos + int32(i*20), W: popup.Rect.W, H: 20}
+		screen.CopyText(line, rect, sdl.Color{0, 0, 0, 255}, sdl.Color{200, 200, 200, 255})
+	}
+}
+
+func (popup *Popup_t) createButtonTextures(screen *Screen_t) {
+	if err := screen.Renderer.SetDrawColor(0, 0, 255, 255); err != nil {
+		panic(err)
+	}
+	for i, option := range popup.Options {
+		var err error
+		popup.Options[i].Texture, err = screen.Renderer.CreateTexture(sdl.PIXELFORMAT_RGBA8888, sdl.TEXTUREACCESS_TARGET, option.Rect.W, option.Rect.H)
+		if err != nil {
+			panic(err)
+		}
+		if popup.Options[i].Texture == nil {
+			panic(errors.New("Failed to create texture"))
+		}
+		if err := screen.Renderer.SetRenderTarget(popup.Options[i].Texture); err != nil {
+			panic(err)
+		}
+
+		if err := screen.Renderer.FillRect(nil); err != nil {
+			panic(err)
+		}
+		rect := &sdl.Rect{W: option.Rect.W, H: option.Rect.H}
+		screen.CopyText(option.Text, rect, sdl.Color{255, 255, 255, 255}, sdl.Color{0, 0, 255, 255})
+	}
+}
+
+func (popup *Popup_t) display(screen *Screen_t) {
+	if err := screen.Renderer.SetRenderTarget(nil); err != nil {
+		panic(err)
+	}
+	if err := screen.Renderer.Copy(screen.Background, nil, nil); err != nil {
+		panic(err)
+	}
+	if err := screen.Renderer.Copy(popup.Texture, nil, popup.Rect); err != nil {
+		panic(err)
+	}
+	for _, option := range popup.Options {
+		if err := screen.Renderer.Copy(option.Texture, nil, option.Rect); err != nil {
+			panic(err)
+		}
+	}
+
+	screen.Renderer.Present()
+}
+
+func (popup *Popup_t) destroy() {
+	popup.Texture.Destroy()
+
+	for _, option := range popup.Options {
+		if option.Texture != nil {
+			option.Texture.Destroy()
+		}
+	}
 }

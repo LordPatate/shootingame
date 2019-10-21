@@ -13,7 +13,7 @@ func (screen *Screen_t) CopyText(line string, frame *sdl.Rect, fg, bg sdl.Color)
 	}
 	screen.Renderer.Copy(texture, nil, &sdl.Rect{
 		X: frame.X + 10 + (frame.W-20)/2 - surface.W/2,
-		Y: frame.Y + 15,
+		Y: frame.Y + frame.H/2 - surface.H/2,
 		W: surface.W,
 		H: surface.H,
 	})
