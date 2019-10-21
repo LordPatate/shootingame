@@ -4,12 +4,14 @@ import (
 	"errors"
 
 	"github.com/veandco/go-sdl2/sdl"
+	"github.com/veandco/go-sdl2/ttf"
 )
 
 type Screen_t struct {
 	Window     *sdl.Window
 	Renderer   *sdl.Renderer
 	Background *sdl.Texture
+	Font       *ttf.Font
 }
 
 func CreateScreen() (screen *Screen_t, err error) {
@@ -37,7 +39,10 @@ func CreateScreen() (screen *Screen_t, err error) {
 	}
 	if screen.Background == nil {
 		err = errors.New("Failed to create Background")
+		return
 	}
+
+	screen.Font, err = ttf.OpenFont("resources/fonts/DejaVuSans.ttf", 18)
 
 	return
 }
@@ -45,6 +50,8 @@ func CreateScreen() (screen *Screen_t, err error) {
 func (screen *Screen_t) Destroy() {
 	screen.Window.Destroy()
 	screen.Renderer.Destroy()
+	screen.Background.Destroy()
+	screen.Font.Close()
 }
 
 func (screen *Screen_t) Update() {

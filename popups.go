@@ -58,6 +58,11 @@ func (popup *Popup_t) display(screen *Screen_t) {
 		panic(err)
 	}
 
+	// text body
+	for _, line := range popup.Text {
+		screen.CopyText(line, popup.Rect, sdl.Color{0, 0, 0, 255}, sdl.Color{200, 200, 200, 255})
+	}
+
 	// buttons
 	if err := screen.Renderer.SetDrawColor(0, 0, 255, 255); err != nil {
 		panic(err)
@@ -66,6 +71,7 @@ func (popup *Popup_t) display(screen *Screen_t) {
 		if err := screen.Renderer.FillRect(option.Rect); err != nil {
 			panic(err)
 		}
+		screen.CopyText(option.Text, option.Rect, sdl.Color{255, 255, 255, 255}, sdl.Color{0, 0, 255, 255})
 	}
 
 	screen.Renderer.Present()
