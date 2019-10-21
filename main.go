@@ -1,6 +1,10 @@
 package main
 
-import "github.com/veandco/go-sdl2/sdl"
+import (
+	"time"
+
+	"github.com/veandco/go-sdl2/sdl"
+)
 
 func main() {
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
@@ -27,5 +31,6 @@ func main() {
 				break
 			}
 		}
+		time.Sleep(100 * time.Millisecond)
 	}
 }
