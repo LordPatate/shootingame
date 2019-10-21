@@ -14,7 +14,7 @@ type Screen_t struct {
 
 func CreateScreen() (screen *Screen_t, err error) {
 	screen = &Screen_t{}
-	screen.Window, err = sdl.CreateWindow("shootingame", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
+	screen.Window, err = sdl.CreateWindow("Shootingame", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 		WindowWidth, WindowHeight, sdl.WINDOW_SHOWN)
 	if err != nil {
 		return
