@@ -5,7 +5,7 @@ import (
 )
 
 type Popup_t struct {
-	Text    string
+	Text    []string
 	Rect    *sdl.Rect
 	Options []PopupOption
 }
@@ -15,7 +15,7 @@ type PopupOption struct {
 	Rect *sdl.Rect
 }
 
-func PopupInit(text string, options ...string) (popup *Popup_t) {
+func PopupInit(text []string, options ...string) (popup *Popup_t) {
 	optionNB := len(options)
 	popup = &Popup_t{
 		Text:    text,

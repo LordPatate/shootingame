@@ -20,7 +20,7 @@ func main() {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
-				popup := PopupInit("Do you really want to quit?", "Yes", "No")
+				popup := PopupInit([]string{"Do you really want to quit?"}, "Yes", "No")
 				if popup.Pop(screen) == "Yes" {
 					running = false
 				}
