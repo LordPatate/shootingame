@@ -21,7 +21,7 @@ type Player_t struct {
 	Texture     *sdl.Texture
 	TextureArea *sdl.Rect
 	State       PlayerState
-	frame       uint8
+	Frame       uint8
 	Left        bool
 }
 
@@ -65,4 +65,26 @@ func (player *Player_t) GetRect() *sdl.Rect {
 
 func (player *Player_t) Destroy() {
 	player.Texture.Destroy()
+}
+
+func PlayerStepLeft(game *Game_t) {
+	player := game.Player
+	if player.State != Running {
+		player.State = Running
+		player.Frame = 0
+	}
+
+	player.Rect.X -= PlayerStep
+	player.Left = true
+}
+
+func PlayerStepRight(game *Game_t) {
+	player := game.Player
+	if player.State != Running {
+		player.State = Running
+		player.Frame = 0
+	}
+
+	player.Rect.X += PlayerStep
+	player.Left = false
 }

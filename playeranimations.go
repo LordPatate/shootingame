@@ -38,7 +38,7 @@ var dispatch map[PlayerState][]spriteCoord = map[PlayerState][]spriteCoord{
 
 func (player *Player_t) setTextureArea() {
 	spriteCoordArray := dispatch[player.State]
-	spriteCoord := spriteCoordArray[player.frame]
+	spriteCoord := spriteCoordArray[player.Frame/2]
 
 	player.TextureArea = &sdl.Rect{
 		X: int32(spriteCoord.X) * CharacterWidth,
@@ -47,6 +47,6 @@ func (player *Player_t) setTextureArea() {
 		H: CharacterHeight,
 	}
 
-	player.frame++
-	player.frame %= uint8(len(spriteCoordArray))
+	player.Frame++
+	player.Frame %= uint8(len(spriteCoordArray) * 2)
 }
