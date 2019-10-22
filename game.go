@@ -38,10 +38,12 @@ func (game *Game_t) Update(screen *Screen_t) {
 		case *sdl.KeyboardEvent:
 			if e.Keysym.Sym == sdl.K_ESCAPE {
 				askQuit()
+				return
 			}
+
 		case *sdl.QuitEvent:
 			askQuit()
-			break
+			return
 		}
 	}
 }

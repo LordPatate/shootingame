@@ -66,7 +66,3 @@ func (player *Player_t) GetRect() *sdl.Rect {
 func (player *Player_t) Destroy() {
 	player.Texture.Destroy()
 }
-
-func (player *Player_t) Step(left bool) {
-	// FIXME
-}
