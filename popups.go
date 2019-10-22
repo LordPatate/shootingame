@@ -104,8 +104,10 @@ func (popup *Popup_t) createTextures(screen *Screen_t) {
 		panic(err)
 	}
 
+	bgColor := sdl.Color{130, 130, 130, 255}
+
 	// frame
-	if err := screen.Renderer.SetDrawColor(200, 200, 200, 255); err != nil {
+	if err := screen.Renderer.SetDrawColor(bgColor.R, bgColor.G, bgColor.B, bgColor.A); err != nil {
 		panic(err)
 	}
 	if err := screen.Renderer.FillRect(nil); err != nil {
@@ -116,7 +118,7 @@ func (popup *Popup_t) createTextures(screen *Screen_t) {
 	yPos := (popup.Rect.H*80/100)/2 - int32(len(popup.Text)*20/2)
 	for i, line := range popup.Text {
 		rect := &sdl.Rect{Y: yPos + int32(i*20), W: popup.Rect.W, H: 20}
-		screen.CopyText(line, rect, sdl.Color{0, 0, 0, 255}, sdl.Color{200, 200, 200, 255})
+		screen.CopyText(line, rect, sdl.Color{0, 0, 0, 255}, bgColor)
 	}
 
 	// buttons
