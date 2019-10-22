@@ -10,8 +10,13 @@ const (
 	WindowWidth  = 1120
 	WindowHeight = 630
 
-	CharacterWidth  = 20
-	CharacterHeight = 30
+	CharacterWidth  = 37
+	CharacterHeight = 50
+
+	FontFile = "resources/fonts/DejaVuSans.ttf"
+	FontSize = 18
 
 	imgFlags = img.INIT_PNG
+
+	PlayerSpriteSheet = "resources/sprites/player/adventurer-v1.5-Sheet.png"
 )

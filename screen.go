@@ -42,7 +42,7 @@ func CreateScreen() (screen *Screen_t, err error) {
 		return
 	}
 
-	screen.Font, err = ttf.OpenFont("resources/fonts/DejaVuSans.ttf", 18)
+	screen.Font, err = ttf.OpenFont(FontFile, FontSize)
 
 	return
 }
