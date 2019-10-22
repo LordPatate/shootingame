@@ -40,10 +40,28 @@ func (game *Game_t) Update(screen *Screen_t) {
 				askQuit()
 				return
 			}
-
 		case *sdl.QuitEvent:
 			askQuit()
 			return
 		}
+	}
+
+	state := sdl.GetKeyboardState()
+	var movement func(*Game_t)
+	present := false
+	for key := 0; key < sdl.NUM_SCANCODES && !present; key++ {
+		if state[key] == 1 {
+			movement, present = Movements[sdl.Scancode(key)]
+		}
+	}
+	if present {
+		movement(game)
+	} else {
+		player := game.Player
+		if player.State != Idle {
+			player.State = Idle
+			player.Frame = 0
+		}
+
 	}
 }
