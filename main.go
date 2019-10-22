@@ -29,6 +29,9 @@ func main() {
 	}
 	defer screen.Destroy()
 
+	game := CreateGame(&sdl.Point{500, 300}, screen)
+	defer game.Destroy()
+
 	running := true
 	askQuit := func() {
 		popup := screen.PopupInit([]string{"Do you really want to quit?"}, "Yes", "No")
@@ -37,7 +40,7 @@ func main() {
 		}
 	}
 	for running {
-		screen.Update()
+		screen.Update(game)
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch e := event.(type) {
 			case *sdl.KeyboardEvent:

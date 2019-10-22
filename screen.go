@@ -54,7 +54,7 @@ func (screen *Screen_t) Destroy() {
 	screen.Font.Close()
 }
 
-func (screen *Screen_t) Update() {
+func (screen *Screen_t) Update(game *Game_t) {
 	if err := screen.Renderer.SetRenderTarget(screen.Background); err != nil {
 		panic(err)
 	}
@@ -65,17 +65,12 @@ func (screen *Screen_t) Update() {
 		panic(err)
 	}
 
-	//Test space
+	// Test space
 
-	if err := screen.Renderer.SetDrawColor(255, 255, 0, 255); err != nil {
-		panic(err)
-	}
-	rect := &sdl.Rect{X: 0, Y: 0, W: 200, H: 200}
-	if err := screen.Renderer.FillRect(rect); err != nil {
-		panic(err)
-	}
+	game.Player.Copy(screen)
 
-	//Test space end
+	// Test space end
+
 	if err := screen.Renderer.SetRenderTarget(nil); err != nil {
 		panic(err)
 	}

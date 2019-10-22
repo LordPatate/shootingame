@@ -10,13 +10,13 @@ const (
 	WindowWidth  = 1120
 	WindowHeight = 630
 
-	CharacterWidth  = 37
-	CharacterHeight = 50
+	CharacterWidth  = 50
+	CharacterHeight = 37
 
 	FontFile = "resources/fonts/DejaVuSans.ttf"
 	FontSize = 18
 
 	imgFlags = img.INIT_PNG
 
-	PlayerSpriteSheet = "resources/sprites/player/adventurer-v1.5-Sheet.png"
+	PlayerSpriteSheet = "resources/sprites/player/adventurer-v1.5-Sheet.png" // see playeranimations.go
 )

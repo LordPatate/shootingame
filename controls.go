@@ -5,10 +5,24 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+type PlayerState uint8
+
+const (
+	Idle PlayerState = iota
+	Running
+	Jumping
+	Falling
+	WallSliding
+	WallJumping
+)
+
 type Player_t struct {
 	Rect        *sdl.Rect
 	Texture     *sdl.Texture
 	TextureArea *sdl.Rect
+	State       PlayerState
+	frame       uint8
+	Left        bool
 }
 
 func CreatePlayer(rect *sdl.Rect, imgPath string, screen *Screen_t) *Player_t {
@@ -30,13 +44,18 @@ func CreatePlayer(rect *sdl.Rect, imgPath string, screen *Screen_t) *Player_t {
 	return player
 }
 
-func (player *Player_t) Copy(screen Screen_t) {
+func (player *Player_t) Copy(screen *Screen_t) {
 	if err := screen.Renderer.SetRenderTarget(screen.Background); err != nil {
 		panic(err)
 	}
+
+	player.setTextureArea()
 	if err := screen.Renderer.Copy(player.Texture, player.TextureArea, player.Rect); err != nil {
 		panic(err)
 	}
+
+	player.frame++
+	player.frame %= stateToFrame[player.State]
 }
 
 func (player *Player_t) GetRect() *sdl.Rect {
