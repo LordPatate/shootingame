@@ -50,12 +50,13 @@ func (player *Player_t) Copy(screen *Screen_t) {
 	}
 
 	player.setTextureArea()
-	if err := screen.Renderer.Copy(player.Texture, player.TextureArea, player.Rect); err != nil {
+	flip := sdl.FLIP_NONE
+	if player.Left {
+		flip = sdl.FLIP_HORIZONTAL
+	}
+	if err := screen.Renderer.CopyEx(player.Texture, player.TextureArea, player.Rect, 0, nil, flip); err != nil {
 		panic(err)
 	}
-
-	player.frame++
-	player.frame %= stateToFrame[player.State]
 }
 
 func (player *Player_t) GetRect() *sdl.Rect {
