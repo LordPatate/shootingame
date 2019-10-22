@@ -32,26 +32,10 @@ func main() {
 	game := CreateGame(&sdl.Point{500, 300}, screen)
 	defer game.Destroy()
 
-	running := true
-	askQuit := func() {
-		popup := screen.PopupInit([]string{"Do you really want to quit?"}, "Yes", "No")
-		if popup.Pop(screen) == "Yes" {
-			running = false
-		}
-	}
-	for running {
+	for game.Running {
 		screen.Update(game)
-		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch e := event.(type) {
-			case *sdl.KeyboardEvent:
-				if e.Keysym.Sym == sdl.K_ESCAPE {
-					askQuit()
-				}
-			case *sdl.QuitEvent:
-				askQuit()
-				break
-			}
-		}
+		game.Update(screen)
+
 		time.Sleep(100 * time.Millisecond)
 	}
 }
