@@ -8,10 +8,10 @@ import (
 )
 
 type Screen_t struct {
-	Window     *sdl.Window
-	Renderer   *sdl.Renderer
-	Background *sdl.Texture
-	Font       *ttf.Font
+	Window    *sdl.Window
+	Renderer  *sdl.Renderer
+	GameScene *sdl.Texture
+	Font      *ttf.Font
 }
 
 func CreateScreen() (screen *Screen_t, err error) {
@@ -33,12 +33,12 @@ func CreateScreen() (screen *Screen_t, err error) {
 		err = errors.New("Failed to create Renderer")
 	}
 
-	screen.Background, err = screen.Renderer.CreateTexture(sdl.PIXELFORMAT_RGBA8888, sdl.TEXTUREACCESS_TARGET, WindowWidth, WindowHeight)
+	screen.GameScene, err = screen.Renderer.CreateTexture(sdl.PIXELFORMAT_RGBA8888, sdl.TEXTUREACCESS_TARGET, WindowWidth, WindowHeight)
 	if err != nil {
 		return
 	}
-	if screen.Background == nil {
-		err = errors.New("Failed to create Background")
+	if screen.GameScene == nil {
+		err = errors.New("Failed to create GameScene")
 		return
 	}
 
@@ -50,12 +50,12 @@ func CreateScreen() (screen *Screen_t, err error) {
 func (screen *Screen_t) Destroy() {
 	screen.Window.Destroy()
 	screen.Renderer.Destroy()
-	screen.Background.Destroy()
+	screen.GameScene.Destroy()
 	screen.Font.Close()
 }
 
 func (screen *Screen_t) Update(game *Game_t) {
-	if err := screen.Renderer.SetRenderTarget(screen.Background); err != nil {
+	if err := screen.Renderer.SetRenderTarget(screen.GameScene); err != nil {
 		panic(err)
 	}
 	if err := screen.Renderer.SetDrawColor(0, 0, 0, 255); err != nil {
@@ -74,7 +74,7 @@ func (screen *Screen_t) Update(game *Game_t) {
 	if err := screen.Renderer.SetRenderTarget(nil); err != nil {
 		panic(err)
 	}
-	if err := screen.Renderer.Copy(screen.Background, nil, nil); err != nil {
+	if err := screen.Renderer.Copy(screen.GameScene, nil, nil); err != nil {
 		panic(err)
 	}
 	screen.Renderer.Present()

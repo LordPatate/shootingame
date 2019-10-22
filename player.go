@@ -45,7 +45,7 @@ func CreatePlayer(rect *sdl.Rect, imgPath string, screen *Screen_t) *Player_t {
 }
 
 func (player *Player_t) Copy(screen *Screen_t) {
-	if err := screen.Renderer.SetRenderTarget(screen.Background); err != nil {
+	if err := screen.Renderer.SetRenderTarget(screen.GameScene); err != nil {
 		panic(err)
 	}
 

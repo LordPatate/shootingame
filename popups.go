@@ -147,7 +147,7 @@ func (popup *Popup_t) display(screen *Screen_t) {
 	if err := screen.Renderer.SetRenderTarget(nil); err != nil {
 		panic(err)
 	}
-	if err := screen.Renderer.Copy(screen.Background, nil, nil); err != nil {
+	if err := screen.Renderer.Copy(screen.GameScene, nil, nil); err != nil {
 		panic(err)
 	}
 	if err := screen.Renderer.Copy(popup.Texture, nil, popup.Rect); err != nil {
