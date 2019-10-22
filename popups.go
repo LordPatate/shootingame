@@ -59,11 +59,6 @@ func (popup *Popup_t) Pop(screen *Screen_t) (option string) {
 		func() {
 			for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 				switch e := event.(type) {
-				case *sdl.KeyboardEvent:
-					if e.Keysym.Sym == sdl.K_ESCAPE {
-						option = "escape"
-						return
-					}
 				case *sdl.MouseButtonEvent:
 					if e.Button == sdl.BUTTON_RIGHT && e.Type == sdl.MOUSEBUTTONDOWN {
 						option = "right click"
