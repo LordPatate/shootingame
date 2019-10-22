@@ -41,6 +41,10 @@ func CreateScreen() (screen *Screen_t, err error) {
 		err = errors.New("Failed to create GameScene")
 		return
 	}
+	err = screen.Renderer.SetRenderTarget(screen.GameScene)
+	if err != nil {
+		return
+	}
 
 	screen.Font, err = ttf.OpenFont(FontFile, FontSize)
 
@@ -55,9 +59,6 @@ func (screen *Screen_t) Destroy() {
 }
 
 func (screen *Screen_t) Update(game *Game_t) {
-	if err := screen.Renderer.SetRenderTarget(screen.GameScene); err != nil {
-		panic(err)
-	}
 	if err := screen.Renderer.SetDrawColor(0, 0, 0, 255); err != nil {
 		panic(err)
 	}
@@ -78,4 +79,8 @@ func (screen *Screen_t) Update(game *Game_t) {
 		panic(err)
 	}
 	screen.Renderer.Present()
+
+	if err := screen.Renderer.SetRenderTarget(screen.GameScene); err != nil {
+		panic(err)
+	}
 }

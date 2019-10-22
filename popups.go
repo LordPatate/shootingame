@@ -59,6 +59,11 @@ func (popup *Popup_t) Pop(screen *Screen_t) (option string) {
 		func() {
 			for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 				switch e := event.(type) {
+				case *sdl.KeyboardEvent:
+					if e.Keysym.Sym == sdl.K_ESCAPE {
+						option = "escape"
+						return
+					}
 				case *sdl.MouseButtonEvent:
 					if e.Button == sdl.BUTTON_RIGHT && e.Type == sdl.MOUSEBUTTONDOWN {
 						option = "right click"
@@ -141,12 +146,12 @@ func (popup *Popup_t) createTextures(screen *Screen_t) {
 		rect := &sdl.Rect{W: option.Rect.W, H: option.Rect.H}
 		screen.CopyText(option.Text, rect, sdl.Color{255, 255, 255, 255}, sdl.Color{0, 0, 255, 255})
 	}
-}
-
-func (popup *Popup_t) display(screen *Screen_t) {
 	if err := screen.Renderer.SetRenderTarget(nil); err != nil {
 		panic(err)
 	}
+}
+
+func (popup *Popup_t) display(screen *Screen_t) {
 	if err := screen.Renderer.Copy(screen.GameScene, nil, nil); err != nil {
 		panic(err)
 	}
