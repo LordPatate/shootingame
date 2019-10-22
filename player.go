@@ -63,24 +63,16 @@ func (player *Player_t) Destroy() {
 	player.Texture.Destroy()
 }
 
-func PlayerStepLeft(game *Game_t) {
-	player := game.Player
+func (player *Player_t) Step(left bool) {
 	if player.State != Running {
 		player.State = Running
 		player.Frame = 0
 	}
 
-	player.Rect.X -= PlayerStep
-	player.Left = true
-}
-
-func PlayerStepRight(game *Game_t) {
-	player := game.Player
-	if player.State != Running {
-		player.State = Running
-		player.Frame = 0
+	if left {
+		player.Rect.X -= PlayerStep
+	} else {
+		player.Rect.X += PlayerStep
 	}
-
-	player.Rect.X += PlayerStep
-	player.Left = false
+	player.Left = left
 }

@@ -3,8 +3,9 @@ package main
 import "github.com/veandco/go-sdl2/sdl"
 
 type Game_t struct {
-	Running bool
-	Player  *Player_t
+	Running    bool
+	Player     *Player_t
+	Background *sdl.Texture
 }
 
 func CreateGame(playerStartPos *sdl.Point, screen *Screen_t) (game *Game_t) {
