@@ -27,15 +27,6 @@ var (
 	}
 )
 
-var stateToFrame map[PlayerState]uint8 = map[PlayerState]uint8{
-	Idle:        8,
-	Running:     6,
-	Jumping:     5,
-	Falling:     4,
-	WallSliding: 2,
-	WallJumping: 2,
-}
-
 var dispatch map[PlayerState][]spriteCoord = map[PlayerState][]spriteCoord{
 	Idle:        idleCoords,
 	Running:     runningCoords,
@@ -46,7 +37,8 @@ var dispatch map[PlayerState][]spriteCoord = map[PlayerState][]spriteCoord{
 }
 
 func (player *Player_t) setTextureArea() {
-	spriteCoord := dispatch[player.State][player.frame]
+	spriteCoordArray := dispatch[player.State]
+	spriteCoord := spriteCoordArray[player.frame]
 
 	player.TextureArea = &sdl.Rect{
 		X: int32(spriteCoord.X) * CharacterWidth,
@@ -54,4 +46,7 @@ func (player *Player_t) setTextureArea() {
 		W: CharacterWidth,
 		H: CharacterHeight,
 	}
+
+	player.frame++
+	player.frame %= uint8(len(spriteCoordArray))
 }
