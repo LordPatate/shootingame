@@ -11,15 +11,14 @@ const (
 
 	GameStepDuration = 10 * time.Millisecond
 	StepsPerFrame    = 10
+	PlayerStep       = 4
 
 	WindowWidth, WindowHeight = 1120, 630
 
-	CharacterWidth, CharacterHeight = 50, 37
-	PlayerStep                      = 4
+	PlayerSpriteSheet                     = "resources/sprites/player/adventurer-v1.5-Sheet.png" // see playeranimations.go
+	PlayerSpriteWidth, PlayerSpriteHeight = 50, 37
 
 	FontFile, FontSize = "resources/fonts/DejaVuSans.ttf", 18
 
 	imgFlags = img.INIT_PNG
-
-	PlayerSpriteSheet = "resources/sprites/player/adventurer-v1.5-Sheet.png" // see playeranimations.go
 )
