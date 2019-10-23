@@ -112,6 +112,8 @@ func (game *Game_t) drawBackground(screen *Screen_t, bg, fg string) {
 	for _, tile := range game.Level.Tiles {
 		screen.Renderer.Copy(foreground, nil, tile.Rect)
 	}
+	foreground.Destroy()
+	background.Destroy()
 }
 
 func getTexture(screen *Screen_t, src string, byDefault uint32) (texture *sdl.Texture) {
@@ -130,6 +132,7 @@ func getTexture(screen *Screen_t, src string, byDefault uint32) (texture *sdl.Te
 	if err != nil {
 		panic(err)
 	}
+	surface.Free()
 
 	return
 }
