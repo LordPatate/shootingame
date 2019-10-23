@@ -1,11 +1,18 @@
 package main
 
-import "github.com/veandco/go-sdl2/img"
+import (
+	"time"
+
+	"github.com/veandco/go-sdl2/img"
+)
 
 const (
 	Red   = 0x00ff0000
 	Green = 0x0000ff00
 	Blue  = 0x000000ff
+
+	GameStepDuration = 10 * time.Millisecond
+	StepsPerFrame    = 10
 
 	WindowWidth  = 1120
 	WindowHeight = 630

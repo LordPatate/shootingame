@@ -37,6 +37,6 @@ func main() {
 		sdl.PumpEvents()
 		game.Update(screen)
 
-		time.Sleep(50 * time.Millisecond)
+		time.Sleep(GameStepDuration)
 	}
 }
