@@ -59,18 +59,11 @@ func (screen *Screen_t) Destroy() {
 }
 
 func (screen *Screen_t) Update(game *Game_t) {
-	if err := screen.Renderer.SetDrawColor(0, 0, 0, 255); err != nil {
+	if err := screen.Renderer.Copy(game.Background, nil, nil); err != nil {
 		panic(err)
 	}
-	if err := screen.Renderer.Clear(); err != nil {
-		panic(err)
-	}
-
-	// Test space
 
 	game.Player.Copy(screen)
-
-	// Test space end
 
 	if err := screen.Renderer.SetRenderTarget(nil); err != nil {
 		panic(err)

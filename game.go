@@ -9,6 +9,23 @@ type Game_t struct {
 }
 
 func CreateGame(playerStartPos *sdl.Point, screen *Screen_t) (game *Game_t) {
+	background, err := screen.Renderer.CreateTexture(sdl.PIXELFORMAT_RGBA8888, sdl.TEXTUREACCESS_TARGET, WindowWidth, WindowHeight)
+	if err != nil {
+		panic(err)
+	}
+	if err := screen.Renderer.SetRenderTarget(background); err != nil {
+		panic(err)
+	}
+	if err := screen.Renderer.SetDrawColor(0, 0, 0, 255); err != nil {
+		panic(err)
+	}
+	if err := screen.Renderer.Clear(); err != nil {
+		panic(err)
+	}
+	if err := screen.Renderer.SetRenderTarget(nil); err != nil {
+		panic(err)
+	}
+
 	game = &Game_t{
 		Running: true,
 		Player: CreatePlayer(
@@ -17,6 +34,7 @@ func CreateGame(playerStartPos *sdl.Point, screen *Screen_t) (game *Game_t) {
 				W: CharacterWidth, H: CharacterHeight,
 			},
 			PlayerSpriteSheet, screen),
+		Background: background,
 	}
 
 	return
@@ -24,6 +42,7 @@ func CreateGame(playerStartPos *sdl.Point, screen *Screen_t) (game *Game_t) {
 
 func (game *Game_t) Destroy() {
 	game.Player.Destroy()
+	game.Background.Destroy()
 }
 
 func (game *Game_t) Update(screen *Screen_t) {
