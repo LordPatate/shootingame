@@ -4,7 +4,7 @@ import "github.com/veandco/go-sdl2/sdl"
 
 const left, right = true, false
 
-var Movements map[sdl.Scancode]func(*Game_t) = map[sdl.Scancode]func(*Game_t){
-	sdl.SCANCODE_A: func(game *Game_t) { game.Player.Step(left) },
-	sdl.SCANCODE_D: func(game *Game_t) { game.Player.Step(right) },
+var Movements map[sdl.Scancode]func(*Player_t) = map[sdl.Scancode]func(*Player_t){
+	sdl.SCANCODE_A: func(player *Player_t) { player.Step(left) },
+	sdl.SCANCODE_D: func(player *Player_t) { player.Step(right) },
 }

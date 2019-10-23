@@ -12,6 +12,8 @@ const (
 	GameStepDuration = 10 * time.Millisecond
 	StepsPerFrame    = 10
 	PlayerStep       = 4
+	Gravity          = 4
+	JumpPower        = 80
 
 	WindowWidth, WindowHeight = 1120, 630
 

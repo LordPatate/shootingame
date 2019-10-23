@@ -48,28 +48,7 @@ func (game *Game_t) Update(screen *Screen_t) {
 		}
 	}
 
-	state := sdl.GetKeyboardState()
-	var movement func(*Game_t)
-	pressedKeys := 0
-	for key := 0; key < sdl.NUM_SCANCODES; key++ {
-		if state[key] == 1 {
-			m, present := Movements[sdl.Scancode(key)]
-			if present {
-				pressedKeys++
-				movement = m
-			}
-		}
-	}
-	if pressedKeys == 1 {
-		movement(game)
-	} else {
-		player := game.Player
-		if player.State != Idle {
-			player.State = Idle
-			player.Frame = 0
-		}
-
-	}
+	game.Player.Update(screen, game.Level)
 }
 
 func (game *Game_t) LoadLevel(id uint8, screen *Screen_t) {
@@ -97,7 +76,7 @@ func (game *Game_t) LoadLevel(id uint8, screen *Screen_t) {
 }
 
 func (game *Game_t) drawBackground(screen *Screen_t, bg, fg string) {
-	foreground := getTexture(screen, fg, FromRGB(80, 80, 80))
+	foreground := getTexture(screen, fg, FromRGB(80, 70, 90))
 	background := getTexture(screen, bg, FromRGB(0, 0, 0))
 
 	if bg == "" {
