@@ -7,21 +7,17 @@ import (
 )
 
 const (
-	Red   = 0x00ff0000
-	Green = 0x0000ff00
-	Blue  = 0x000000ff
+	Red, Green, Blue = 0x00ff0000, 0x0000ff00, 0x000000ff
 
 	GameStepDuration = 10 * time.Millisecond
 	StepsPerFrame    = 10
 
-	WindowWidth  = 1120
-	WindowHeight = 630
+	WindowWidth, WindowHeight = 1120, 630
 
 	CharacterWidth, CharacterHeight = 50, 37
 	PlayerStep                      = 4
 
-	FontFile = "resources/fonts/DejaVuSans.ttf"
-	FontSize = 18
+	FontFile, FontSize = "resources/fonts/DejaVuSans.ttf", 18
 
 	imgFlags = img.INIT_PNG
 
