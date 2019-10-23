@@ -37,8 +37,8 @@ func CreatePlayer(rect *sdl.Rect, imgPath string, screen *Screen_t) *Player_t {
 		panic(err)
 	}
 	player.TextureArea = &sdl.Rect{
-		W: CharacterWidth,
-		H: CharacterHeight,
+		W: PlayerSpriteWidth,
+		H: PlayerSpriteHeight,
 	}
 
 	return player

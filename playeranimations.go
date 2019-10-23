@@ -41,10 +41,10 @@ func (player *Player_t) setTextureArea() {
 	spriteCoord := spriteCoordArray[player.Frame/StepsPerFrame]
 
 	player.TextureArea = &sdl.Rect{
-		X: int32(spriteCoord.X) * CharacterWidth,
-		Y: int32(spriteCoord.Y) * CharacterHeight,
-		W: CharacterWidth,
-		H: CharacterHeight,
+		X: int32(spriteCoord.X) * PlayerSpriteWidth,
+		Y: int32(spriteCoord.Y) * PlayerSpriteHeight,
+		W: PlayerSpriteWidth,
+		H: PlayerSpriteHeight,
 	}
 
 	player.Frame++

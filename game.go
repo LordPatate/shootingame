@@ -31,7 +31,7 @@ func CreateGame(playerStartPos *sdl.Point, screen *Screen_t) (game *Game_t) {
 		Player: CreatePlayer(
 			&sdl.Rect{
 				X: playerStartPos.X, Y: playerStartPos.Y,
-				W: CharacterWidth, H: CharacterHeight,
+				W: PlayerSpriteWidth, H: PlayerSpriteHeight,
 			},
 			PlayerSpriteSheet, screen),
 		Background: background,
