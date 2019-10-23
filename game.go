@@ -49,13 +49,17 @@ func (game *Game_t) Update(screen *Screen_t) {
 
 	state := sdl.GetKeyboardState()
 	var movement func(*Game_t)
-	present := false
-	for key := 0; key < sdl.NUM_SCANCODES && !present; key++ {
+	pressedKeys := 0
+	for key := 0; key < sdl.NUM_SCANCODES; key++ {
 		if state[key] == 1 {
-			movement, present = Movements[sdl.Scancode(key)]
+			m, present := Movements[sdl.Scancode(key)]
+			if present {
+				pressedKeys++
+				movement = m
+			}
 		}
 	}
-	if present {
+	if pressedKeys == 1 {
 		movement(game)
 	} else {
 		player := game.Player
