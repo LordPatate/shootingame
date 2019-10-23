@@ -66,7 +66,7 @@ func (level *Level_t) Init(infos LevelInfos_t) {
 				}
 				level.PlayerStartPos = &sdl.Point{
 					X: bounds.X + int32(i*TileWidth),
-					Y: bounds.Y + int32(j*TileHeight),
+					Y: bounds.Y + int32(j*TileHeight) - PlayerSpriteHeight,
 				}
 			}
 		}

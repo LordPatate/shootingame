@@ -97,32 +97,39 @@ func (game *Game_t) LoadLevel(id uint8, screen *Screen_t) {
 }
 
 func (game *Game_t) drawBackground(screen *Screen_t, bg, fg string) {
-	if bg == "" {
-		if err := screen.Renderer.SetDrawColor(0, 0, 0, 255); err != nil {
-			panic(err)
-		}
-		if err := screen.Renderer.Clear(); err != nil {
-			panic(err)
-		}
-	}
+	foreground := getTexture(screen, fg, FromRGB(80, 80, 80))
+	background := getTexture(screen, bg, FromRGB(0, 0, 0))
 
-	var foregroundSurface *sdl.Surface
-	if fg == "" {
-		var err error
-		foregroundSurface, err = sdl.CreateRGBSurface(0, TileWidth, TileHeight, 32, 0, 0, 0, 0)
-		if err != nil {
+	if bg == "" {
+		if err := screen.Renderer.Copy(foreground, nil, &sdl.Rect{W: WindowWidth, H: WindowHeight}); err != nil {
 			panic(err)
 		}
-		if err := foregroundSurface.FillRect(nil, FromRGB(100, 100, 100)); err != nil {
+		if err := screen.Renderer.Copy(background, nil, game.Level.Bounds); err != nil {
 			panic(err)
 		}
-	}
-	foreground, err := screen.Renderer.CreateTextureFromSurface(foregroundSurface)
-	if err != nil {
-		panic(err)
 	}
 
 	for _, tile := range game.Level.Tiles {
 		screen.Renderer.Copy(foreground, nil, tile.Rect)
 	}
+}
+
+func getTexture(screen *Screen_t, src string, byDefault uint32) (texture *sdl.Texture) {
+	var surface *sdl.Surface
+	if src == "" {
+		var err error
+		surface, err = sdl.CreateRGBSurface(0, TileWidth, TileHeight, 32, 0, 0, 0, 0)
+		if err != nil {
+			panic(err)
+		}
+		if err := surface.FillRect(nil, byDefault); err != nil {
+			panic(err)
+		}
+	}
+	texture, err := screen.Renderer.CreateTextureFromSurface(surface)
+	if err != nil {
+		panic(err)
+	}
+
+	return
 }
