@@ -6,36 +6,18 @@ type Game_t struct {
 	Running    bool
 	Player     *Player_t
 	Background *sdl.Texture
+	Level      *Level_t
 }
 
-func CreateGame(playerStartPos *sdl.Point, screen *Screen_t) (game *Game_t) {
-	background, err := screen.Renderer.CreateTexture(sdl.PIXELFORMAT_RGBA8888, sdl.TEXTUREACCESS_TARGET, WindowWidth, WindowHeight)
-	if err != nil {
-		panic(err)
-	}
-	if err := screen.Renderer.SetRenderTarget(background); err != nil {
-		panic(err)
-	}
-	if err := screen.Renderer.SetDrawColor(0, 0, 0, 255); err != nil {
-		panic(err)
-	}
-	if err := screen.Renderer.Clear(); err != nil {
-		panic(err)
-	}
-	if err := screen.Renderer.SetRenderTarget(nil); err != nil {
-		panic(err)
-	}
-
+func CreateGame(screen *Screen_t) (game *Game_t) {
 	game = &Game_t{
 		Running: true,
 		Player: CreatePlayer(
-			&sdl.Rect{
-				X: playerStartPos.X, Y: playerStartPos.Y,
-				W: PlayerSpriteWidth, H: PlayerSpriteHeight,
-			},
+			&sdl.Rect{W: PlayerSpriteWidth, H: PlayerSpriteHeight},
 			PlayerSpriteSheet, screen),
-		Background: background,
+		Level: &Level_t{},
 	}
+	game.LoadLevel(0, screen)
 
 	return
 }
@@ -87,5 +69,60 @@ func (game *Game_t) Update(screen *Screen_t) {
 			player.Frame = 0
 		}
 
+	}
+}
+
+func (game *Game_t) LoadLevel(id uint8, screen *Screen_t) {
+	levelInfos := LevelInfos[id]
+
+	game.Level.Init(levelInfos)
+
+	game.Player.Rect.X = game.Level.PlayerStartPos.X
+	game.Player.Rect.Y = game.Level.PlayerStartPos.Y
+
+	background, err := screen.Renderer.CreateTexture(sdl.PIXELFORMAT_RGBA8888, sdl.TEXTUREACCESS_TARGET, WindowWidth, WindowHeight)
+	if err != nil {
+		panic(err)
+	}
+	if err := screen.Renderer.SetRenderTarget(background); err != nil {
+		panic(err)
+	}
+
+	game.drawBackground(screen, levelInfos.BackgroundImg, levelInfos.ForegroundImg)
+
+	game.Background = background
+	if err := screen.Renderer.SetRenderTarget(nil); err != nil {
+		panic(err)
+	}
+}
+
+func (game *Game_t) drawBackground(screen *Screen_t, bg, fg string) {
+	if bg == "" {
+		if err := screen.Renderer.SetDrawColor(0, 0, 0, 255); err != nil {
+			panic(err)
+		}
+		if err := screen.Renderer.Clear(); err != nil {
+			panic(err)
+		}
+	}
+
+	var foregroundSurface *sdl.Surface
+	if fg == "" {
+		var err error
+		foregroundSurface, err = sdl.CreateRGBSurface(0, TileWidth, TileHeight, 32, 0, 0, 0, 0)
+		if err != nil {
+			panic(err)
+		}
+		if err := foregroundSurface.FillRect(nil, FromRGB(100, 100, 100)); err != nil {
+			panic(err)
+		}
+	}
+	foreground, err := screen.Renderer.CreateTextureFromSurface(foregroundSurface)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, tile := range game.Level.Tiles {
+		screen.Renderer.Copy(foreground, nil, tile.Rect)
 	}
 }

@@ -29,7 +29,7 @@ func main() {
 	}
 	defer screen.Destroy()
 
-	game := CreateGame(&sdl.Point{500, 300}, screen)
+	game := CreateGame(screen)
 	defer game.Destroy()
 
 	for game.Running {

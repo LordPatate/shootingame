@@ -18,6 +18,8 @@ const (
 	PlayerSpriteSheet                     = "resources/sprites/player/adventurer-v1.5-Sheet.png" // see playeranimations.go
 	PlayerSpriteWidth, PlayerSpriteHeight = 50, 37
 
+	TileWidth, TileHeight = 25, 25
+
 	FontFile, FontSize = "resources/fonts/DejaVuSans.ttf", 18
 
 	imgFlags = img.INIT_PNG
