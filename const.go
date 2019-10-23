@@ -18,7 +18,7 @@ const (
 	WindowHeight = 630
 
 	CharacterWidth, CharacterHeight = 50, 37
-	PlayerStep                      = 12
+	PlayerStep                      = 4
 
 	FontFile = "resources/fonts/DejaVuSans.ttf"
 	FontSize = 18
