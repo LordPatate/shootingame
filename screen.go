@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"sync"
 
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
@@ -68,6 +69,7 @@ func (screen *Screen_t) Update(game *Game_t) {
 	}
 
 	game.Player.Copy(screen)
+	screen.castShadows(game)
 
 	if err := screen.Renderer.SetRenderTarget(nil); err != nil {
 		panic(err)
@@ -79,5 +81,64 @@ func (screen *Screen_t) Update(game *Game_t) {
 
 	if err := screen.Renderer.SetRenderTarget(screen.GameScene); err != nil {
 		panic(err)
+	}
+}
+
+func (screen *Screen_t) castShadows(game *Game_t) {
+	screen.Renderer.SetDrawColor(0, 0, 0, 200)
+
+	bounds := game.Level.Bounds
+	playerRect := game.Player.Rect
+	playerEye := &sdl.Point{
+		X: playerRect.X + playerRect.W/2,
+		Y: playerRect.Y + 10,
+	}
+	isHidden := func(x, y int32) bool {
+		for _, tile := range game.Level.Tiles {
+			if PointInRectangle(x, y, tile.Rect) {
+				return false
+			}
+		}
+		for _, tile := range game.Level.Tiles {
+			rect := myRect(*tile.Rect)
+			if rect.IntersectLine(x, y, playerEye.X, playerEye.Y) {
+				return true
+			}
+		}
+		return false
+	}
+	w, h := bounds.W, bounds.H
+	blackPoints := make([]bool, w*h)
+	rowsPerThreads := int32(80)
+	wg := sync.WaitGroup{}
+	wg.Add(int(w / rowsPerThreads))
+	routine := func(start, end int32) {
+		for x := start; x < end; x += 2 {
+			for y := bounds.Y; y < bounds.Y+h; y += 2 {
+				if isHidden(x, y) {
+					i, j := y-bounds.Y, x-bounds.X
+					blackPoints[j+i*w] = true
+					blackPoints[j+i*w+1] = true
+					blackPoints[j+i*w+w] = true
+					blackPoints[j+i*w+w+1] = true
+				}
+			}
+		}
+		wg.Done()
+	}
+	for threadID := int32(0); threadID < w/rowsPerThreads-1; threadID++ {
+		start := bounds.X + threadID*rowsPerThreads
+		end := start + rowsPerThreads
+		go routine(start, end)
+	}
+	go routine(bounds.X+(w/rowsPerThreads-1)*rowsPerThreads, bounds.X+w)
+	wg.Wait()
+	for i := int32(0); i < h; i++ {
+		for j := int32(0); j < w; j++ {
+			if blackPoints[j+i*w] {
+				x, y := j+bounds.X, i+bounds.Y
+				screen.Renderer.DrawPoint(x, y)
+			}
+		}
 	}
 }
