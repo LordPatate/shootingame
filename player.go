@@ -94,14 +94,14 @@ func (player *Player_t) Update(screen *Screen_t, level *Level_t) {
 			player.Rect.Y = ground - player.Rect.H
 			player.Inertia.Y = 0
 			player.Inertia.X = 0
-			player.groundControl(state)
+			player.groundControl(state, level)
 			return
 		}
 
 		player.SetState(Falling)
 	}
 
-	player.airControl(state)
+	player.airControl(state, level)
 
 	player.Inertia.Y += Gravity
 	player.Rect.Y += player.Inertia.Y / InertiaPerPixel
@@ -112,21 +112,48 @@ func (player *Player_t) Update(screen *Screen_t, level *Level_t) {
 		player.Inertia.X += AirSlow
 		player.Inertia.X = Min32(player.Inertia.X, 0)
 	}
-	player.Rect.X += player.Inertia.X / InertiaPerPixel
+	player.MoveX(player.Inertia.X/InertiaPerPixel, level)
 }
 
-func (player *Player_t) Step(left bool) {
+func (player *Player_t) MoveX(delta int32, level *Level_t) {
+	projection := &sdl.Rect{
+		X: player.Rect.X + delta,
+		Y: player.Rect.Y, W: player.Rect.W, H: player.Rect.H,
+	}
+
+	player.Rect.X = func() int32 {
+		for _, tile := range level.Tiles {
+			if projection.HasIntersection(tile.Rect) {
+				if delta > 0 {
+					return tile.Rect.X - player.Rect.W
+				}
+				return tile.Rect.X + tile.Rect.W
+			}
+		}
+		union := projection.Union(level.Bounds)
+		if !union.Equals(level.Bounds) {
+			if delta > 0 {
+				return level.Bounds.X + level.Bounds.W - player.Rect.W
+			}
+			return level.Bounds.X
+		}
+
+		return player.Rect.X + delta
+	}()
+}
+
+func (player *Player_t) Step(left bool, level *Level_t) {
 	player.SetState(Running)
 
 	if left {
-		player.Rect.X -= PlayerStep
+		player.MoveX(-PlayerStep, level)
 	} else {
-		player.Rect.X += PlayerStep
+		player.MoveX(PlayerStep, level)
 	}
 	player.Left = left
 }
 
-func (player *Player_t) groundControl(keyState []uint8) {
+func (player *Player_t) groundControl(keyState []uint8, level *Level_t) {
 	if keyState[sdl.SCANCODE_W] == 1 {
 		player.SetState(Jumping)
 		player.Inertia.Y = -JumpPower
@@ -139,7 +166,7 @@ func (player *Player_t) groundControl(keyState []uint8) {
 		return
 	}
 
-	var step func(*Player_t)
+	var step func(*Player_t, *Level_t)
 	moveKeysPressed := 0
 	for _, key := range []uint{sdl.SCANCODE_A, sdl.SCANCODE_D} {
 		if keyState[key] == 1 {
@@ -148,13 +175,13 @@ func (player *Player_t) groundControl(keyState []uint8) {
 		}
 	}
 	if moveKeysPressed == 1 {
-		step(player)
+		step(player, level)
 	} else {
 		player.SetState(Idle)
 	}
 }
 
-func (player *Player_t) airControl(keyState []uint8) {
+func (player *Player_t) airControl(keyState []uint8, level *Level_t) {
 	if keyState[sdl.SCANCODE_A] == 1 {
 		player.Inertia.X -= AirMovePower
 		player.Inertia.X = Max32(player.Inertia.X, -PlayerStep*InertiaPerPixel)
@@ -176,7 +203,8 @@ func (player *Player_t) getGround(level *Level_t) int32 {
 			return tile.Rect.Y
 		}
 	}
-	if !groundHitBox.HasIntersection(level.Bounds) {
+	union := groundHitBox.Union(level.Bounds)
+	if !union.Equals(level.Bounds) {
 		return level.Bounds.Y + level.Bounds.H
 	}
 	return -1
