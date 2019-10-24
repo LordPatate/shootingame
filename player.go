@@ -93,7 +93,6 @@ func (player *Player_t) Update(screen *Screen_t, level *Level_t) {
 		if ground != -1 {
 			player.Rect.Y = ground - player.Rect.H
 			player.Inertia.Y = 0
-			player.Inertia.X = 0
 			player.groundControl(state, level)
 			return
 		}
@@ -170,8 +169,10 @@ func (player *Player_t) Step(direction bool, level *Level_t) {
 
 	if direction == Left {
 		player.MoveX(-PlayerStep, level)
+		player.Inertia.X = -PlayerStep * InertiaPerPixel
 	} else {
 		player.MoveX(PlayerStep, level)
+		player.Inertia.X = PlayerStep * InertiaPerPixel
 	}
 	player.Direction = direction
 }
@@ -180,12 +181,6 @@ func (player *Player_t) groundControl(keyState []uint8, level *Level_t) {
 	if keyState[sdl.SCANCODE_W] == 1 {
 		player.SetState(Jumping)
 		player.Inertia.Y = -JumpPower
-		if keyState[sdl.SCANCODE_A] == 1 {
-			player.Inertia.X = -PlayerStep * InertiaPerPixel
-		}
-		if keyState[sdl.SCANCODE_D] == 1 {
-			player.Inertia.X = PlayerStep * InertiaPerPixel
-		}
 		return
 	}
 
