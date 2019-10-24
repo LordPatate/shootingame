@@ -113,14 +113,11 @@ func (screen *Screen_t) castShadows(game *Game_t) {
 	wg := sync.WaitGroup{}
 	wg.Add(int(w / rowsPerThreads))
 	routine := func(start, end int32) {
-		for x := start; x < end; x += 2 {
-			for y := bounds.Y; y < bounds.Y+h; y += 2 {
+		for x := start; x < end-3; x += 3 {
+			for y := bounds.Y; y < bounds.Y+h-3; y += 3 {
 				if isHidden(x, y) {
 					i, j := y-bounds.Y, x-bounds.X
-					blackPoints[j+i*w] = true
-					blackPoints[j+i*w+1] = true
-					blackPoints[j+i*w+w] = true
-					blackPoints[j+i*w+w+1] = true
+					blackPoints = matrixTrueSquare(blackPoints, w, h, j, i)
 				}
 			}
 		}
@@ -141,4 +138,13 @@ func (screen *Screen_t) castShadows(game *Game_t) {
 			}
 		}
 	}
+}
+
+func matrixTrueSquare(mat []bool, w, h, x, y int32) []bool {
+	for i := y; i < y+3; i++ {
+		for j := x; j < x+3; j++ {
+			mat[i*w+j] = true
+		}
+	}
+	return mat
 }
