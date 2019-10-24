@@ -22,7 +22,7 @@ type Player_t struct {
 	TextureArea *sdl.Rect
 	State       PlayerState
 	Frame       uint8
-	Left        bool
+	Direction   bool
 	Inertia     *sdl.Point
 }
 
@@ -57,7 +57,7 @@ func CreatePlayer(screen *Screen_t) *Player_t {
 func (player *Player_t) Copy(screen *Screen_t) {
 	player.setTextureArea()
 	flip := sdl.FLIP_NONE
-	if player.Left {
+	if player.Direction == Left {
 		flip = sdl.FLIP_HORIZONTAL
 	}
 	dst := &sdl.Rect{
@@ -150,7 +150,7 @@ func (player *Player_t) Step(direction bool, level *Level_t) {
 	} else {
 		player.MoveX(PlayerStep, level)
 	}
-	player.Left = left
+	player.Direction = direction
 }
 
 func (player *Player_t) groundControl(keyState []uint8, level *Level_t) {
