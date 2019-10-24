@@ -32,6 +32,10 @@ func CreateScreen() (screen *Screen_t, err error) {
 	if screen.Renderer == nil {
 		err = errors.New("Failed to create Renderer")
 	}
+	err = screen.Renderer.SetDrawBlendMode(sdl.BLENDMODE_BLEND)
+	if err != nil {
+		return
+	}
 
 	screen.GameScene, err = screen.Renderer.CreateTexture(sdl.PIXELFORMAT_RGBA8888, sdl.TEXTUREACCESS_TARGET, WindowWidth, WindowHeight)
 	if err != nil {

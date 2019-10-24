@@ -104,7 +104,7 @@ func (popup *Popup_t) createTextures(screen *Screen_t) {
 		panic(err)
 	}
 
-	bgColor := sdl.Color{130, 130, 130, 255}
+	bgColor := sdl.Color{110, 100, 100, 255}
 
 	// frame
 	if err := screen.Renderer.SetDrawColor(bgColor.R, bgColor.G, bgColor.B, bgColor.A); err != nil {
