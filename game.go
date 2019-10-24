@@ -74,8 +74,8 @@ func (game *Game_t) LoadLevel(id uint8, screen *Screen_t) {
 }
 
 func (game *Game_t) drawBackground(screen *Screen_t, bg, fg string) {
-	foreground := getTexture(screen, fg, FromRGB(80, 70, 90))
-	background := getTexture(screen, bg, FromRGB(0, 0, 0))
+	foreground := getTexture(screen, fg, FromRGB(20, 17, 23))
+	background := getTexture(screen, bg, FromRGB(65, 60, 55))
 
 	if bg == "" {
 		if err := screen.Renderer.Copy(foreground, nil, &sdl.Rect{W: WindowWidth, H: WindowHeight}); err != nil {
