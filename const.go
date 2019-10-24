@@ -9,6 +9,8 @@ import (
 const (
 	Red, Green, Blue = 0x00ff0000, 0x0000ff00, 0x000000ff
 
+	Left, Right = true, false
+
 	GameStepDuration = 10 * time.Millisecond
 	StepsPerFrame    = 10
 	PlayerStep       = 4

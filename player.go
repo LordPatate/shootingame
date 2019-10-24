@@ -142,10 +142,10 @@ func (player *Player_t) MoveX(delta int32, level *Level_t) {
 	}()
 }
 
-func (player *Player_t) Step(left bool, level *Level_t) {
+func (player *Player_t) Step(direction bool, level *Level_t) {
 	player.SetState(Running)
 
-	if left {
+	if direction == Left {
 		player.MoveX(-PlayerStep, level)
 	} else {
 		player.MoveX(PlayerStep, level)
