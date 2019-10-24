@@ -12,10 +12,8 @@ type Game_t struct {
 func CreateGame(screen *Screen_t) (game *Game_t) {
 	game = &Game_t{
 		Running: true,
-		Player: CreatePlayer(
-			&sdl.Rect{W: PlayerSpriteWidth, H: PlayerSpriteHeight},
-			PlayerSpriteSheet, screen),
-		Level: &Level_t{},
+		Player:  CreatePlayer(screen),
+		Level:   &Level_t{},
 	}
 	game.LoadLevel(0, screen)
 

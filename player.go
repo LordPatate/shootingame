@@ -26,13 +26,19 @@ type Player_t struct {
 	Inertia     *sdl.Point
 }
 
-func CreatePlayer(rect *sdl.Rect, imgPath string, screen *Screen_t) *Player_t {
+var playerStateDim map[PlayerState]sdl.Point = map[PlayerState]sdl.Point{
+	Idle: {X: 20, Y: 37}, Running: {X: 20, Y: 37}, Jumping: {X: 20, Y: 37}, Falling: {X: 20, Y: 37}, WallSliding: {X: 20, Y: 37}, WallJumping: {X: 20, Y: 37},
+}
+
+func CreatePlayer(screen *Screen_t) *Player_t {
 	player := &Player_t{
-		Rect:    rect,
+		Rect:    &sdl.Rect{},
 		Inertia: &sdl.Point{},
 	}
+	dim := playerStateDim[player.State]
+	player.Rect.W, player.Rect.H = dim.X, dim.Y
 
-	surface, err := img.Load(imgPath)
+	surface, err := img.Load(PlayerSpriteSheet)
 	if err != nil {
 		panic(err)
 	}
@@ -54,7 +60,12 @@ func (player *Player_t) Copy(screen *Screen_t) {
 	if player.Left {
 		flip = sdl.FLIP_HORIZONTAL
 	}
-	if err := screen.Renderer.CopyEx(player.Texture, player.TextureArea, player.Rect, 0, nil, flip); err != nil {
+	dst := &sdl.Rect{
+		X: player.Rect.X + player.Rect.W/2 - PlayerSpriteWidth/2,
+		Y: player.Rect.Y + player.Rect.H/2 - PlayerSpriteHeight/2,
+		W: PlayerSpriteWidth, H: PlayerSpriteHeight,
+	}
+	if err := screen.Renderer.CopyEx(player.Texture, player.TextureArea, dst, 0, nil, flip); err != nil {
 		panic(err)
 	}
 }
@@ -75,20 +86,33 @@ func (player *Player_t) SetState(state PlayerState) {
 }
 
 func (player *Player_t) Update(screen *Screen_t, level *Level_t) {
+	state := sdl.GetKeyboardState()
+
 	if player.Inertia.Y >= 0 {
 		ground := player.getGround(level)
 		if ground != -1 {
 			player.Rect.Y = ground - player.Rect.H
 			player.Inertia.Y = 0
-			player.groundControl()
+			player.Inertia.X = 0
+			player.groundControl(state)
 			return
 		}
 
 		player.SetState(Falling)
 	}
 
-	player.Inertia.Y += int32(Gravity)
-	player.Rect.Y += player.Inertia.Y / 10
+	player.airControl(state)
+
+	player.Inertia.Y += Gravity
+	player.Rect.Y += player.Inertia.Y / InertiaPerPixel
+	if player.Inertia.X > 0 {
+		player.Inertia.X -= AirSlow
+		player.Inertia.X = Max32(player.Inertia.X, 0)
+	} else {
+		player.Inertia.X += AirSlow
+		player.Inertia.X = Min32(player.Inertia.X, 0)
+	}
+	player.Rect.X += player.Inertia.X / InertiaPerPixel
 }
 
 func (player *Player_t) Step(left bool) {
@@ -102,30 +126,42 @@ func (player *Player_t) Step(left bool) {
 	player.Left = left
 }
 
-func (player *Player_t) groundControl() {
-	state := sdl.GetKeyboardState()
-
-	if state[sdl.SCANCODE_W] == 1 {
+func (player *Player_t) groundControl(keyState []uint8) {
+	if keyState[sdl.SCANCODE_W] == 1 {
 		player.SetState(Jumping)
 		player.Inertia.Y = -JumpPower
+		if keyState[sdl.SCANCODE_A] == 1 {
+			player.Inertia.X = -PlayerStep * InertiaPerPixel
+		}
+		if keyState[sdl.SCANCODE_D] == 1 {
+			player.Inertia.X = PlayerStep * InertiaPerPixel
+		}
 		return
 	}
 
-	var movement func(*Player_t)
+	var step func(*Player_t)
 	moveKeysPressed := 0
-	for key := 0; key < sdl.NUM_SCANCODES; key++ {
-		if state[key] == 1 {
-			m, present := Movements[sdl.Scancode(key)]
-			if present {
-				moveKeysPressed++
-				movement = m
-			}
+	for _, key := range []uint{sdl.SCANCODE_A, sdl.SCANCODE_D} {
+		if keyState[key] == 1 {
+			step = GroundSteps[sdl.Scancode(key)]
+			moveKeysPressed++
 		}
 	}
 	if moveKeysPressed == 1 {
-		movement(player)
+		step(player)
 	} else {
 		player.SetState(Idle)
+	}
+}
+
+func (player *Player_t) airControl(keyState []uint8) {
+	if keyState[sdl.SCANCODE_A] == 1 {
+		player.Inertia.X -= AirMovePower
+		player.Inertia.X = Max32(player.Inertia.X, -PlayerStep*InertiaPerPixel)
+	}
+	if keyState[sdl.SCANCODE_D] == 1 {
+		player.Inertia.X += AirMovePower
+		player.Inertia.X = Min32(player.Inertia.X, PlayerStep*InertiaPerPixel)
 	}
 }
 
@@ -133,7 +169,7 @@ func (player *Player_t) getGround(level *Level_t) int32 {
 	groundHitBox := &sdl.Rect{
 		X: player.Rect.X,
 		Y: player.Rect.Y + player.Rect.H + 1,
-		W: player.Rect.W, H: player.Inertia.Y + 1,
+		W: player.Rect.W, H: player.Inertia.Y/InertiaPerPixel + 1,
 	}
 	for _, tile := range level.Tiles {
 		if groundHitBox.HasIntersection(tile.Rect) {
