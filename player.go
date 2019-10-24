@@ -104,7 +104,7 @@ func (player *Player_t) Update(screen *Screen_t, level *Level_t) {
 	player.airControl(state, level)
 
 	player.Inertia.Y += Gravity
-	player.Rect.Y += player.Inertia.Y / InertiaPerPixel
+	player.MoveY(player.Inertia.Y/InertiaPerPixel, level)
 	if player.Inertia.X > 0 {
 		player.Inertia.X -= AirSlow
 		player.Inertia.X = Max32(player.Inertia.X, 0)
@@ -139,6 +139,29 @@ func (player *Player_t) MoveX(delta int32, level *Level_t) {
 		}
 
 		return player.Rect.X + delta
+	}()
+}
+
+func (player *Player_t) MoveY(delta int32, level *Level_t) {
+	projection := &sdl.Rect{
+		Y: player.Rect.Y + delta,
+		X: player.Rect.X, W: player.Rect.W, H: player.Rect.H,
+	}
+
+	player.Rect.Y = func() int32 {
+		for _, tile := range level.Tiles {
+			if projection.HasIntersection(tile.Rect) {
+				player.Inertia.Y = 0
+				return tile.Rect.Y + tile.Rect.H
+			}
+		}
+		union := projection.Union(level.Bounds)
+		if !union.Equals(level.Bounds) {
+			player.Inertia.Y = 0
+			return level.Bounds.Y
+		}
+
+		return player.Rect.Y + delta
 	}()
 }
 
