@@ -108,9 +108,10 @@ func (screen *Screen_t) ComputeShadows(game *Game_t) {
 	}
 	w, h := bounds.W, bounds.H
 	blackPoints := make([]bool, w*h)
-	chunksPerThreads := int32(80)
+	threadNB := 10
+	chunksPerThreads := w / int32(threadNB)
 	wg := sync.WaitGroup{}
-	wg.Add(int(w / chunksPerThreads))
+	wg.Add(threadNB)
 	routine := func(start, end int32) {
 		for x := start; x < end; x += 3 {
 			for y := bounds.Y; y < bounds.Y+h-3; y += 3 {
@@ -120,19 +121,22 @@ func (screen *Screen_t) ComputeShadows(game *Game_t) {
 				}
 			}
 		}
-		wg.Done()
 	}
-	var start, end int32
-	for start = bounds.X; start < bounds.X+w; start += chunksPerThreads {
-		end = start + chunksPerThreads
-		go routine(start, end)
+	start := bounds.X
+	for i := 0; i < threadNB; i++ {
+		go func(start int32) { routine(start, start+chunksPerThreads); wg.Done() }(start)
+		start += chunksPerThreads
+	}
+	if start < bounds.X+w {
+		routine(start, bounds.X+w)
 	}
 	wg.Wait()
+
 	screen.BlackPoints = blackPoints
 }
 
 func (screen *Screen_t) castShadows(game *Game_t) {
-	screen.Renderer.SetDrawColor(0, 0, 0, 200)
+	screen.Renderer.SetDrawColor(15, 15, 15, 255)
 
 	bounds := game.Level.Bounds
 	w, h := bounds.W, bounds.H
