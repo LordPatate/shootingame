@@ -196,6 +196,7 @@ func (player *Player_t) groundControl(keyState []uint8, level *Level_t) {
 		step(player, level)
 	} else {
 		player.SetState(Idle)
+		player.Inertia.X = 0
 	}
 }
 
