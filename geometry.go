@@ -32,6 +32,13 @@ func ScaleRect(rect *sdl.Rect, wPercent, hPercent int32) *sdl.Rect {
 
 type myRect sdl.Rect
 
+func AdaptRect(rect *sdl.Rect) myRect {
+	return myRect{
+		X: rect.X - 1, Y: rect.Y - 1,
+		W: rect.W + 2, H: rect.H + 2,
+	}
+}
+
 func (rect *myRect) IntersectLine(x1, y1, x2, y2 int32) bool {
 	rectX1 := rect.X
 	rectY1 := rect.Y

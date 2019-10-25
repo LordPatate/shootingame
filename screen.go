@@ -99,7 +99,7 @@ func (screen *Screen_t) ComputeShadows(game *Game_t) {
 			}
 		}
 		for _, tile := range game.Level.Tiles {
-			rect := myRect(*tile.Rect)
+			rect := AdaptRect(tile.Rect)
 			if rect.IntersectLine(x, y, playerEye.X, playerEye.Y) {
 				return true
 			}
@@ -108,9 +108,9 @@ func (screen *Screen_t) ComputeShadows(game *Game_t) {
 	}
 	w, h := bounds.W, bounds.H
 	blackPoints := make([]bool, w*h)
-	rowsPerThreads := int32(80)
+	chunksPerThreads := int32(80)
 	wg := sync.WaitGroup{}
-	wg.Add(int(w / rowsPerThreads))
+	wg.Add(int(w / chunksPerThreads))
 	routine := func(start, end int32) {
 		for x := start; x < end; x += 3 {
 			for y := bounds.Y; y < bounds.Y+h-3; y += 3 {
@@ -122,8 +122,9 @@ func (screen *Screen_t) ComputeShadows(game *Game_t) {
 		}
 		wg.Done()
 	}
-	for start := bounds.X; start < bounds.X+w; start += rowsPerThreads {
-		end := start + rowsPerThreads
+	var start, end int32
+	for start = bounds.X; start < bounds.X+w; start += chunksPerThreads {
+		end = start + chunksPerThreads
 		go routine(start, end)
 	}
 	wg.Wait()
