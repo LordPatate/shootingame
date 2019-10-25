@@ -32,11 +32,21 @@ func main() {
 	game := CreateGame(screen)
 	defer game.Destroy()
 
+	const done = true
+	channel := make(chan bool)
+
+	screen.ComputeShadows(game)
 	for game.Running {
 		screen.Update(game)
 		sdl.PumpEvents()
 		game.Update(screen)
 
+		shadows := !done
+		go func() { screen.ComputeShadows(game); channel <- done }()
+
 		time.Sleep(GameStepDuration)
+		for shadows != done {
+			shadows = <-channel
+		}
 	}
 }

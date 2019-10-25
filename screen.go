@@ -9,10 +9,11 @@ import (
 )
 
 type Screen_t struct {
-	Window    *sdl.Window
-	Renderer  *sdl.Renderer
-	GameScene *sdl.Texture
-	Font      *ttf.Font
+	Window      *sdl.Window
+	Renderer    *sdl.Renderer
+	GameScene   *sdl.Texture
+	Font        *ttf.Font
+	BlackPoints []bool
 }
 
 func CreateScreen() (screen *Screen_t, err error) {
@@ -84,9 +85,7 @@ func (screen *Screen_t) Update(game *Game_t) {
 	}
 }
 
-func (screen *Screen_t) castShadows(game *Game_t) {
-	screen.Renderer.SetDrawColor(0, 0, 0, 200)
-
+func (screen *Screen_t) ComputeShadows(game *Game_t) {
 	bounds := game.Level.Bounds
 	playerRect := game.Player.Rect
 	playerEye := &sdl.Point{
@@ -113,7 +112,7 @@ func (screen *Screen_t) castShadows(game *Game_t) {
 	wg := sync.WaitGroup{}
 	wg.Add(int(w / rowsPerThreads))
 	routine := func(start, end int32) {
-		for x := start; x < end-3; x += 3 {
+		for x := start; x < end; x += 3 {
 			for y := bounds.Y; y < bounds.Y+h-3; y += 3 {
 				if isHidden(x, y) {
 					i, j := y-bounds.Y, x-bounds.X
@@ -123,16 +122,22 @@ func (screen *Screen_t) castShadows(game *Game_t) {
 		}
 		wg.Done()
 	}
-	for threadID := int32(0); threadID < w/rowsPerThreads-1; threadID++ {
-		start := bounds.X + threadID*rowsPerThreads
+	for start := bounds.X; start < bounds.X+w; start += rowsPerThreads {
 		end := start + rowsPerThreads
 		go routine(start, end)
 	}
-	go routine(bounds.X+(w/rowsPerThreads-1)*rowsPerThreads, bounds.X+w)
 	wg.Wait()
+	screen.BlackPoints = blackPoints
+}
+
+func (screen *Screen_t) castShadows(game *Game_t) {
+	screen.Renderer.SetDrawColor(0, 0, 0, 200)
+
+	bounds := game.Level.Bounds
+	w, h := bounds.W, bounds.H
 	for i := int32(0); i < h; i++ {
 		for j := int32(0); j < w; j++ {
-			if blackPoints[j+i*w] {
+			if screen.BlackPoints[j+i*w] {
 				x, y := j+bounds.X, i+bounds.Y
 				screen.Renderer.DrawPoint(x, y)
 			}
