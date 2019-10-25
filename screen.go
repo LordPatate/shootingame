@@ -108,7 +108,7 @@ func (screen *Screen_t) ComputeShadows(game *Game_t) {
 	}
 	w, h := bounds.W, bounds.H
 	blackPoints := make([]bool, w*h)
-	threadNB := 10
+	threadNB := 11
 	chunksPerThreads := w / int32(threadNB)
 	wg := sync.WaitGroup{}
 	wg.Add(threadNB)
