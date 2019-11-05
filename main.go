@@ -38,15 +38,19 @@ func main() {
 	screen.ComputeShadows(game)
 	for game.Running {
 		screen.Update(game)
-		sdl.PumpEvents()
-		game.Update(screen)
 
-		shadows := !done
-		go func() { screen.ComputeShadows(game); channel <- done }()
+		update := !done
+		go func() {
+			sdl.PumpEvents()
+			game.Update(screen)
+			screen.ComputeShadows(game)
+
+			channel <- done
+		}()
 
 		time.Sleep(GameStepDuration)
-		for shadows != done {
-			shadows = <-channel
+		for update != done {
+			update = <-channel
 		}
 	}
 }

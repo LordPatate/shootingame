@@ -2,18 +2,20 @@ package main
 
 import (
 	"errors"
-	"sync"
 
+	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
 )
 
 type Screen_t struct {
-	Window      *sdl.Window
-	Renderer    *sdl.Renderer
-	GameScene   *sdl.Texture
-	Font        *ttf.Font
-	BlackPoints []bool
+	Window    *sdl.Window
+	Renderer  *sdl.Renderer
+	GameScene *sdl.Texture
+	Font      *ttf.Font
+	Shades    []struct {
+		vx, vy []int16
+	}
 }
 
 func CreateScreen() (screen *Screen_t, err error) {
@@ -70,7 +72,7 @@ func (screen *Screen_t) Update(game *Game_t) {
 	}
 
 	game.Player.Copy(screen)
-	screen.castShadows(game)
+	screen.castShadows()
 
 	if err := screen.Renderer.SetRenderTarget(nil); err != nil {
 		panic(err)
@@ -86,75 +88,37 @@ func (screen *Screen_t) Update(game *Game_t) {
 }
 
 func (screen *Screen_t) ComputeShadows(game *Game_t) {
+	shades := []struct{ vx, vy []int16 }{}
 	bounds := game.Level.Bounds
 	playerRect := game.Player.Rect
 	playerEye := &sdl.Point{
 		X: playerRect.X + playerRect.W/2,
 		Y: playerRect.Y + 10,
 	}
-	isHidden := func(x, y int32) bool {
-		for _, tile := range game.Level.Tiles {
-			if PointInRectangle(x, y, tile.Rect) {
-				return false
-			}
-		}
-		for _, tile := range game.Level.Tiles {
-			rect := AdaptRect(tile.Rect)
-			if rect.IntersectLine(x, y, playerEye.X, playerEye.Y) {
-				return true
-			}
-		}
-		return false
-	}
-	w, h := bounds.W, bounds.H
-	blackPoints := make([]bool, w*h)
-	threadNB := 11
-	chunksPerThreads := w / int32(threadNB)
-	wg := sync.WaitGroup{}
-	wg.Add(threadNB)
-	routine := func(start, end int32) {
-		for x := start; x < end; x += 3 {
-			for y := bounds.Y; y < bounds.Y+h-3; y += 3 {
-				if isHidden(x, y) {
-					i, j := y-bounds.Y, x-bounds.X
-					blackPoints = matrixTrueSquare(blackPoints, w, h, j, i)
-				}
-			}
-		}
-	}
-	start := bounds.X
-	for i := 0; i < threadNB; i++ {
-		go func(start int32) { routine(start, start+chunksPerThreads); wg.Done() }(start)
-		start += chunksPerThreads
-	}
-	if start < bounds.X+w {
-		routine(start, bounds.X+w)
-	}
-	wg.Wait()
 
-	screen.BlackPoints = blackPoints
+	for _, tile := range game.Level.Tiles {
+
+		// Compute the shade produced by each diagonal
+		rect := tile.Rect
+		x, y, w, h := rect.X, rect.Y, rect.W, rect.H
+		vx := []int32{x, x + w}
+		vy := []int32{y, y + h}
+		for i := 0; i < 2; i++ {
+			x1, y1 := PointShade(bounds, playerEye, vx[0], vy[i])
+			x2, y2 := PointShade(bounds, playerEye, vx[1], vy[1-i])
+			s := struct{ vx, vy []int16 }{
+				vx: []int16{int16(vx[0]), int16(vx[1]), x2, x1},
+				vy: []int16{int16(vy[i]), int16(vy[1-i]), y2, y1},
+			}
+			shades = append(shades, s)
+		}
+	}
+
+	screen.Shades = shades
 }
 
-func (screen *Screen_t) castShadows(game *Game_t) {
-	screen.Renderer.SetDrawColor(15, 15, 15, 255)
-
-	bounds := game.Level.Bounds
-	w, h := bounds.W, bounds.H
-	for i := int32(0); i < h; i++ {
-		for j := int32(0); j < w; j++ {
-			if screen.BlackPoints[j+i*w] {
-				x, y := j+bounds.X, i+bounds.Y
-				screen.Renderer.DrawPoint(x, y)
-			}
-		}
+func (screen *Screen_t) castShadows() {
+	for _, shade := range screen.Shades {
+		gfx.FilledPolygonRGBA(screen.Renderer, shade.vx, shade.vy, 15, 15, 15, 255)
 	}
-}
-
-func matrixTrueSquare(mat []bool, w, h, x, y int32) []bool {
-	for i := y; i < y+3; i++ {
-		for j := x; j < x+3; j++ {
-			mat[i*w+j] = true
-		}
-	}
-	return mat
 }
