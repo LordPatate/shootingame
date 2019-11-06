@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -88,6 +90,8 @@ func (popup *Popup_t) Pop(screen *Screen_t) (option string) {
 				}
 			}
 		}()
+
+		time.Sleep(GameStepDuration)
 	}
 
 	popup.destroy()
