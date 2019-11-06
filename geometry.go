@@ -91,27 +91,27 @@ func VerticalIntersection(a1, a2 FloatPoint, x int32) int32 {
 	return int32(math.Round(coefA*float64(x) + ordA))
 }
 
-func PointShade(bounds *sdl.Rect, playerEye *sdl.Point, x, y int32) (sx, sy int16) {
+func PointShade(bounds *sdl.Rect, playerEye *sdl.Point, x, y int32) (sx, sy int32) {
 	a1, a2 := PointToFloat(x, y), PointToFloat(playerEye.X, playerEye.Y)
 
 	if playerEye.X > x { // shadow on left bound
-		sx = int16(bounds.X)
+		sx = bounds.X
 	} else { // shadow on right bound
-		sx = int16(bounds.X + bounds.W)
+		sx = bounds.X + bounds.W
 	}
-	sy = int16(VerticalIntersection(a1, a2, int32(sx)))
-	if sy >= int16(bounds.Y) && sy <= int16(bounds.Y+bounds.H) {
+	sy = VerticalIntersection(a1, a2, int32(sx))
+	if sy >= bounds.Y && sy <= bounds.Y+bounds.H {
 		return
 	}
 
 	if playerEye.Y > y { // shadow on top edge
-		sy = int16(bounds.Y)
+		sy = bounds.Y
 	} else { //shadow on bottom edge
-		sy = int16(bounds.Y + bounds.H)
+		sy = bounds.Y + bounds.H
 	}
-	sx = int16(HorizontalIntersection(a1, a2, int32(sy)))
-	if sx >= int16(bounds.X) && sx <= int16(bounds.X+bounds.W) {
+	sx = HorizontalIntersection(a1, a2, int32(sy))
+	if sx >= bounds.X && sx <= bounds.X+bounds.W {
 		return
 	}
-	return int16(x), sy
+	return x, sy
 }

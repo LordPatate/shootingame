@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"math"
 
 	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
@@ -90,6 +91,8 @@ func (screen *Screen_t) Update(game *Game_t) {
 func (screen *Screen_t) ComputeShadows(game *Game_t) {
 	shades := []struct{ vx, vy []int16 }{}
 	bounds := game.Level.Bounds
+	topLeft, topRight := &sdl.Point{bounds.X, bounds.Y}, &sdl.Point{bounds.X + bounds.W, bounds.Y}
+	botLeft, botRight := &sdl.Point{bounds.X, bounds.Y + bounds.H}, &sdl.Point{bounds.X + bounds.W, bounds.Y + bounds.H}
 	playerRect := game.Player.Rect
 	playerEye := &sdl.Point{
 		X: playerRect.X + playerRect.W/2,
@@ -97,21 +100,73 @@ func (screen *Screen_t) ComputeShadows(game *Game_t) {
 	}
 
 	for _, tile := range game.Level.Tiles {
-
 		// Compute the shade produced by each diagonal
+
 		rect := tile.Rect
 		x, y, w, h := rect.X, rect.Y, rect.W, rect.H
-		vx := []int32{x, x + w}
-		vy := []int32{y, y + h}
-		for i := 0; i < 2; i++ {
-			x1, y1 := PointShade(bounds, playerEye, vx[0], vy[i])
-			x2, y2 := PointShade(bounds, playerEye, vx[1], vy[1-i])
-			s := struct{ vx, vy []int16 }{
-				vx: []int16{int16(vx[0]), int16(vx[1]), x2, x1},
-				vy: []int16{int16(vy[i]), int16(vy[1-i]), y2, y1},
+		var x1, x2, y1, y2 int32
+		var s struct{ vx, vy []int16 }
+		// Checks if the corner specified is inside the shadow
+		checkCorner := func(corner *sdl.Point, above bool) {
+			square := func(x float64) float64 { return x * x }
+			computeAngle := func(x, y int32) float64 {
+				val := math.Acos(float64(x-playerEye.X) / math.Sqrt(square(float64(x-playerEye.X))+square(float64(y-playerEye.Y))))
+				if playerEye.Y < y {
+					return -val
+				}
+				return val
 			}
-			shades = append(shades, s)
+			upper := computeAngle(x1, y1)
+			lower := computeAngle(x2, y2)
+			angle := computeAngle(corner.X, corner.Y)
+			if above {
+				if upper < angle && angle < lower {
+					s.vx = append(s.vx, int16(corner.X))
+					s.vy = append(s.vy, int16(corner.Y))
+				}
+				return
+			}
+			if upper > angle && angle > lower {
+				s.vx = append(s.vx, int16(corner.X))
+				s.vy = append(s.vy, int16(corner.Y))
+			}
 		}
+
+		// TopLeft - BotRight diagonal
+		x1, y1 = PointShade(bounds, playerEye, x, y)
+		x2, y2 = PointShade(bounds, playerEye, x+w, y+h)
+		s = struct{ vx, vy []int16 }{
+			vx: []int16{int16(x1), int16(x), int16(x + w), int16(x2)},
+			vy: []int16{int16(y1), int16(y), int16(y + h), int16(y2)},
+		}
+		above := playerEye.Y < playerEye.X+(y-x)
+		checkCorner(botRight, above)
+		if above {
+			checkCorner(botLeft, above)
+		} else {
+			checkCorner(topRight, above)
+		}
+		checkCorner(topLeft, above)
+
+		shades = append(shades, s)
+
+		// BotLeft - TopRight diagonal
+		x1, y1 = PointShade(bounds, playerEye, x, y+h)
+		x2, y2 = PointShade(bounds, playerEye, x+w, y)
+		s = struct{ vx, vy []int16 }{
+			vx: []int16{int16(x1), int16(x), int16(x + w), int16(x2)},
+			vy: []int16{int16(y1), int16(y + h), int16(y), int16(y2)},
+		}
+		above = playerEye.Y < -playerEye.X+(y-h+x)
+		checkCorner(topRight, above)
+		if above {
+			checkCorner(botRight, above)
+		} else {
+			checkCorner(topLeft, above)
+		}
+		checkCorner(botLeft, above)
+
+		shades = append(shades, s)
 	}
 
 	screen.Shades = shades
