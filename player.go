@@ -107,7 +107,6 @@ func (player *Player_t) Update(screen *Screen_t, level *Level_t) {
 	player.airControl(state, level)
 
 	player.Inertia.Y += Gravity
-	player.MoveY(player.Inertia.Y/InertiaPerPixel, level)
 	if player.Inertia.X > 0 {
 		player.Inertia.X -= AirSlow
 		player.Inertia.X = Max32(player.Inertia.X, 0)
@@ -116,6 +115,7 @@ func (player *Player_t) Update(screen *Screen_t, level *Level_t) {
 		player.Inertia.X = Min32(player.Inertia.X, 0)
 	}
 	player.MoveX(player.Inertia.X/InertiaPerPixel, level)
+	player.MoveY(player.Inertia.Y/InertiaPerPixel, level)
 }
 
 func (player *Player_t) MoveX(delta int32, level *Level_t) {
@@ -123,23 +123,33 @@ func (player *Player_t) MoveX(delta int32, level *Level_t) {
 		X: player.Rect.X + delta,
 		Y: player.Rect.Y, W: player.Rect.W, H: player.Rect.H,
 	}
+	collision := func() {
+		if player.State == Falling || player.State == WallSliding {
+			player.SetState(WallSliding)
+			player.Inertia.Y -= WallFriction
+		}
+	}
 
 	player.Rect.X = func() int32 {
 		for _, tile := range level.Tiles {
 			if projection.HasIntersection(tile.Rect) {
-				player.Inertia.X = 0
+				collision()
 				if delta > 0 {
+					player.Inertia.X = InertiaPerPixel
 					return tile.Rect.X - player.Rect.W
 				}
+				player.Inertia.X = -InertiaPerPixel
 				return tile.Rect.X + tile.Rect.W
 			}
 		}
 		union := projection.Union(level.Bounds)
 		if !union.Equals(level.Bounds) {
-			player.Inertia.X = 0
+			collision()
 			if delta > 0 {
+				player.Inertia.X = InertiaPerPixel
 				return level.Bounds.X + level.Bounds.W - player.Rect.W
 			}
+			player.Inertia.X = -InertiaPerPixel
 			return level.Bounds.X
 		}
 

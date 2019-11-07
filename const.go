@@ -18,6 +18,7 @@ const (
 	JumpPower        = 850
 	AirMovePower     = 20
 	AirSlow          = 4
+	WallFriction     = 10
 	InertiaPerPixel  = 100
 
 	WindowWidth, WindowHeight = 1120, 630
