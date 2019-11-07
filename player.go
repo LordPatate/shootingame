@@ -30,13 +30,17 @@ var playerStateDim map[PlayerState]sdl.Point = map[PlayerState]sdl.Point{
 	Idle: {X: 20, Y: 37}, Running: {X: 20, Y: 37}, Jumping: {X: 20, Y: 37}, Falling: {X: 20, Y: 37}, WallSliding: {X: 20, Y: 37}, WallJumping: {X: 20, Y: 37},
 }
 
+func scale(x int32) int32 {
+	return x * PlayerScalePercent / 100
+}
+
 func CreatePlayer(screen *Screen_t) *Player_t {
 	player := &Player_t{
 		Rect:    &sdl.Rect{},
 		Inertia: &sdl.Point{},
 	}
 	dim := playerStateDim[player.State]
-	player.Rect.W, player.Rect.H = dim.X, dim.Y
+	player.Rect.W, player.Rect.H = scale(dim.X), scale(dim.Y)
 
 	surface, err := img.Load(PlayerSpriteSheet)
 	if err != nil {
@@ -61,9 +65,9 @@ func (player *Player_t) Copy(screen *Screen_t) {
 		flip = sdl.FLIP_HORIZONTAL
 	}
 	dst := &sdl.Rect{
-		X: player.Rect.X + player.Rect.W/2 - PlayerSpriteWidth/2,
-		Y: player.Rect.Y + player.Rect.H/2 - PlayerSpriteHeight/2,
-		W: PlayerSpriteWidth, H: PlayerSpriteHeight,
+		X: player.Rect.X + player.Rect.W/2 - scale(PlayerSpriteWidth)/2,
+		Y: player.Rect.Y + player.Rect.H/2 - scale(PlayerSpriteHeight)/2,
+		W: scale(PlayerSpriteWidth), H: scale(PlayerSpriteHeight),
 	}
 	if err := screen.Renderer.CopyEx(player.Texture, player.TextureArea, dst, 0, nil, flip); err != nil {
 		panic(err)

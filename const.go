@@ -13,7 +13,7 @@ const (
 
 	GameStepDuration = 10 * time.Millisecond
 	StepsPerFrame    = 10
-	PlayerStep       = 4
+	PlayerStep       = 5
 	Gravity          = 30
 	JumpPower        = 800
 	AirMovePower     = 20
@@ -26,6 +26,7 @@ const (
 
 	PlayerSpriteSheet                     = "resources/sprites/player/adventurer-v1.5-Sheet.png" // see playeranimations.go
 	PlayerSpriteWidth, PlayerSpriteHeight = 50, 37
+	PlayerScalePercent                    = 120
 
 	FontFile, FontSize = "resources/fonts/DejaVuSans.ttf", 18
 
