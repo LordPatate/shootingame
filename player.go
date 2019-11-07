@@ -127,6 +127,7 @@ func (player *Player_t) MoveX(delta int32, level *Level_t) {
 	player.Rect.X = func() int32 {
 		for _, tile := range level.Tiles {
 			if projection.HasIntersection(tile.Rect) {
+				player.Inertia.X = 0
 				if delta > 0 {
 					return tile.Rect.X - player.Rect.W
 				}
@@ -135,6 +136,7 @@ func (player *Player_t) MoveX(delta int32, level *Level_t) {
 		}
 		union := projection.Union(level.Bounds)
 		if !union.Equals(level.Bounds) {
+			player.Inertia.X = 0
 			if delta > 0 {
 				return level.Bounds.X + level.Bounds.W - player.Rect.W
 			}
