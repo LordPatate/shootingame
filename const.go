@@ -15,7 +15,7 @@ const (
 	StepsPerFrame    = 10
 	PlayerStep       = 5
 	Gravity          = 30
-	JumpPower        = 800
+	JumpPower        = 850
 	AirMovePower     = 20
 	AirSlow          = 4
 	InertiaPerPixel  = 100
