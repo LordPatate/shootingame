@@ -225,6 +225,40 @@ func (player *Player_t) airControl(keyState []uint8, level *Level_t) {
 		player.Inertia.X += AirMovePower
 		player.Inertia.X = Min32(player.Inertia.X, PlayerStep*InertiaPerPixel)
 	}
+
+	collision := func(projection *sdl.Rect) bool {
+		for _, tile := range level.Tiles {
+			if projection.HasIntersection(tile.Rect) {
+				return true
+			}
+		}
+		union := projection.Union(level.Bounds)
+		if !union.Equals(level.Bounds) {
+			return true
+		}
+		return false
+	}
+
+	projectionLeft := &sdl.Rect{
+		X: player.Rect.X - 1,
+		Y: player.Rect.Y, W: player.Rect.W, H: player.Rect.H,
+	}
+	if collision(projectionLeft) && keyState[sdl.SCANCODE_W] == 1 {
+		player.SetState(WallJumping)
+		player.Inertia.Y = -JumpPower
+		player.Direction = Right
+		player.Inertia.X = PlayerStep * InertiaPerPixel
+	}
+	projectionRight := &sdl.Rect{
+		X: player.Rect.X + 1,
+		Y: player.Rect.Y, W: player.Rect.W, H: player.Rect.H,
+	}
+	if collision(projectionRight) && keyState[sdl.SCANCODE_W] == 1 {
+		player.SetState(WallJumping)
+		player.Inertia.Y = -JumpPower
+		player.Direction = Left
+		player.Inertia.X = -PlayerStep * InertiaPerPixel
+	}
 }
 
 func (player *Player_t) getGround(level *Level_t) int32 {
