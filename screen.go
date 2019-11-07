@@ -107,12 +107,15 @@ func (screen *Screen_t) ComputeShadows(game *Game_t) {
 		var x1, x2, y1, y2 int32
 		var s struct{ vx, vy []int16 }
 		// Checks if the corner specified is inside the shadow
-		checkCorner := func(corner *sdl.Point, above bool) {
+		checkCorner := func(corner *sdl.Point, above, right bool) {
 			square := func(x float64) float64 { return x * x }
 			computeAngle := func(x, y int32) float64 {
 				val := math.Acos(float64(x-playerEye.X) / math.Sqrt(square(float64(x-playerEye.X))+square(float64(y-playerEye.Y))))
 				if playerEye.Y < y {
-					return -val
+					val = -val
+				}
+				if val < 0 && right {
+					val += math.Pi * 2
 				}
 				return val
 			}
@@ -140,13 +143,13 @@ func (screen *Screen_t) ComputeShadows(game *Game_t) {
 			vy: []int16{int16(y1), int16(y), int16(y + h), int16(y2)},
 		}
 		above := playerEye.Y < playerEye.X+(y-x)
-		checkCorner(botRight, above)
+		checkCorner(botRight, above, above)
 		if above {
-			checkCorner(botLeft, above)
+			checkCorner(botLeft, above, above)
 		} else {
-			checkCorner(topRight, above)
+			checkCorner(topRight, above, above)
 		}
-		checkCorner(topLeft, above)
+		checkCorner(topLeft, above, above)
 
 		shades = append(shades, s)
 
@@ -157,14 +160,14 @@ func (screen *Screen_t) ComputeShadows(game *Game_t) {
 			vx: []int16{int16(x1), int16(x), int16(x + w), int16(x2)},
 			vy: []int16{int16(y1), int16(y + h), int16(y), int16(y2)},
 		}
-		above = playerEye.Y < -playerEye.X+(y-h+x)
-		checkCorner(topRight, above)
+		above = playerEye.Y < -playerEye.X+(y+h+x)
+		checkCorner(topRight, above, !above)
 		if above {
-			checkCorner(botRight, above)
+			checkCorner(botRight, above, !above)
 		} else {
-			checkCorner(topLeft, above)
+			checkCorner(topLeft, above, !above)
 		}
-		checkCorner(botLeft, above)
+		checkCorner(botLeft, above, !above)
 
 		shades = append(shades, s)
 	}
