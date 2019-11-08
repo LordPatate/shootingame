@@ -1,6 +1,8 @@
 package main
 
 import (
+	"math"
+
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -24,6 +26,8 @@ type Player_t struct {
 	Frame       uint8
 	Direction   bool
 	Inertia     *sdl.Point
+	HookPoint   *sdl.Point
+	JumpEnabled bool
 }
 
 var playerStateDim map[PlayerState]sdl.Point = map[PlayerState]sdl.Point{
@@ -36,8 +40,9 @@ func scale(x int32) int32 {
 
 func CreatePlayer(screen *Screen_t) *Player_t {
 	player := &Player_t{
-		Rect:    &sdl.Rect{},
-		Inertia: &sdl.Point{},
+		Rect:        &sdl.Rect{},
+		Inertia:     &sdl.Point{},
+		JumpEnabled: true,
 	}
 	dim := playerStateDim[player.State]
 	player.Rect.W, player.Rect.H = scale(dim.X), scale(dim.Y)
@@ -72,6 +77,15 @@ func (player *Player_t) Copy(screen *Screen_t) {
 	if err := screen.Renderer.CopyEx(player.Texture, player.TextureArea, dst, 0, nil, flip); err != nil {
 		panic(err)
 	}
+	if player.HookPoint != nil {
+		if err := screen.Renderer.SetDrawColor(255, 0, 0, 255); err != nil {
+			panic(err)
+		}
+		playerCOM := player.GetCOM()
+		if err := screen.Renderer.DrawLine(playerCOM.X, playerCOM.Y, player.HookPoint.X, player.HookPoint.Y); err != nil {
+			panic(err)
+		}
+	}
 }
 
 func (player *Player_t) GetRect() *sdl.Rect {
@@ -90,21 +104,44 @@ func (player *Player_t) SetState(state PlayerState) {
 }
 
 func (player *Player_t) Update(screen *Screen_t, level *Level_t) {
+	mouseX, mouseY, mouseState := sdl.GetMouseState()
+	if mouseState&sdl.ButtonRMask() != 0 {
+		if player.HookPoint == nil {
+			if hookPoint, ok := player.hook(level, mouseX, mouseY); ok {
+				player.HookPoint = hookPoint
+			}
+		}
+		if player.HookPoint != nil {
+			if Dist(player.GetCOM(), player.HookPoint) <= HookMaxRange {
+				player.swing()
+				player.MoveX(player.Inertia.X/InertiaPerPixel, level)
+				player.MoveY(player.Inertia.Y/InertiaPerPixel, level)
+				return
+			}
+			player.HookPoint = nil
+		}
+	} else {
+		player.HookPoint = nil
+	}
+
 	state := sdl.GetKeyboardState()
+	if !player.JumpEnabled && state[sdl.SCANCODE_W] != 1 {
+		player.JumpEnabled = true
+	}
 
 	if player.Inertia.Y >= 0 {
 		ground := player.getGround(level)
 		if ground != -1 {
 			player.Rect.Y = ground - player.Rect.H
 			player.Inertia.Y = 0
-			player.groundControl(state, level)
+			player.GroundControl(state, level)
 			return
 		}
 
 		player.SetState(Falling)
 	}
 
-	player.airControl(state, level)
+	player.AirControl(state, level)
 
 	player.Inertia.Y += Gravity
 	if player.Inertia.X > 0 {
@@ -123,7 +160,7 @@ func (player *Player_t) MoveX(delta int32, level *Level_t) {
 		X: player.Rect.X + delta,
 		Y: player.Rect.Y, W: player.Rect.W, H: player.Rect.H,
 	}
-	collision := func() {
+	wallslide := func() {
 		if player.State == Falling || player.State == WallSliding {
 			player.SetState(WallSliding)
 			player.Inertia.Y -= WallFriction
@@ -133,7 +170,7 @@ func (player *Player_t) MoveX(delta int32, level *Level_t) {
 	player.Rect.X = func() int32 {
 		for _, tile := range level.Tiles {
 			if projection.HasIntersection(tile.Rect) {
-				collision()
+				wallslide()
 				if delta > 0 {
 					player.Inertia.X = InertiaPerPixel
 					return tile.Rect.X - player.Rect.W
@@ -144,7 +181,7 @@ func (player *Player_t) MoveX(delta int32, level *Level_t) {
 		}
 		union := projection.Union(level.Bounds)
 		if !union.Equals(level.Bounds) {
-			collision()
+			wallslide()
 			if delta > 0 {
 				player.Inertia.X = InertiaPerPixel
 				return level.Bounds.X + level.Bounds.W - player.Rect.W
@@ -167,98 +204,23 @@ func (player *Player_t) MoveY(delta int32, level *Level_t) {
 		for _, tile := range level.Tiles {
 			if projection.HasIntersection(tile.Rect) {
 				player.Inertia.Y = 0
+				if delta > 0 {
+					return tile.Rect.Y
+				}
 				return tile.Rect.Y + tile.Rect.H
 			}
 		}
 		union := projection.Union(level.Bounds)
 		if !union.Equals(level.Bounds) {
 			player.Inertia.Y = 0
+			if delta > 0 {
+				return level.Bounds.Y + level.Bounds.H
+			}
 			return level.Bounds.Y
 		}
 
 		return player.Rect.Y + delta
 	}()
-}
-
-func (player *Player_t) Step(direction bool, level *Level_t) {
-	player.SetState(Running)
-
-	if direction == Left {
-		player.MoveX(-PlayerStep, level)
-		player.Inertia.X = -PlayerStep * InertiaPerPixel
-	} else {
-		player.MoveX(PlayerStep, level)
-		player.Inertia.X = PlayerStep * InertiaPerPixel
-	}
-	player.Direction = direction
-}
-
-func (player *Player_t) groundControl(keyState []uint8, level *Level_t) {
-	if keyState[sdl.SCANCODE_W] == 1 {
-		player.SetState(Jumping)
-		player.Inertia.Y = -JumpPower
-		return
-	}
-
-	var step func(*Player_t, *Level_t)
-	moveKeysPressed := 0
-	for _, key := range []uint{sdl.SCANCODE_A, sdl.SCANCODE_D} {
-		if keyState[key] == 1 {
-			step = GroundSteps[sdl.Scancode(key)]
-			moveKeysPressed++
-		}
-	}
-	if moveKeysPressed == 1 {
-		step(player, level)
-	} else {
-		player.SetState(Idle)
-		player.Inertia.X = 0
-	}
-}
-
-func (player *Player_t) airControl(keyState []uint8, level *Level_t) {
-	if keyState[sdl.SCANCODE_A] == 1 {
-		player.Inertia.X -= AirMovePower
-		player.Inertia.X = Max32(player.Inertia.X, -PlayerStep*InertiaPerPixel)
-	}
-	if keyState[sdl.SCANCODE_D] == 1 {
-		player.Inertia.X += AirMovePower
-		player.Inertia.X = Min32(player.Inertia.X, PlayerStep*InertiaPerPixel)
-	}
-
-	collision := func(projection *sdl.Rect) bool {
-		for _, tile := range level.Tiles {
-			if projection.HasIntersection(tile.Rect) {
-				return true
-			}
-		}
-		union := projection.Union(level.Bounds)
-		if !union.Equals(level.Bounds) {
-			return true
-		}
-		return false
-	}
-
-	projectionLeft := &sdl.Rect{
-		X: player.Rect.X - 1,
-		Y: player.Rect.Y, W: player.Rect.W, H: player.Rect.H,
-	}
-	if collision(projectionLeft) && keyState[sdl.SCANCODE_W] == 1 {
-		player.SetState(WallJumping)
-		player.Inertia.Y = -JumpPower
-		player.Direction = Right
-		player.Inertia.X = PlayerStep * InertiaPerPixel
-	}
-	projectionRight := &sdl.Rect{
-		X: player.Rect.X + 1,
-		Y: player.Rect.Y, W: player.Rect.W, H: player.Rect.H,
-	}
-	if collision(projectionRight) && keyState[sdl.SCANCODE_W] == 1 {
-		player.SetState(WallJumping)
-		player.Inertia.Y = -JumpPower
-		player.Direction = Left
-		player.Inertia.X = -PlayerStep * InertiaPerPixel
-	}
 }
 
 func (player *Player_t) getGround(level *Level_t) int32 {
@@ -277,4 +239,58 @@ func (player *Player_t) getGround(level *Level_t) int32 {
 		return level.Bounds.Y + level.Bounds.H
 	}
 	return -1
+}
+
+func (player *Player_t) hook(level *Level_t, mouseX, mouseY int32) (hookPoint *sdl.Point, ok bool) {
+	playerCOM := player.GetCOM()
+	projX, projY := PointShade(level.Bounds, playerCOM, mouseX, mouseY)
+	point := &sdl.Point{projX, projY}
+	minDist := Dist(playerCOM, point)
+	if minDist <= HookMaxRange {
+		ok = true
+		hookPoint = point
+	}
+
+	for _, tile := range level.Tiles {
+		rect := AdaptRect(tile.Rect)
+		if rect.IntersectLine(playerCOM.X, playerCOM.Y, projX, projY) {
+			point = rect.HitPoint(playerCOM, &sdl.Point{projX, projY})
+			dist := Dist(playerCOM, point)
+			if dist <= HookMaxRange && dist < minDist {
+				minDist = dist
+				hookPoint = point
+				ok = true
+			}
+		}
+	}
+
+	return
+}
+
+func (player *Player_t) swing() {
+	x, y := player.HookPoint.X, player.HookPoint.Y
+	playerCOM := player.GetCOM()
+	player.SetState(WallJumping)
+	cos := Cos(playerCOM, x, y)
+	sin := Sin(playerCOM, x, y)
+	if sin > 0 {
+		return
+	}
+	pullX := int32(math.Round(Gravity * math.Abs(cos)))
+	if cos < 0 {
+		player.Inertia.X -= pullX
+	} else {
+		player.Inertia.X += pullX
+	}
+	pullY := int32(math.Round(Gravity * 2 * math.Abs(sin)))
+	player.Inertia.Y -= pullY
+	player.Inertia.Y += Gravity
+}
+
+func (player *Player_t) GetCOM() *sdl.Point {
+	playerRect := player.Rect
+	return &sdl.Point{
+		X: playerRect.X + playerRect.W/2,
+		Y: playerRect.Y + playerRect.H/2,
+	}
 }
