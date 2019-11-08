@@ -20,6 +20,7 @@ const (
 	AirSlow          = 4
 	WallFriction     = 10
 	InertiaPerPixel  = 100
+	HookMaxRange     = 170
 
 	WindowWidth, WindowHeight = 1120, 630
 
