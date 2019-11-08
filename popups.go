@@ -76,7 +76,7 @@ func (popup *Popup_t) Pop(screen *Screen_t) (option string) {
 									return
 								}
 								// e.Type == sdl.MOUSEBUTTONUP
-								if clickedOption.Text == opt.Text {
+								if clickedOption != nil && clickedOption.Text == opt.Text {
 									option = opt.Text
 									return
 								}
