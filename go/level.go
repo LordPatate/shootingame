@@ -15,7 +15,7 @@ type LevelInfos_t struct {
 
 var LevelInfos []LevelInfos_t = []LevelInfos_t{
 	{ // Level 0
-		SourceFile:    "levels/level0.png",
+		SourceFile:    "../levels/level0.png",
 		BackgroundImg: "",
 		ForegroundImg: "",
 	},
