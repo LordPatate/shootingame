@@ -39,5 +39,10 @@ namespace shootingame
             SDL.SDL_DestroyTexture(GameScene);
             SDL_ttf.TTF_CloseFont(Font);
         }
+
+        public static void Update()
+        {
+            
+        }
     }
 }

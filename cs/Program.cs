@@ -13,10 +13,18 @@ namespace shootingame
             SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG);
             
             Screen.Init();
+            Game.Init();
 
-            Thread.Sleep(1000);            
+            while (Game.Running)
+            {
+                Screen.Update();
+                Game.Update();
+
+                Thread.Sleep(Const.GameStepDuration);
+            }
 
             Screen.Quit();
+            Game.Quit();
             SDL.SDL_Quit();
             SDL_ttf.TTF_Quit();
             SDL_image.IMG_Quit();

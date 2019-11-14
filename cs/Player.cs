@@ -5,6 +5,9 @@ namespace shootingame
 {
     class Player
     {
-        
+        public void Update()
+        {
+            
+        }
     }
 }

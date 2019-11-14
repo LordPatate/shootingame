@@ -5,6 +5,9 @@ namespace shootingame
 {
     class Popup
     {
-        
+        public string Pop()
+        {
+            return "yes";
+        }
     }
 }
