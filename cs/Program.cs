@@ -12,12 +12,11 @@ namespace shootingame
             SDL_ttf.TTF_Init();
             SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG);
             
-            SDL.SDL_CreateWindow("Shootingame", SDL.SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED,
-            Const.WindowWidth, Const.WindowHeight,
-            SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
+            Screen.Init();
 
             Thread.Sleep(1000);            
 
+            Screen.Quit();
             SDL.SDL_Quit();
             SDL_ttf.TTF_Quit();
             SDL_image.IMG_Quit();
