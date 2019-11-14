@@ -1,4 +1,8 @@
 shootingame
-.vscode/launch.json
 shootingame.zip
 shootingame.exe
+cs/bin/
+cs/obj/
+*.pidb
+*.userprefs
+*.suo
