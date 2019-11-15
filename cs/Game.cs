@@ -3,7 +3,7 @@ using SDL2;
 
 namespace shootingame
 {
-    class Game
+    unsafe class Game
     {
         public static bool Running;
         public static Player Player;
@@ -15,8 +15,10 @@ namespace shootingame
         {
             Running = true;
             Player = new Player();
-            LoadLevel(0);
+            Level = new Level();
             AskQuit = new Popup();
+
+            LoadLevel(0);
         }
 
         public static void Quit()
@@ -58,48 +60,53 @@ namespace shootingame
             Player.Rect.x = Level.PlayerStartPos.x;
             Player.Rect.y = Level.PlayerStartPos.y;
 
-            Background = SDL.SDL_CreateTexture(Screen.Renderer, SDL.SDL_PIXELFORMAT_RGBA8888, SDL.SDL_TEXTUREACCESS_TARGET,
+            Background = SDL.SDL_CreateTexture(Screen.Renderer, SDL.SDL_PIXELFORMAT_RGBA8888,
+                (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
                 Screen.Width, Screen.Height);
             SDL.SDL_SetRenderTarget(Screen.Renderer, Background);
 
             DrawBackground(infos.BackgroundImg, infos.ForegroundImg);
 
-            SDL.SDL_SetRenderTarget(Screen.Renderer, null);
+            SDL.SDL_SetRenderTarget(Screen.Renderer, IntPtr.Zero);
         }
 
         private static void DrawBackground(string bg, string fg)
         {
-            string foreground = GetTexture(fg, 20, 17, 23);
-            string background = GetTexture(bg, 65, 60, 55);
+            IntPtr foreground = GetTexture(fg, 20, 17, 23);
+            IntPtr background = GetTexture(bg, 65, 60, 55);
 
             if (bg == "") {
                 var rect = SDLFactory.MakeRect(w: Screen.Width, h: Screen.Height);
-                SDL.SDL_RenderCopy(Screen.Renderer, foreground, null, rect);
-                SDL.SDL_RenderCopy(Screen.Renderer, background, null, Game.Level.Bounds);
+                SDL.SDL_RenderCopy(Screen.Renderer, foreground, IntPtr.Zero, ref rect);
+                SDL.SDL_RenderCopy(Screen.Renderer, background, IntPtr.Zero, ref Game.Level.Bounds);
             }
 
             foreach (var tile in Game.Level.Tiles)
-                SDL.SDL_RenderCopy(Screen.Renderer, foreground, null, tile.Rect);
+                SDL.SDL_RenderCopy(Screen.Renderer, foreground, IntPtr.Zero, ref tile.Rect);
             
             SDL.SDL_DestroyTexture(foreground);
             SDL.SDL_DestroyTexture(background);
         }
 
-        private static IntPtr GetTexture(string src, uint defaultR, uint defaultG, uint defaultB)
+        private static IntPtr GetTexture(string src, byte defaultR, byte defaultG, byte defaultB)
         {
+            IntPtr surfacePtr = IntPtr.Zero;
             SDL.SDL_Surface surface;
             if (src != "")
             {
-                surface = SDL.SDL_CreateRGBSurface(0, Const.TileWidth, Const.TileHeight, 32, 0, 0, 0, 0);
-                SDL.SDL_FillRect(surface, null, SDL.SDL_MapRGB(surface.format, defaultR, defaultG, defaultB));
+                surfacePtr = SDL.SDL_CreateRGBSurface(0, Const.TileWidth, Const.TileHeight, 32, 0, 0, 0, 0);
+                surface = *(SDL.SDL_Surface*)surfacePtr.ToPointer();
+                SDL.SDL_FillRect(surfacePtr, IntPtr.Zero, SDL.SDL_MapRGB(surface.format, defaultR, defaultG, defaultB));
             }
             else
             {
                 // FIXME
             }
 
-            IntPtr texture = SDL.SDL_CreateTextureFromSurface(surface);
-            SDL.SDL_FreeSurface(surface);
+            IntPtr texture = SDL.SDL_CreateTextureFromSurface(Screen.Renderer, surfacePtr);
+            SDL.SDL_FreeSurface(surfacePtr);
+
+            return texture;
         }
     }
 }

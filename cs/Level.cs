@@ -9,6 +9,10 @@ namespace shootingame
         public string SourceFile;
         public string BackgroundImg;
         public string ForegroundImg;
+
+        public LevelInfos(string src, string bg = "", string fg = "") {
+            SourceFile = src; BackgroundImg = bg; ForegroundImg = fg;
+        }
     }
 
     class Tile
@@ -19,13 +23,12 @@ namespace shootingame
         }
     }
 
-    class Level
+    unsafe class Level
     {
         public static readonly LevelInfos[] levelInfos = {
-            { // Level 0
-                "../levels/level0.png",
-                "", ""
-            },
+            new LevelInfos( // Level 0
+                src: "../levels/level0.png"
+            ),
         };
 
         public uint id;
@@ -35,19 +38,25 @@ namespace shootingame
 
         public void Init(LevelInfos infos)
         {
-            SDL.SDL_Surface surface = SDL_image.IMG_Load(infos.SourceFile);
+            IntPtr surfacePtr = SDL_image.IMG_Load(infos.SourceFile);
+            if (surfacePtr == IntPtr.Zero) {
+                throw new Exception("Problem loading image");
+            }
+            SDL.SDL_Surface surface = *(SDL.SDL_Surface*)surfacePtr.ToPointer();
+            SDL.SDL_PixelFormat format = *(SDL.SDL_PixelFormat*)surface.format.ToPointer();
 
             Bounds = SDLFactory.MakeRect(
                 x: Screen.Width/2 - surface.w*Const.TileWidth/2,
                 y: Screen.Height/2 - surface.h*Const.TileHeight/2,
                 w: surface.w*Const.TileWidth, h: surface.h*Const.TileHeight
             );
+            bool startPosFound = false;
 
             for (int i = 0; i < surface.w; ++i)
                 for (int j = 0; j < surface.h; ++j)
                 {
-                    int[] pixels = surface.Pixels();
-                    int x = j*surface.Pitch + i*surface.Format.BytesPerPixel;
+                    int* pixels = (int*)surface.pixels.ToPointer();
+                    int x = j*surface.pitch + i*format.BytesPerPixel;
                     int r = pixels[x], g = pixels[x+1], b = pixels[x+2], a = pixels[x+3];
 
                     if ((r|g|b) == 0 && (a) == 255) { // black pixel
@@ -57,19 +66,22 @@ namespace shootingame
                         ));
                         continue;
                     }
-                    if ((r&a) == 255 && (g|b) == 0) { //red pixel
-                        if (PlayerStartPos is null) {
+                    if ((r&a) == 255 && (g|b) == 0) { // red pixel
+                        if (startPosFound) {
                             throw new Exception($"Invalid file \"{infos.SourceFile}\": too many player spawn points");
                         }
                         PlayerStartPos = SDLFactory.MakePoint(
                             x: Bounds.x + i*Const.TileWidth,
                             y: Bounds.y + j*Const.TileHeight - Const.PlayerSpriteHeight
                         );
+                        startPosFound = true;
                     }
                 }
-            if (PlayerStartPos is null) {
+            if (!startPosFound) {
                 throw new Exception($"Invalid file \"{infos.SourceFile}\": no player spawn point");
             }
+
+            SDL.SDL_FreeSurface(surfacePtr);
         }
     }
 }

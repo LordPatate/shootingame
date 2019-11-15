@@ -21,7 +21,7 @@ namespace shootingame
                 out Window, out Renderer);
             
             SDL.SDL_SetWindowTitle(Window, "Shootingame");
-            SDL.SDL_GetWindowSize(Window, ref Width, ref Height);
+            SDL.SDL_GetWindowSize(Window, out Width, out Height);
 
             SDL.SDL_SetRenderDrawBlendMode(Renderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
 
