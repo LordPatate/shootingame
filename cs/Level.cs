@@ -27,11 +27,11 @@ namespace shootingame
     {
         public static readonly LevelInfos[] levelInfos = {
             new LevelInfos( // Level 0
+                //src: "/home/tom/lab/shootingame/levels/level0.png"
                 src: "../levels/level0.png"
             ),
         };
 
-        public uint id;
         public SDL.SDL_Rect Bounds;
         public SDL.SDL_Point PlayerStartPos;
         public List<Tile> Tiles;
