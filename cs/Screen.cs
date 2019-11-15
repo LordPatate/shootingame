@@ -7,6 +7,7 @@ namespace shootingame
     {
         public struct ShadePolygon {int[] vx, vy;}
         public static IntPtr Window;
+        public static int Width, Height;
         public static IntPtr Renderer;
         public static IntPtr GameScene;
         public static IntPtr Font;
@@ -20,6 +21,7 @@ namespace shootingame
                 out Window, out Renderer);
             
             SDL.SDL_SetWindowTitle(Window, "Shootingame");
+            SDL.SDL_GetWindowSize(Window, ref Width, ref Height);
 
             SDL.SDL_SetRenderDrawBlendMode(Renderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
 
@@ -43,6 +45,11 @@ namespace shootingame
         public static void Update()
         {
             
+        }
+
+        public static void ComputeShadows()
+        {
+
         }
     }
 }
