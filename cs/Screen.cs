@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SDL2;
 
 namespace shootingame
@@ -11,7 +12,7 @@ namespace shootingame
         public static IntPtr Renderer;
         public static IntPtr GameScene;
         public static IntPtr Font;
-        public static ShadePolygon Shades;
+        public static List<ShadePolygon> Shades;
 
         
         public static void Init()
@@ -57,12 +58,15 @@ namespace shootingame
 
         public static void ComputeShadows()
         {
-
+            Shades = new List<ShadePolygon>();
         }
 
         public static void CastShadows()
         {
-
+            foreach (ShadePolygon shade in Shades)
+            {
+                //SDL_gfx.SDL_FilledPolygonRGBA
+            }
         }
     }
 }
