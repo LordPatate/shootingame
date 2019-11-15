@@ -55,9 +55,9 @@ namespace shootingame
             for (int i = 0; i < surface.w; ++i)
                 for (int j = 0; j < surface.h; ++j)
                 {
-                    int* pixels = (int*)surface.pixels.ToPointer();
+                    byte* pixels = (byte*)surface.pixels.ToPointer();
                     int x = j*surface.pitch + i*format.BytesPerPixel;
-                    int r = pixels[x], g = pixels[x+1], b = pixels[x+2], a = pixels[x+3];
+                    byte r = pixels[x], g = pixels[x+1], b = pixels[x+2], a = pixels[x+3];
 
                     if ((r|g|b) == 0 && (a) == 255) { // black pixel
                         Tiles.Add(new Tile(
