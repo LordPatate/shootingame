@@ -34,7 +34,7 @@ namespace shootingame
         public uint id;
         public SDL.SDL_Rect Bounds;
         public SDL.SDL_Point PlayerStartPos;
-        public List<Tile> Tiles = new List<Tile>();
+        public List<Tile> Tiles;
 
         public void Init(LevelInfos infos)
         {
@@ -50,6 +50,8 @@ namespace shootingame
                 y: Screen.Height/2 - surface.h*Const.TileHeight/2,
                 w: surface.w*Const.TileWidth, h: surface.h*Const.TileHeight
             );
+            Tiles = new List<Tile>();
+            
             bool startPosFound = false;
 
             for (int i = 0; i < surface.w; ++i)
