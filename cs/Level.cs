@@ -34,7 +34,7 @@ namespace shootingame
         public uint id;
         public SDL.SDL_Rect Bounds;
         public SDL.SDL_Point PlayerStartPos;
-        public List<Tile> Tiles;
+        public List<Tile> Tiles = new List<Tile>();
 
         public void Init(LevelInfos infos)
         {
