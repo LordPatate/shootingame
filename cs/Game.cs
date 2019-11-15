@@ -21,6 +21,7 @@ namespace shootingame
 
         public static void Quit()
         {
+            Player.Destroy();
             SDL.SDL_DestroyTexture(Background);
         }
 
@@ -51,7 +52,54 @@ namespace shootingame
 
         public static void LoadLevel(uint id)
         {
+            LevelInfos infos = Level.levelInfos[id];
+            Level.Init(infos);
 
+            Player.Rect.X = Level.PlayerStartPos.X;
+            Player.Rect.Y = Level.PlayerStartPos.Y;
+
+            Background = SDL.SDL_CreateTexture(Screen.Renderer, SDL.SDL_PIXELFORMAT_RGBA8888, SDL.SDL_TEXTUREACCESS_TARGET,
+                Screen.Width, Screen.Height);
+            SDL.SDL_SetRenderTarget(Screen.Renderer, Background);
+
+            DrawBackground(infos.BackgroundImg, infos.ForegroundImg);
+
+            SDL.SDL_SetRenderTarget(Screen.Renderer, null);
+        }
+
+        private static void DrawBackground(string bg, string fg)
+        {
+            string foreground = GetTexture(fg, 20, 17, 23);
+            string background = GetTexture(bg, 65, 60, 55);
+
+            if (bg == "") {
+                var rect = SDLFactory.MakeRect(W: Screen.Width, H: Screen.Height);
+                SDL.SDL_RenderCopy(Screen.Renderer, foreground, null, rect);
+                SDL.SDL_RenderCopy(Screen.Renderer, background, null, Game.Level.Bounds);
+            }
+
+            foreach (var tile in Game.Level.Tiles)
+                SDL.SDL_RenderCopy(Screen.Renderer, foreground, null, tile.Rect);
+            
+            SDL.SDL_DestroyTexture(foreground);
+            SDL.SDL_DestroyTexture(background);
+        }
+
+        private static SDL.SDL_Texture GetTexture(string src, uint defaultR, uint defaultG, uint defaultB)
+        {
+            SDL.SDL_Surface surface;
+            if (src != "")
+            {
+                surface = SDL.SDL_CreateRGBSurface(0, Const.TileWidth, Const.TileHeight, 32, 0, 0, 0, 0);
+                SDL.SDL_FillRect(surface, null, SDL.SDL_MapRGB(surface.format, defaultR, defaultG, defaultB));
+            }
+            else
+            {
+                // FIXME
+            }
+
+            SDL.SDL_Texture texture = SDL.SDL_CreateTextureFromSurface(surface);
+            SDL.SDL_FreeSurface(surface);
         }
     }
 }
