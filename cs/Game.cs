@@ -55,8 +55,8 @@ namespace shootingame
             LevelInfos infos = Level.levelInfos[id];
             Level.Init(infos);
 
-            Player.Rect.X = Level.PlayerStartPos.X;
-            Player.Rect.Y = Level.PlayerStartPos.Y;
+            Player.Rect.x = Level.PlayerStartPos.x;
+            Player.Rect.y = Level.PlayerStartPos.y;
 
             Background = SDL.SDL_CreateTexture(Screen.Renderer, SDL.SDL_PIXELFORMAT_RGBA8888, SDL.SDL_TEXTUREACCESS_TARGET,
                 Screen.Width, Screen.Height);
@@ -73,7 +73,7 @@ namespace shootingame
             string background = GetTexture(bg, 65, 60, 55);
 
             if (bg == "") {
-                var rect = SDLFactory.MakeRect(W: Screen.Width, H: Screen.Height);
+                var rect = SDLFactory.MakeRect(w: Screen.Width, h: Screen.Height);
                 SDL.SDL_RenderCopy(Screen.Renderer, foreground, null, rect);
                 SDL.SDL_RenderCopy(Screen.Renderer, background, null, Game.Level.Bounds);
             }

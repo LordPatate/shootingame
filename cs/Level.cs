@@ -6,22 +6,22 @@ namespace shootingame
 {
     struct LevelInfos
     {
-        string SourceFile;
-        string BackgroundImg;
-        string ForegroundImg;
+        public string SourceFile;
+        public string BackgroundImg;
+        public string ForegroundImg;
     }
 
     class Tile
     {
         public SDL.SDL_Rect Rect;
-        public Tile(int X = 0, int Y = 0) {
-            Rect = SDLFactory.MakeRect(X, Y, Const.TileWidth, Const.TileHeight);
+        public Tile(int x = 0, int y = 0) {
+            Rect = SDLFactory.MakeRect(x, y, Const.TileWidth, Const.TileHeight);
         }
     }
 
     class Level
     {
-        public static readonly LevelInfos levelInfos = {
+        public static readonly LevelInfos[] levelInfos = {
             { // Level 0
                 "../levels/level0.png",
                 "", ""
@@ -38,36 +38,36 @@ namespace shootingame
             SDL.SDL_Surface surface = SDL_image.IMG_Load(infos.SourceFile);
 
             Bounds = SDLFactory.MakeRect(
-                X: Screen.Width/2 - surface.W*Const.TileWidth/2,
-                Y: Screen.Height/2 - surface.H*Const.TileHeight/2,
-                W: surface.W*Const.TileWidth, H: surface.H*Const.TileHeight
+                x: Screen.Width/2 - surface.w*Const.TileWidth/2,
+                y: Screen.Height/2 - surface.h*Const.TileHeight/2,
+                w: surface.w*Const.TileWidth, h: surface.h*Const.TileHeight
             );
 
-            for (int i = 0; i < surface.W; ++i)
-                for (int j = 0; j < surface.H; ++j)
+            for (int i = 0; i < surface.w; ++i)
+                for (int j = 0; j < surface.h; ++j)
                 {
-                    pixels = surface.Pixels();
+                    int[] pixels = surface.Pixels();
                     int x = j*surface.Pitch + i*surface.Format.BytesPerPixel;
                     int r = pixels[x], g = pixels[x+1], b = pixels[x+2], a = pixels[x+3];
 
-                    if (r|g|b == 0 && a == 255) { // black pixel
+                    if ((r|g|b) == 0 && (a) == 255) { // black pixel
                         Tiles.Add(new Tile(
-                            X: Bounds.X + i*Const.TileWidth,
-                            Y: Bounds.Y + j*TileHeight
+                            x: Bounds.x + i*Const.TileWidth,
+                            y: Bounds.y + j*Const.TileHeight
                         ));
                         continue;
                     }
-                    if (r&a == 255 && g|b == 0) { //red pixel
-                        if (PlayerStartPos != null) {
+                    if ((r&a) == 255 && (g|b) == 0) { //red pixel
+                        if (PlayerStartPos is null) {
                             throw new Exception($"Invalid file \"{infos.SourceFile}\": too many player spawn points");
                         }
                         PlayerStartPos = SDLFactory.MakePoint(
-                            X: Bounds.X + i*Const.TileWidth,
-                            Y: Bounds.Y + j*Const.TileHeight - Const.PlayerSpriteHeight
+                            x: Bounds.x + i*Const.TileWidth,
+                            y: Bounds.y + j*Const.TileHeight - Const.PlayerSpriteHeight
                         );
                     }
                 }
-            if (PlayerStartPos == null) {
+            if (PlayerStartPos is null) {
                 throw new Exception($"Invalid file \"{infos.SourceFile}\": no player spawn point");
             }
         }
