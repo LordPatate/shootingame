@@ -44,10 +44,23 @@ namespace shootingame
 
         public static void Update()
         {
-            
+            SDL.SDL_RenderCopy(Renderer, Game.Background, IntPtr.Zero, IntPtr.Zero);
+            Game.Player.Copy();
+            CastShadows();
+
+            SDL.SDL_SetRenderTarget(Renderer, IntPtr.Zero);
+            SDL.SDL_RenderCopy(Renderer, GameScene, IntPtr.Zero, IntPtr.Zero);
+            SDL.SDL_RenderPresent(Renderer);
+
+            SDL.SDL_SetRenderTarget(Renderer, GameScene);
         }
 
         public static void ComputeShadows()
+        {
+
+        }
+
+        public static void CastShadows()
         {
 
         }
