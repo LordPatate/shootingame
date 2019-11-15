@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using SDL2;
 
 namespace shootingame
@@ -18,9 +19,14 @@ namespace shootingame
             while (Game.Running)
             {
                 Screen.Update();
-                Game.Update();
+                Task update = Task.Run(() => {
+                    SDL.SDL_PumpEvents();
+                    Game.Update();
+                    Screen.ComputeShadows();
+                });
 
                 Thread.Sleep(Const.GameStepDuration);
+                update.Wait();
             }
 
             Screen.Quit();
