@@ -21,7 +21,7 @@ namespace shootingame
 
     class Level
     {
-        public const LevelInfos levelInfos = {
+        public static readonly LevelInfos levelInfos = {
             { // Level 0
                 "../levels/level0.png",
                 "", ""

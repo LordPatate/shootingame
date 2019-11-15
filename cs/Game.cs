@@ -85,7 +85,7 @@ namespace shootingame
             SDL.SDL_DestroyTexture(background);
         }
 
-        private static SDL.SDL_Texture GetTexture(string src, uint defaultR, uint defaultG, uint defaultB)
+        private static IntPtr GetTexture(string src, uint defaultR, uint defaultG, uint defaultB)
         {
             SDL.SDL_Surface surface;
             if (src != "")
@@ -98,7 +98,7 @@ namespace shootingame
                 // FIXME
             }
 
-            SDL.SDL_Texture texture = SDL.SDL_CreateTextureFromSurface(surface);
+            IntPtr texture = SDL.SDL_CreateTextureFromSurface(surface);
             SDL.SDL_FreeSurface(surface);
         }
     }
