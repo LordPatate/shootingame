@@ -16,7 +16,11 @@ namespace shootingame
             Running = true;
             Player = new Player();
             Level = new Level();
-            AskQuit = new Popup();
+            AskQuit = new Popup(
+                new string[] {
+                    "Do you really want to quit?",
+                }, "Yes", "No"
+            );
 
             LoadLevel(0);
         }
@@ -25,6 +29,7 @@ namespace shootingame
         {
             Player.Destroy();
             SDL.SDL_DestroyTexture(Background);
+            AskQuit.Destroy();
         }
 
         public static void Update()

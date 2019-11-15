@@ -17,5 +17,17 @@ namespace shootingame
             point.x = x; point.y = y;
             return point;
         }
+        
+        public static SDL.SDL_FPoint MakeFPoint(int x = 0, int y = 0) {
+            var point = new SDL.SDL_FPoint();
+            point.x = (float)x; point.y = (float)y;
+            return point;
+        }
+
+        public static SDL.SDL_Color MakeColor(byte r = 0, byte g = 0, byte b = 0, byte a = 255) {
+            var color = new SDL.SDL_Color();
+            color.r = r; color.g = g; color.b = b; color.a = a;
+            return color;
+        }
     }
 }
