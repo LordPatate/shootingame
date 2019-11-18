@@ -40,14 +40,14 @@ namespace shootingame
                 switch (e.type) {
                     case SDL.SDL_EventType.SDL_KEYDOWN:
                         if (e.key.keysym.sym == SDL.SDL_Keycode.SDLK_ESCAPE) {
-                            if (AskQuit.Pop() == "yes") {
+                            if (AskQuit.Pop() == "Yes") {
                                 Running = false;
                             }
                             return;
                         }
                         break;
                     case SDL.SDL_EventType.SDL_QUIT:
-                        if (AskQuit.Pop() == "yes") {
+                        if (AskQuit.Pop() == "Yes") {
                             Running = false;
                         }
                         return;
