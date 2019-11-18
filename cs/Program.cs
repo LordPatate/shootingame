@@ -19,6 +19,7 @@ namespace shootingame
             Screen.Init();
             Game.Init();
 
+            Screen.ComputeShadows();
             while (Game.Running)
             {
                 Screen.Update();
