@@ -59,6 +59,8 @@ namespace shootingame
 
         public static void LoadLevel(uint id)
         {
+            int err; Errors.msg = "Game.LoadLevel";
+
             LevelInfos infos = Level.levelInfos[id];
             Level.Init(infos);
 
@@ -68,26 +70,29 @@ namespace shootingame
             Background = SDL.SDL_CreateTexture(Screen.Renderer, SDL.SDL_PIXELFORMAT_RGBA8888,
                 (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
                 Screen.Width, Screen.Height);
-            SDL.SDL_SetRenderTarget(Screen.Renderer, Background);
+            Errors.CheckNull(Background);
+            err = SDL.SDL_SetRenderTarget(Screen.Renderer, Background); Errors.Check(err);
 
             DrawBackground(infos.BackgroundImg, infos.ForegroundImg);
 
-            SDL.SDL_SetRenderTarget(Screen.Renderer, IntPtr.Zero);
+            err = SDL.SDL_SetRenderTarget(Screen.Renderer, IntPtr.Zero); Errors.Check(err);
         }
 
         private static void DrawBackground(string bg, string fg)
         {
+            int err; Errors.msg = "Game.DrawBackground";
+
             IntPtr foreground = GetTexture(fg, 20, 17, 23);
             IntPtr background = GetTexture(bg, 65, 60, 55);
 
             if (bg == "") {
                 var rect = SDLFactory.MakeRect(w: Screen.Width, h: Screen.Height);
-                SDL.SDL_RenderCopy(Screen.Renderer, foreground, IntPtr.Zero, ref rect);
-                SDL.SDL_RenderCopy(Screen.Renderer, background, IntPtr.Zero, ref Game.Level.Bounds);
+                err = SDL.SDL_RenderCopy(Screen.Renderer, foreground, IntPtr.Zero, ref rect); Errors.Check(err);
+                err = SDL.SDL_RenderCopy(Screen.Renderer, background, IntPtr.Zero, ref Game.Level.Bounds); Errors.Check(err);
             }
 
             foreach (var tile in Game.Level.Tiles)
-                SDL.SDL_RenderCopy(Screen.Renderer, foreground, IntPtr.Zero, ref tile.Rect);
+                err = SDL.SDL_RenderCopy(Screen.Renderer, foreground, IntPtr.Zero, ref tile.Rect); Errors.Check(err);
             
             SDL.SDL_DestroyTexture(foreground);
             SDL.SDL_DestroyTexture(background);
@@ -95,13 +100,16 @@ namespace shootingame
 
         private static IntPtr GetTexture(string src, byte defaultR, byte defaultG, byte defaultB)
         {
+            int err; Errors.msg = "Game.GetTexture";
+         
             IntPtr surfacePtr = IntPtr.Zero;
             SDL.SDL_Surface surface;
             if (src != "")
             {
                 surfacePtr = SDL.SDL_CreateRGBSurface(0, Const.TileWidth, Const.TileHeight, 32, 0, 0, 0, 0);
+                Errors.CheckNull(surfacePtr);
                 surface = *(SDL.SDL_Surface*)surfacePtr.ToPointer();
-                SDL.SDL_FillRect(surfacePtr, IntPtr.Zero, SDL.SDL_MapRGB(surface.format, defaultR, defaultG, defaultB));
+                err = SDL.SDL_FillRect(surfacePtr, IntPtr.Zero, SDL.SDL_MapRGB(surface.format, defaultR, defaultG, defaultB)); Errors.Check(err);
             }
             else
             {
@@ -109,6 +117,7 @@ namespace shootingame
             }
 
             IntPtr texture = SDL.SDL_CreateTextureFromSurface(Screen.Renderer, surfacePtr);
+            Errors.CheckNull(texture);
             SDL.SDL_FreeSurface(surfacePtr);
 
             return texture;
