@@ -178,7 +178,7 @@ namespace shootingame
         {
             int err; Errors.msg = "Popup.CopyText";
            
-            IntPtr surfacePtr = SDL_ttf.TTF_RenderUTF8_Shaded(Screen.Renderer, line, fg, bg);
+            IntPtr surfacePtr = SDL_ttf.TTF_RenderUTF8_Shaded(Screen.Font, line, fg, bg);
             Errors.CheckNull(surfacePtr);
             var surface = *(SDL.SDL_Surface*)surfacePtr.ToPointer();
             
