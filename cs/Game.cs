@@ -91,8 +91,9 @@ namespace shootingame
                 err = SDL.SDL_RenderCopy(Screen.Renderer, background, IntPtr.Zero, ref Game.Level.Bounds); Errors.Check(err);
             }
 
-            foreach (var tile in Game.Level.Tiles)
+            foreach (var tile in Game.Level.Tiles) {
                 err = SDL.SDL_RenderCopy(Screen.Renderer, foreground, IntPtr.Zero, ref tile.Rect); Errors.Check(err);
+            }
             
             SDL.SDL_DestroyTexture(foreground);
             SDL.SDL_DestroyTexture(background);
