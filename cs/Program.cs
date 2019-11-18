@@ -9,8 +9,11 @@ namespace shootingame
     {
         static void Main(string[] args)
         {
-            SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
-            SDL_ttf.TTF_Init();
+            int err; Errors.msg = "Main";
+            err = SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
+            Errors.Check(err);
+            err = SDL_ttf.TTF_Init();
+            Errors.Check(err);
             SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG);
             
             Screen.Init();
@@ -19,8 +22,8 @@ namespace shootingame
             while (Game.Running)
             {
                 Screen.Update();
+                SDL.SDL_PumpEvents();
                 Task update = Task.Run(() => {
-                    SDL.SDL_PumpEvents();
                     Game.Update();
                     Screen.ComputeShadows();
                 });

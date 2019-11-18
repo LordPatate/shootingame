@@ -17,20 +17,23 @@ namespace shootingame
         
         public static void Init()
         {
-            SDL.SDL_CreateWindowAndRenderer(Const.WindowWidth, Const.WindowHeight,
+            int err; Errors.msg = "Screen.Init";
+            err = SDL.SDL_CreateWindowAndRenderer(Const.WindowWidth, Const.WindowHeight,
                 SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP,
                 out Window, out Renderer);
+            Errors.Check(err);
             
             SDL.SDL_SetWindowTitle(Window, "Shootingame");
             SDL.SDL_GetWindowSize(Window, out Width, out Height);
 
-            SDL.SDL_SetRenderDrawBlendMode(Renderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
+            err = SDL.SDL_SetRenderDrawBlendMode(Renderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND); Errors.Check(err);
 
             GameScene = SDL.SDL_CreateTexture(Renderer, SDL.SDL_PIXELFORMAT_RGBA8888,
                 (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
                 Const.WindowWidth, Const.WindowHeight);
+            Errors.CheckNull(GameScene);
             
-            SDL.SDL_SetRenderTarget(Renderer, GameScene);
+            err = SDL.SDL_SetRenderTarget(Renderer, GameScene); Errors.Check(err);
 
             Font = SDL_ttf.TTF_OpenFont(Const.FontFile, Const.FontSize);
         }
@@ -45,15 +48,16 @@ namespace shootingame
 
         public static void Update()
         {
-            SDL.SDL_RenderCopy(Renderer, Game.Background, IntPtr.Zero, IntPtr.Zero);
+            int err; Errors.msg = "Screen.Update";
+            err = SDL.SDL_RenderCopy(Renderer, Game.Background, IntPtr.Zero, IntPtr.Zero); Errors.Check(err);
             Game.Player.Copy();
             CastShadows();
 
-            SDL.SDL_SetRenderTarget(Renderer, IntPtr.Zero);
-            SDL.SDL_RenderCopy(Renderer, GameScene, IntPtr.Zero, IntPtr.Zero);
+            err = SDL.SDL_SetRenderTarget(Renderer, IntPtr.Zero); Errors.Check(err);
+            err = SDL.SDL_RenderCopy(Renderer, GameScene, IntPtr.Zero, IntPtr.Zero); Errors.Check(err);
             SDL.SDL_RenderPresent(Renderer);
 
-            SDL.SDL_SetRenderTarget(Renderer, GameScene);
+            err = SDL.SDL_SetRenderTarget(Renderer, GameScene); Errors.Check(err);
         }
 
         public static void ComputeShadows()
