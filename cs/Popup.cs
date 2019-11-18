@@ -115,26 +115,32 @@ namespace shootingame
 
         private void Display()
         {
-            SDL.SDL_RenderCopy(Screen.Renderer, Screen.GameScene, IntPtr.Zero, IntPtr.Zero);
-            SDL.SDL_RenderCopy(Screen.Renderer, Texture, IntPtr.Zero, ref Rect);
-            foreach (PopupOption option in Options)
-                SDL.SDL_RenderCopy(Screen.Renderer, option.Texture, IntPtr.Zero, ref option.Rect);
+            int err; Errors.msg = "Popup.Display";
+            
+            err = SDL.SDL_RenderCopy(Screen.Renderer, Screen.GameScene, IntPtr.Zero, IntPtr.Zero); Errors.Check(err);
+            err = SDL.SDL_RenderCopy(Screen.Renderer, Texture, IntPtr.Zero, ref Rect); Errors.Check(err);
+            foreach (PopupOption option in Options) {
+                err = SDL.SDL_RenderCopy(Screen.Renderer, option.Texture, IntPtr.Zero, ref option.Rect); Errors.Check(err);
+            }
 
             SDL.SDL_RenderPresent(Screen.Renderer);
         }
 
         private void CreateTextures()
         {
+            int err; Errors.msg = "Popup.CreateTextures";
+            
             Texture = SDL.SDL_CreateTexture(Screen.Renderer, SDL.SDL_PIXELFORMAT_RGBA8888,
                 (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
                 Rect.w, Rect.h);
-            SDL.SDL_SetRenderTarget(Screen.Renderer, Texture);
+            Errors.CheckNull(Texture);
+            err = SDL.SDL_SetRenderTarget(Screen.Renderer, Texture); Errors.Check(err);
 
             var bgColor = SDLFactory.MakeColor(r: 110, g: 100, b: 100);
 
             // frame
-            SDL.SDL_SetRenderDrawColor(Screen.Renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
-            SDL.SDL_RenderFillRect(Screen.Renderer, IntPtr.Zero);
+            err = SDL.SDL_SetRenderDrawColor(Screen.Renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a); Errors.Check(err);
+            err = SDL.SDL_RenderFillRect(Screen.Renderer, IntPtr.Zero); Errors.Check(err);
 
             // text body
             int yPos = (Rect.h*80/100)/2 - Text.Length*20/2;
@@ -148,37 +154,42 @@ namespace shootingame
             }
 
             // buttons
-            SDL.SDL_SetRenderDrawColor(Screen.Renderer, 0, 0, 255, 255);
+            err = SDL.SDL_SetRenderDrawColor(Screen.Renderer, 0, 0, 255, 255); Errors.Check(err);
             i = 0;
             foreach (PopupOption option in Options)
             {
                 Options[i].Texture = SDL.SDL_CreateTexture(Screen.Renderer, SDL.SDL_PIXELFORMAT_RGBA8888,
                     (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
                     option.Rect.w, option.Rect.h);
-                SDL.SDL_SetRenderTarget(Screen.Renderer, Options[i].Texture);
+                Errors.CheckNull(Options[i].Texture);
+                err = SDL.SDL_SetRenderTarget(Screen.Renderer, Options[i].Texture); Errors.Check(err);
 
-                SDL.SDL_RenderFillRect(Screen.Renderer, IntPtr.Zero);
+                err = SDL.SDL_RenderFillRect(Screen.Renderer, IntPtr.Zero); Errors.Check(err);
                 var rect = SDLFactory.MakeRect(w: option.Rect.w, h: option.Rect.h);
                 CopyText(option.Text, rect, SDLFactory.MakeColor(255,255,255), SDLFactory.MakeColor(b:255));
 
                 ++i;
             }
 
-            SDL.SDL_SetRenderTarget(Screen.Renderer, IntPtr.Zero);
+            err = SDL.SDL_SetRenderTarget(Screen.Renderer, IntPtr.Zero); Errors.Check(err);
         }
 
         private static void CopyText(string line, SDL.SDL_Rect frame, SDL.SDL_Color fg, SDL.SDL_Color bg)
         {
+            int err; Errors.msg = "Popup.CopyText";
+           
             IntPtr surfacePtr = SDL_ttf.TTF_RenderUTF8_Shaded(Screen.Renderer, line, fg, bg);
+            Errors.CheckNull(surfacePtr);
             var surface = *(SDL.SDL_Surface*)surfacePtr.ToPointer();
             
             IntPtr texture = SDL.SDL_CreateTextureFromSurface(Screen.Renderer, surfacePtr);
+            Errors.CheckNull(texture);
             var rect = SDLFactory.MakeRect(
                 x: frame.x + 10 + (frame.w-20)/2 - surface.w/2,
                 y: frame.y + frame.h/2 - surface.h/2,
                 w: surface.w, h: surface.h
             );
-            SDL.SDL_RenderCopy(Screen.Renderer, texture, IntPtr.Zero, ref rect);
+            err = SDL.SDL_RenderCopy(Screen.Renderer, texture, IntPtr.Zero, ref rect); Errors.Check(err);
             
             SDL.SDL_FreeSurface(surfacePtr);
             SDL.SDL_DestroyTexture(texture);
