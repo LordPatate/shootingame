@@ -49,6 +49,7 @@ namespace shootingame
         public static void Update()
         {
             int err; Errors.msg = "Screen.Update";
+            err = SDL.SDL_SetRenderTarget(Renderer, GameScene); Errors.Check(err);
             err = SDL.SDL_RenderCopy(Renderer, Game.Background, IntPtr.Zero, IntPtr.Zero); Errors.Check(err);
             Game.Player.Copy();
             CastShadows();
@@ -56,8 +57,6 @@ namespace shootingame
             err = SDL.SDL_SetRenderTarget(Renderer, IntPtr.Zero); Errors.Check(err);
             err = SDL.SDL_RenderCopy(Renderer, GameScene, IntPtr.Zero, IntPtr.Zero); Errors.Check(err);
             SDL.SDL_RenderPresent(Renderer);
-
-            err = SDL.SDL_SetRenderTarget(Renderer, GameScene); Errors.Check(err);
         }
 
         public static void ComputeShadows()

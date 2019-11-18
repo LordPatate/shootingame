@@ -117,6 +117,8 @@ namespace shootingame
         {
             int err; Errors.msg = "Popup.Display";
             
+            err = SDL.SDL_SetRenderTarget(Screen.Renderer, IntPtr.Zero); Errors.Check(err);
+            
             err = SDL.SDL_RenderCopy(Screen.Renderer, Screen.GameScene, IntPtr.Zero, IntPtr.Zero); Errors.Check(err);
             err = SDL.SDL_RenderCopy(Screen.Renderer, Texture, IntPtr.Zero, ref Rect); Errors.Check(err);
             foreach (PopupOption option in Options) {
