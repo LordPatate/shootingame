@@ -18,7 +18,7 @@ namespace shootingame
 
         public static void CheckNull(IntPtr ptr, string msg = "")
         {
-            if (ptr != null)
+            if (ptr != IntPtr.Zero)
                 return;
 
             if (msg != "")
