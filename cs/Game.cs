@@ -105,7 +105,7 @@ namespace shootingame
          
             IntPtr surfacePtr = IntPtr.Zero;
             SDL.SDL_Surface surface;
-            if (src != "")
+            if (src == "")
             {
                 surfacePtr = SDL.SDL_CreateRGBSurface(0, Const.TileWidth, Const.TileHeight, 32, 0, 0, 0, 0);
                 Errors.CheckNull(surfacePtr);
