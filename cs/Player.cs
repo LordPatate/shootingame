@@ -52,7 +52,22 @@ namespace shootingame
 
         public void Copy()
         {
+            PlayerAnimations.SetTextureArea(this);
 
+            SDL.SDL_RendererFlip flip = (Direction == Const.Left) ?
+                SDL.SDL_RendererFlip.SDL_FLIP_NONE :
+                SDL.SDL_RendererFlip.SDL.FLIP_HORIZONTAL;
+            
+            Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
+            var width = scale(Const.PlayerSpriteWidth), height = scale(Const.PlayerSpriteHeight);
+            SDL.SDL_Rect dst = SDLFactory.MakeRect(
+                x: Rect.x + Rect.w/2 - width/2,
+                y: Rect.y + Rect.h/2 - height/2,
+                w: width, h: height
+            );
+
+            int err; Errors.msg = "Player.Copy";
+            err = SDL.SDL_RenderCopyEx(Screen.Renderer, Texture, ref TextureArea, ref dst, 0, IntPtr.Zero, flip); Errors.Check(err);
         }
 
         public void Update(Level level)
@@ -65,7 +80,7 @@ namespace shootingame
 
             if (Inertia.y >= 0) {
                 if (OnGround(level)) {
-                    Controls.OnGround(player, level);
+                    Controls.OnGround(this, level);
                     return;
                 }
                 SetState(PlayerState.Falling);
@@ -74,7 +89,7 @@ namespace shootingame
             MoveX(Inertia.x/Const.InertiaPerPixel, level);
             MoveY(Inertia.y/Const.InertiaPerPixel, level);
             
-            Controls.InAir(player, level);
+            Controls.InAir(this, level);
         }
 
         public void SetState(PlayerState state)
