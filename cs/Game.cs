@@ -54,7 +54,7 @@ namespace shootingame
                 }
             }
 
-            Player.Update();
+            Player.Update(Level);
         }
 
         public static void LoadLevel(uint id)
