@@ -117,11 +117,16 @@ namespace shootingame
                 y: Rect.y, w: Rect.w, h: Rect.h
             );
 
-            Controls.Collision(ref projection, level);
-            if (delta > 0) {
-                Rect.x = projection.x - Rect.w;
-            } else {
-                Rect.x = projection.x + projection.w;
+            if (Controls.Collision(ref projection, level)) {
+                if (delta > 0) {
+                    Rect.x = projection.x - Rect.w;
+                } else {
+                    Rect.x = projection.x + projection.w;
+                }
+            }
+            else
+            {
+                Rect.x = projection.x;
             }
         }
 
@@ -133,11 +138,16 @@ namespace shootingame
                 w: Rect.w, h: Rect.h
             );
 
-            Controls.Collision(ref projection, level);
-            if (delta > 0) {
-                Rect.y = projection.y - Rect.h;
-            } else {
-                Rect.y = projection.y + projection.h;
+            if (Controls.Collision(ref projection, level)) {
+                if (delta > 0) {
+                    Rect.y = projection.y - Rect.h;
+                } else {
+                    Rect.y = projection.y + projection.h;
+                }
+            }
+            else
+            {
+                Rect.y = projection.y;
             }
         }
     }
