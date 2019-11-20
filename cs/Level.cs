@@ -74,7 +74,7 @@ namespace shootingame
                         }
                         PlayerStartPos = SDLFactory.MakePoint(
                             x: Bounds.x + i*Const.TileWidth,
-                            y: Bounds.y + j*Const.TileHeight - Const.PlayerSpriteHeight
+                            y: Bounds.y + j*Const.TileHeight
                         );
                         startPosFound = true;
                     }
