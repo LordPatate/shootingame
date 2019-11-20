@@ -55,8 +55,8 @@ namespace shootingame
             PlayerAnimations.SetTextureArea(this);
 
             SDL.SDL_RendererFlip flip = (Direction == Const.Left) ?
-                SDL.SDL_RendererFlip.SDL_FLIP_NONE :
-                SDL.SDL_RendererFlip.SDL_FLIP_HORIZONTAL;
+                SDL.SDL_RendererFlip.SDL_FLIP_HORIZONTAL :
+                SDL.SDL_RendererFlip.SDL_FLIP_NONE;
             
             Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
             int width = scale(Const.PlayerSpriteWidth), height = scale(Const.PlayerSpriteHeight);

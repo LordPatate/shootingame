@@ -41,8 +41,8 @@ namespace shootingame
             SDL.SDL_Point coord = spriteCoordArray[player.Frame / Const.StepsPerFrame];
 
             player.TextureArea = SDLFactory.MakeRect(
-                x: coord.x * Const.PlayerSpriteWidth,
-                y: coord.y * Const.PlayerSpriteHeight,
+                x: coord.y * Const.PlayerSpriteWidth,
+                y: coord.x * Const.PlayerSpriteHeight,
                 w: Const.PlayerSpriteWidth,
                 h: Const.PlayerSpriteHeight
             );
