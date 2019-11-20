@@ -4,21 +4,21 @@ using SDL2;
 
 namespace shootingame
 {
-    class Controls
+    unsafe class Controls
     {
         public static bool Left, Right, Jump;
         public static int MouseX, MouseY;
         public static bool LeftClick, RightClick;
-        public static bool Update()
+        public static void Update()
         {
             // Keys
             IntPtr keyStatePtr = SDL.SDL_GetKeyboardState(out int numkeys);
             Errors.CheckNull(keyStatePtr, "Controls.Update");
-            uint* keyStatePtr = *(uint*)keyStatePtr.ToPointer();
+            uint* keyState = (uint*)keyStatePtr.ToPointer();
             
-            Left = keyState[SDL.SDL_Scancode.SDL_SCANCODE_A] == 1;
-            Right = keyState[SDL.SDL_Scancode.SDL_SCANCODE_D] == 1;
-            Jump = keyState[SDL.SDL_Scancode.SDL_SCANCODE_W] == 1;
+            Left = keyState[(int)SDL.SDL_Scancode.SDL_SCANCODE_A] == 1;
+            Right = keyState[(int)SDL.SDL_Scancode.SDL_SCANCODE_D] == 1;
+            Jump = keyState[(int)SDL.SDL_Scancode.SDL_SCANCODE_W] == 1;
 
             // Mouse
             UInt32 mouseState = SDL.SDL_GetMouseState(out MouseX, out MouseY);
@@ -78,19 +78,19 @@ namespace shootingame
                 player.Inertia.x -= Const.AirSlow;
                 player.Inertia.x = Math.Max(player.Inertia.x, 0);
             } else {
-                player.Inertia.x += AirSlow;
+                player.Inertia.x += Const.AirSlow;
                 player.Inertia.x = Math.Min(player.Inertia.x, 0);
             }
             
             // Gravity
-            player.Inertia.y += Gravity;
+            player.Inertia.y += Const.Gravity;
         }
 
         public static bool Collision(ref SDL.SDL_Rect projection, Level level)
         {
             foreach (Tile tile in level.Tiles) {
                 var rect = tile.Rect;
-                if (SDL.SDL_HasIntersection(projection, rect)) {
+                if ((int)SDL.SDL_HasIntersection(ref projection, ref rect) != 0) {
                     projection.x = rect.x; projection.y = rect.y;
                     projection.w = rect.w; projection.h = rect.h;
                     return true;
@@ -99,7 +99,7 @@ namespace shootingame
             
             SDL.SDL_Rect union, bounds = level.Bounds;
             SDL.SDL_UnionRect(ref projection, ref level.Bounds, out union);
-            if (!SDL.SDL_RectEquals(ref level.Bounds, ref union)) {
+            if ((int)SDL.SDL_RectEquals(ref level.Bounds, ref union) == 0) {
                 projection.x = bounds.x + bounds.w; projection.y = bounds.y + bounds.h;
                 projection.w = -bounds.w; projection.h = -bounds.h;
                 return true;
@@ -113,10 +113,10 @@ namespace shootingame
             player.SetState(PlayerState.Running);
 
             if (direction == Const.Left) {
-                player.MoveX(-PlayerStep, level);
+                player.MoveX(-Const.PlayerStep, level);
                 player.Inertia.x = -Const.PlayerStep * Const.InertiaPerPixel;
             } else {
-                player.MoveX(PlayerStep, level);
+                player.MoveX(Const.PlayerStep, level);
                 player.Inertia.x = Const.PlayerStep * Const.InertiaPerPixel;
             }
             player.Direction = direction;
@@ -137,7 +137,7 @@ namespace shootingame
         private static void WallJump(Player player, bool direction)
         {
             player.SetState(PlayerState.WallJumping);
-            player.Inertia.Y = - Const.JumpPower;
+            player.Inertia.y = - Const.JumpPower;
             player.JumpEnabled = false;
             player.Direction = direction;
             player.Inertia.x = Const.PlayerStep * Const.InertiaPerPixel;
@@ -147,8 +147,8 @@ namespace shootingame
 
         private static void WallSlide(Player player, bool direction)
         {
-            player.SetState(WallSliding);
-            player.Inertia.Y -= WallFriction;
+            player.SetState(PlayerState.WallSliding);
+            player.Inertia.y -= Const.WallFriction;
             player.Direction = direction;
         }
 

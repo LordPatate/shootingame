@@ -48,7 +48,7 @@ namespace shootingame
             );
 
             ++player.Frame;
-            player.Frame %= (spriteCoordArray.Length * Const.StepsPerFrame);
+            player.Frame %= (uint)(spriteCoordArray.Length * Const.StepsPerFrame);
         }
     }
 }

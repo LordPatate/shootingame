@@ -13,7 +13,7 @@ namespace shootingame
         WallJumping
     }
 
-    class Player
+    unsafe class Player
     {
         public SDL.SDL_Rect Rect;
         public IntPtr Texture;
@@ -56,10 +56,10 @@ namespace shootingame
 
             SDL.SDL_RendererFlip flip = (Direction == Const.Left) ?
                 SDL.SDL_RendererFlip.SDL_FLIP_NONE :
-                SDL.SDL_RendererFlip.SDL.FLIP_HORIZONTAL;
+                SDL.SDL_RendererFlip.SDL_FLIP_HORIZONTAL;
             
             Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
-            var width = scale(Const.PlayerSpriteWidth), height = scale(Const.PlayerSpriteHeight);
+            int width = scale(Const.PlayerSpriteWidth), height = scale(Const.PlayerSpriteHeight);
             SDL.SDL_Rect dst = SDLFactory.MakeRect(
                 x: Rect.x + Rect.w/2 - width/2,
                 y: Rect.y + Rect.h/2 - height/2,
