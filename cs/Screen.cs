@@ -30,7 +30,7 @@ namespace shootingame
 
             GameScene = SDL.SDL_CreateTexture(Renderer, SDL.SDL_PIXELFORMAT_RGBA8888,
                 (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
-                Const.WindowWidth, Const.WindowHeight);
+                Width, Height);
             Errors.CheckNull(GameScene);
             
             err = SDL.SDL_SetRenderTarget(Renderer, GameScene); Errors.Check(err);
