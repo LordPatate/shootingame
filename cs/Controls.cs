@@ -12,18 +12,18 @@ namespace shootingame
         public static void Update()
         {
             // Keys
-            IntPtr keyStatePtr = SDL.SDL_GetKeyboardState(out int numkeys);
-            Errors.CheckNull(keyStatePtr, "Controls.Update");
-            uint* keyState = (uint*)keyStatePtr.ToPointer();
+            // IntPtr keyStatePtr = SDL.SDL_GetKeyboardState(out int numkeys);
+            // Errors.CheckNull(keyStatePtr, "Controls.Update");
+            // uint* keyState = (uint*)keyStatePtr.ToPointer();
             
-            Left = keyState[(int)SDL.SDL_Scancode.SDL_SCANCODE_A] == 1;
-            Right = keyState[(int)SDL.SDL_Scancode.SDL_SCANCODE_D] == 1;
-            Jump = keyState[(int)SDL.SDL_Scancode.SDL_SCANCODE_W] == 1;
+            // Left = keyState[(int)SDL.SDL_Scancode.SDL_SCANCODE_A] == 1;
+            // Right = keyState[(int)SDL.SDL_Scancode.SDL_SCANCODE_D] == 1;
+            // Jump = keyState[(int)SDL.SDL_Scancode.SDL_SCANCODE_W] == 1;
 
-            // Mouse
-            UInt32 mouseState = SDL.SDL_GetMouseState(out MouseX, out MouseY);
-            LeftClick = (mouseState & SDL.SDL_BUTTON_LMASK) != 0;
-            RightClick = (mouseState & SDL.SDL_BUTTON_RMASK) != 0;
+            // // Mouse
+            // UInt32 mouseState = SDL.SDL_GetMouseState(out MouseX, out MouseY);
+            // LeftClick = (mouseState & SDL.SDL_BUTTON_LMASK) != 0;
+            // RightClick = (mouseState & SDL.SDL_BUTTON_RMASK) != 0;
         }
 
         public static void OnGround(Player player, Level level)
@@ -90,20 +90,20 @@ namespace shootingame
         {
             foreach (Tile tile in level.Tiles) {
                 var rect = tile.Rect;
-                if ((int)SDL.SDL_HasIntersection(ref projection, ref rect) != 0) {
-                    projection.x = rect.x; projection.y = rect.y;
-                    projection.w = rect.w; projection.h = rect.h;
-                    return true;
-                }
+                //if ((int)SDL.SDL_HasIntersection(ref projection, ref rect) != 0) {
+                //     projection.x = rect.x; projection.y = rect.y;
+                //     projection.w = rect.w; projection.h = rect.h;
+                //     return true;
+                // }
             }
             
-            SDL.SDL_Rect union, bounds = level.Bounds;
-            SDL.SDL_UnionRect(ref projection, ref level.Bounds, out union);
-            if ((int)SDL.SDL_RectEquals(ref level.Bounds, ref union) == 0) {
-                projection.x = bounds.x + bounds.w; projection.y = bounds.y + bounds.h;
-                projection.w = -bounds.w; projection.h = -bounds.h;
-                return true;
-            }
+            // SDL.SDL_Rect union, bounds = level.Bounds;
+            // SDL.SDL_UnionRect(ref projection, ref level.Bounds, out union);
+            // if ((int)SDL.SDL_RectEquals(ref level.Bounds, ref union) == 0) {
+            //     projection.x = bounds.x + bounds.w; projection.y = bounds.y + bounds.h;
+            //     projection.w = -bounds.w; projection.h = -bounds.h;
+            //     return true;
+            // }
             
             return false;
         }

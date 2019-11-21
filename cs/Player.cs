@@ -15,14 +15,14 @@ namespace shootingame
 
     unsafe class Player
     {
-        public SDL.SDL_Rect Rect;
-        public IntPtr Texture;
-        public SDL.SDL_Rect TextureArea;
+        // public SDL.SDL_Rect Rect;
+        // public IntPtr Texture;
+        // public SDL.SDL_Rect TextureArea;
         public PlayerState State;
         public uint Frame;
         public bool Direction;
-        public SDL.SDL_Point Inertia;
-        public SDL.SDL_Point* HookPoint;
+        // public SDL.SDL_Point Inertia;
+        // public SDL.SDL_Point* HookPoint;
         public bool JumpEnabled;
 
         public readonly SDL.SDL_Point NormalStateDim = SDLFactory.MakePoint(20, 37);
@@ -36,11 +36,11 @@ namespace shootingame
             Inertia = SDLFactory.MakePoint();
             HookPoint = null;
 
-            IntPtr surfacePtr = SDL_image.IMG_Load(Const.PlayerSpriteSheet);
-            Errors.CheckNull(surfacePtr, "Load PlayerSpriteSheet");
-            Texture = SDL.SDL_CreateTextureFromSurface(Screen.Renderer, surfacePtr);
-            Errors.CheckNull(Texture, "Player.Texture Creation");
-            SDL.SDL_FreeSurface(surfacePtr);
+            // IntPtr surfacePtr = SDL_image.IMG_Load(Const.PlayerSpriteSheet);
+            // Errors.CheckNull(surfacePtr, "Load PlayerSpriteSheet");
+            // Texture = SDL.SDL_CreateTextureFromSurface(Screen.Renderer, surfacePtr);
+            // Errors.CheckNull(Texture, "Player.Texture Creation");
+            // SDL.SDL_FreeSurface(surfacePtr);
 
             TextureArea = SDLFactory.MakeRect(w: Const.PlayerSpriteWidth, h: Const.PlayerSpriteHeight);
         }
@@ -54,9 +54,9 @@ namespace shootingame
         {
             PlayerAnimations.SetTextureArea(this);
 
-            SDL.SDL_RendererFlip flip = (Direction == Const.Left) ?
-                SDL.SDL_RendererFlip.SDL_FLIP_HORIZONTAL :
-                SDL.SDL_RendererFlip.SDL_FLIP_NONE;
+            // SDL.SDL_RendererFlip flip = (Direction == Const.Left) ?
+            //     SDL.SDL_RendererFlip.SDL_FLIP_HORIZONTAL :
+            //     SDL.SDL_RendererFlip.SDL_FLIP_NONE;
             
             Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
             int width = scale(Const.PlayerSpriteWidth), height = scale(Const.PlayerSpriteHeight);
@@ -66,8 +66,8 @@ namespace shootingame
                 w: width, h: height
             );
 
-            int err; Errors.msg = "Player.Copy";
-            err = SDL.SDL_RenderCopyEx(Screen.Renderer, Texture, ref TextureArea, ref dst, 0, IntPtr.Zero, flip); Errors.Check(err);
+            // int err; Errors.msg = "Player.Copy";
+            // err = SDL.SDL_RenderCopyEx(Screen.Renderer, Texture, ref TextureArea, ref dst, 0, IntPtr.Zero, flip); Errors.Check(err);
         }
 
         public void Update(Level level)

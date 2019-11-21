@@ -1,20 +1,48 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SDL2;
+using SFML.Window;
+using SFML.Graphics;
 
 namespace shootingame
 {
     class Program
     {
+        /*
         static void Main(string[] args)
         {
-            int err; Errors.msg = "Main";
-            err = SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
-            Errors.Check(err);
-            err = SDL_ttf.TTF_Init();
-            Errors.Check(err);
-            SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG);
+
+            // Load a sprite to display
+            Texture texture = new Texture(Const.PlayerSpriteSheet);
+            Sprite sprite = new Sprite(texture);
+
+            // Create a graphical string to display
+            Font font = new Font(Const.FontFile);
+            Text text = new Text("Hello SFML.Net", font);
+
+            // Start the game loop
+            while (window.IsOpen)
+            {
+                // Process events
+                window.DispatchEvents();
+
+                // Clear screen
+                window.Clear();
+
+                // Draw the sprite
+                window.Draw(sprite);
+
+                // Draw the string
+                window.Draw(text);
+
+                // Update the window
+                window.Display();
+            }
+        }
+        */
+        
+        static void Main(string[] args)
+        {
             
             Screen.Init();
             Game.Init();
@@ -23,7 +51,6 @@ namespace shootingame
             while (Game.Running)
             {
                 Screen.Update();
-                SDL.SDL_PumpEvents();
                 Task update = Task.Run(() => {
                     Game.Update();
                     Screen.ComputeShadows();
@@ -35,9 +62,7 @@ namespace shootingame
 
             Screen.Quit();
             Game.Quit();
-            SDL.SDL_Quit();
-            SDL_ttf.TTF_Quit();
-            SDL_image.IMG_Quit();
         }
+        
     }
 }
