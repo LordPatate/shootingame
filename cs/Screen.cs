@@ -11,7 +11,7 @@ namespace shootingame
         public struct ShadePolygon {int[] vx, vy;}
         public static RenderWindow Window;
         public static uint Width, Height;
-        public static RectangleShape GameScene;
+        public static RenderTexture GameScene;
         public static Font Font;
         public static List<ShadePolygon> Shades;
 
@@ -27,7 +27,7 @@ namespace shootingame
             Window.Closed += new EventHandler(OnClose);
             Width = videoMode.Width; Height = videoMode.Height;
 
-            GameScene = new RectangleShape(new Vector2f((float)Width, (float)Height));
+            GameScene = new RenderTexture(Width, Height));
 
             Font = new Font(Const.FontFile);
         }
