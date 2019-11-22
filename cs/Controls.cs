@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+using SFML.Window.Keyboard;
 
 namespace shootingame
 {
@@ -14,9 +15,9 @@ namespace shootingame
         public static void Update()
         {
             // Keys
-            Left = Keyboard.IsKeyPressed(Key.A) || Keyboard.IsKeyPressed(Key.Q);
-            Right = Keyboard.IsKeyPressed(Key.D);
-            Jump = Keyboard.IsKeyPressed(Key.W) || Keyboard.IsKeyPressed(Key.Z);
+            Left = IsKeyPressed(Key.A) || IsKeyPressed(Key.Q);
+            Right = IsKeyPressed(Key.D);
+            Jump = IsKeyPressed(Key.W) || IsKeyPressed(Key.Z);
 
             // Mouse
             MousePos = Mouse.GetPosition();
@@ -88,9 +89,8 @@ namespace shootingame
         {
             foreach (Tile tile in level.tiles) {
                 var rect = tile.Rect;
-                if (projection.Intersects(rect) {
-                    projection.x = rect.x; projection.y = rect.y;
-                    projection.w = rect.w; projection.h = rect.h;
+                if (projection.Intersects(rect)) {
+                    projection = rect;
                     return true;
                 }
             }
@@ -98,8 +98,10 @@ namespace shootingame
             IntRect bounds = level.Bounds;
             projection.Intersects(bounds, out overLap);
             if (projection.Equals(overLap)) {
-                projection.x = bounds.x + bounds.w; projection.y = bounds.y + bounds.h;
-                projection.w = -bounds.w; projection.h = -bounds.h;
+                projection.Left = bounds.Left + bounds.Width;
+                projection.Top = bounds.Top + bounds.Height;
+                projection.Width = -bounds.Width;
+                projection.Height = -bounds.Height;
                 return true;
             }
             
