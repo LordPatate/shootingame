@@ -122,7 +122,7 @@ namespace shootingame
             Screen.Window.Draw(Shape);
             foreach (PopupOption option in Options) {
                 // Update size and position because of eventual resize when clicked
-                option.Shape.Size = new Vector2f((float)option.Rect.Width, (float)option.Rect.Height));
+                option.Shape.Size = new Vector2f((float)option.Rect.Width, (float)option.Rect.Height);
                 option.Shape.Position = new Vector2f((float)option.Rect.Left, (float)option.Rect.Top);
 
                 Screen.Window.Draw(option.Shape);
