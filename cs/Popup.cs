@@ -140,13 +140,15 @@ namespace shootingame
             // text body
             int lineHeight = 20;
             int sideMargin = 10;
-            int topMargin = (Rect.Top*80/100)/2 - Text.Length*lineHeight/2;
+            int maxHeight = Rect.Height*80/100;
+            int paragraphSize = Text.Length*lineHeight;
+            int topSpace = maxHeight/2 - paragraphSize/2;
             int i = 0;
             foreach (string line in Text)
             {
                 var rect = new IntRect(
                     left: sideMargin,
-                    top: topMargin + i*lineHeight, 
+                    top: topSpace + i*lineHeight, 
                     width: Rect.Width - 2*sideMargin,
                     height: lineHeight
                 );
