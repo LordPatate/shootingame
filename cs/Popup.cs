@@ -85,10 +85,10 @@ namespace shootingame
         {
             Screen.Window.Draw(new Sprite(Screen.GameScene.Texture));
                         
-            Screen.Window.Draw(new Sprite(Texture.Texture, Rect));
+            Screen.Window.Draw(Drawing.SpriteOf(Texture, Rect));
             
             foreach (PopupOption option in Options) {
-                Screen.Window.Draw(new Sprite(option.Texture.Texture, option.Rect));
+                Screen.Window.Draw(Drawing.SpriteOf(option.Texture, option.Rect));
             }
 
             Screen.Window.Display();
@@ -150,7 +150,7 @@ namespace shootingame
                     width: Rect.Width - 2*sideMargin,
                     height: lineHeight
                 );
-                CopyText(Texture, line, rect, new Color(0, 0, 0), bgColor);
+                DrawText(Texture, line, rect, new Color(0, 0, 0), bgColor);
 
                 ++i;
             }
@@ -164,11 +164,11 @@ namespace shootingame
                 option.Texture.Clear(buttonBG);
                 
                 var rect = new IntRect(0, 0, width: option.Rect.Width, height: option.Rect.Height);
-                CopyText(option.Texture, option.Text, rect, buttonFG, buttonBG);
+                DrawText(option.Texture, option.Text, rect, buttonFG, buttonBG);
             }
         }
 
-        private static void CopyText(RenderTarget dst, string line, IntRect frame, Color fg, Color bg)
+        private static void DrawText(RenderTarget dst, string line, IntRect frame, Color fg, Color bg)
         {
             Text text = new Text(line, Screen.Font, Const.FontSize);
             text.FillColor = fg;
