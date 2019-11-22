@@ -60,7 +60,7 @@ namespace shootingame
                 return;
             }
             
-            Const int maxSpeed = Const.PlayerStep * Const.InertiaPerPixel;
+            int maxSpeed = Const.PlayerStep * Const.InertiaPerPixel;
 
             // Movement
             if (Left) {
