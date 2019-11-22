@@ -1,43 +1,45 @@
 using System;
 using System.Threading;
-using SDL2;
+using SFML.Graphics;
+using SFML.System;
+using SFML.Window;
 
 namespace shootingame
 {
-    unsafe class PopupOption
+    class PopupOption
     {
         public string Text;
-        public IntPtr Texture;
-        public SDL.SDL_Rect Rect;
+        public RectangleShape Shape;
+        public IntRect Rect;
     }
-    unsafe class Popup
+    class Popup
     {
         public string[] Text;
-        public IntPtr Texture;
-        public SDL.SDL_Rect Rect;
+        public RectangleShape Shape;
+        public IntRect Rect;
         public PopupOption[] Options;
 
         public Popup(string[] text, params string[] options)
         {
             Text = text;
-            Rect = Geometry.ScaleRect(SDLFactory.MakeRect(w: Screen.Width, h: Screen.Height), 80, 80);
+            Rect = Geometry.ScaleRect(new IntRect(0, 0, width: (int)Screen.Width, height: (int)Screen.Height), 80, 80);
             Options = new PopupOption[options.Length];
 
-            var buttonRow = SDLFactory.MakeRect(
-                x: Rect.x + Rect.w*5/100,
-                y: Rect.y + Rect.h*80/100,
-                w: Rect.w * 90 / 100,
-                h: 60
+            var buttonRow = new IntRect(
+                left: Rect.Left + Rect.Width*5/100,
+                top: Rect.Top + Rect.Height*80/100,
+                width: Rect.Width * 90 / 100,
+                height: 60
             );
-            int width = buttonRow.w / options.Length;
-            var buttonSpaces = new SDL.SDL_Rect[options.Length];
+            int width = buttonRow.width / options.Length;
+            var buttonSpaces = new IntRect[options.Length];
             for (int i = 0; i < options.Length; ++i)
             {
                 var space = buttonSpaces[i];
-                space.x = buttonRow.x + width*i;
-                space.y = buttonRow.y;
-                space.w = width;
-                space.h = buttonRow.h;
+                space.Left = buttonRow.Left + width*i;
+                space.Top = buttonRow.Top;
+                space.Width = width;
+                space.Height = buttonRow.Height;
 
                 Options[i] = new PopupOption();
                 Options[i].Rect = Geometry.ScaleRect(space, 75, 90);
@@ -50,7 +52,7 @@ namespace shootingame
         public string Pop()
         {
             PopupOption clickedOption = null;
-            SDL.SDL_Rect previousRect = Options[0].Rect;
+            IntRect previousRect = Options[0].Rect;
 
             string option = "";
 
@@ -58,43 +60,47 @@ namespace shootingame
             {
                 Display();
 
-                Action inner = () => {
-                    SDL.SDL_Event e;
-                    while (SDL.SDL_PollEvent(out e) != 0) {
-                        if ((int)e.type >> 8 == 0x4) // MouseEvent
+                Action inner = () =>
+                {
+                    while (Screen.Window.PollEvent(out Event e) != 0)
+                    {
+                        switch (e.Type)
                         {
-                            var be = e.button;
-                            if (be.button == SDL.SDL_BUTTON_RIGHT && e.type == SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN) {
+                        case EventType.MouseButtonPressed:
+                            var mbe = e.MouseButton;
+                            
+                            if (mbe.Button == Mouse.Button.Right){
                                 option = "right click";
                                 return;
                             }
-                            if (be.button == SDL.SDL_BUTTON_LEFT)
-                            {
-                                int i = 0;
-                                foreach (PopupOption opt in Options)
-                                {
-                                    if (Geometry.PointInRectangle(be.x, be.y, opt.Rect))
-                                    {
-                                        if (e.type == SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN) {
-                                            clickedOption = Options[i];
-                                            previousRect = opt.Rect;
-                                            clickedOption.Rect = Geometry.ScaleRect(opt.Rect, 95, 95);
-                                            return;
-                                        }
-                                        // e.type == SDL.SDL_EventType.SDL_MOUSEBUTTONUP
-                                        if (clickedOption != null && clickedOption.Text == opt.Text) {
-                                            option = opt.Text;
-                                            return;
-                                        }
+                            if (mbe.button == Mouse.Button.Left) {
+                                foreach (PopupOption opt in Options) {
+                                    if (opt.Rect.Contains(mbe.X, mbe.Y)) {
+                                        previousRect = opt.Rect;
+                                        opt.Rect = Geometry.ScaleRect(opt.Rect, 95, 95);
+                                        clickedOption = opt;
+                                        return;
                                     }
-                                    ++i;
                                 }
-                                if (clickedOption != null) {
-                                    clickedOption.Rect = previousRect;
+                            }
+                            break;
+                        case EventType.MouseButtonReleased:
+                            var mbe = e.MouseButton;
+                            
+                            if (mbe.Button == Mouse.Button.Left) {
+                                clickedOption.Rect = previousRect;
+                                foreach (PopupOption opt in Options) {
+                                    if (opt.Contains(mbe.X, mbe.Y)) {
+                                        if (opt == clickedOption)
+                                            option = opt.Text;
+                                        
+                                        return;
+                                    }
                                 }
                                 clickedOption = null;
                             }
                         }
+
                     }
                 };
                 inner();
@@ -107,94 +113,78 @@ namespace shootingame
 
         public void Destroy()
         {
-            SDL.SDL_DestroyTexture(Texture);
-            foreach (PopupOption option in Options)
-                if (option.Texture != IntPtr.Zero)
-                    SDL.SDL_DestroyTexture(option.Texture);
+            
         }
 
         private void Display()
         {
-            int err; Errors.msg = "Popup.Display";
-            
-            err = SDL.SDL_SetRenderTarget(Screen.Renderer, IntPtr.Zero); Errors.Check(err);
-            
-            err = SDL.SDL_RenderCopy(Screen.Renderer, Screen.GameScene, IntPtr.Zero, IntPtr.Zero); Errors.Check(err);
-            err = SDL.SDL_RenderCopy(Screen.Renderer, Texture, IntPtr.Zero, ref Rect); Errors.Check(err);
+            Screen.Window.Draw(Screen.GameScene);
+            Screen.Window.Draw(Shape);
             foreach (PopupOption option in Options) {
-                err = SDL.SDL_RenderCopy(Screen.Renderer, option.Texture, IntPtr.Zero, ref option.Rect); Errors.Check(err);
+                // Update size and position because of eventual resize when clicked
+                option.Shape.Size = new Vector2f((float)option.Rect.Width, (float)option.Rect.Height));
+                option.Shape.Position = new Vector2f((float)option.Rect.Left, (float)option.Rect.Top);
+
+                Screen.Window.Draw(option.Shape);
             }
 
-            SDL.SDL_RenderPresent(Screen.Renderer);
+            Screen.Window.Display();
         }
 
         private void CreateTextures()
         {
-            int err; Errors.msg = "Popup.CreateTextures";
-            
-            Texture = SDL.SDL_CreateTexture(Screen.Renderer, SDL.SDL_PIXELFORMAT_RGBA8888,
-                (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
-                Rect.w, Rect.h);
-            Errors.CheckNull(Texture);
-            err = SDL.SDL_SetRenderTarget(Screen.Renderer, Texture); Errors.Check(err);
-
-            var bgColor = SDLFactory.MakeColor(r: 110, g: 100, b: 100);
+            var bgColor = new Color(red: 110, green: 100, blue: 100);
 
             // frame
-            err = SDL.SDL_SetRenderDrawColor(Screen.Renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a); Errors.Check(err);
-            err = SDL.SDL_RenderFillRect(Screen.Renderer, IntPtr.Zero); Errors.Check(err);
+            Shape = new RectangleShape(new Vector2f((int)Rect.Width, (int)Rect.Height));
+            Shape.Position = new Vector2f((int)Rect.Left, (int)Rect.Top);
+            Shape.FillColor = bgColor;
 
             // text body
-            int yPos = (Rect.h*80/100)/2 - Text.Length*20/2;
+            int lineHeight = 20;
+            int sideMargin = 10;
+            int topMargin = (Rect.Top*80/100)/2 - Text.Length*lineHeight/2;
             int i = 0;
             foreach (string line in Text)
             {
-                var rect = SDLFactory.MakeRect(y: yPos + i*20, w: Rect.w, h: 20);
-                CopyText(line, rect, SDLFactory.MakeColor(), bgColor);
+                var rect = new IntRect(
+                    left: sideMargin,
+                    top: topMargin + i*lineHeight, 
+                    width: Rect.Width - 2*sideMargin,
+                    height: lineHeight
+                );
+                CopyText(line, rect, new Color(0, 0, 0), bgColor);
 
                 ++i;
             }
 
             // buttons
-            err = SDL.SDL_SetRenderDrawColor(Screen.Renderer, 0, 0, 255, 255); Errors.Check(err);
-            i = 0;
+            var buttonFG = new Color(255, 255, 255);
+            var buttonBG = new Color(0, 0, blue: 255);
             foreach (PopupOption option in Options)
             {
-                Options[i].Texture = SDL.SDL_CreateTexture(Screen.Renderer, SDL.SDL_PIXELFORMAT_RGBA8888,
-                    (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
-                    option.Rect.w, option.Rect.h);
-                Errors.CheckNull(Options[i].Texture);
-                err = SDL.SDL_SetRenderTarget(Screen.Renderer, Options[i].Texture); Errors.Check(err);
-
-                err = SDL.SDL_RenderFillRect(Screen.Renderer, IntPtr.Zero); Errors.Check(err);
-                var rect = SDLFactory.MakeRect(w: option.Rect.w, h: option.Rect.h);
-                CopyText(option.Text, rect, SDLFactory.MakeColor(255,255,255), SDLFactory.MakeColor(b:255));
-
-                ++i;
+                option.Shape = new RectangleShape(new Vector2f((float)option.Rect.Width, (float)option.Rect.Height));
+                option.Shape.Position = new Vector2f((float)option.Rect.Left, (float)option.Rect.Top);
+                option.Shape.FillColor = buttonBG;
+                
+                var rect = new IntRect(0, 0, width: option.Rect.Width, height: option.Rect.Height);
+                CopyText(option.Text, rect, buttonFG, buttonBG);
             }
-
-            err = SDL.SDL_SetRenderTarget(Screen.Renderer, IntPtr.Zero); Errors.Check(err);
         }
 
-        private static void CopyText(string line, SDL.SDL_Rect frame, SDL.SDL_Color fg, SDL.SDL_Color bg)
+        private static void CopyText(string line, IntRect frame, Color fg, Color bg)
         {
-            int err; Errors.msg = "Popup.CopyText";
-           
-            IntPtr surfacePtr = SDL_ttf.TTF_RenderUTF8_Shaded(Screen.Font, line, fg, bg);
-            Errors.CheckNull(surfacePtr);
-            var surface = *(SDL.SDL_Surface*)surfacePtr.ToPointer();
-            
-            IntPtr texture = SDL.SDL_CreateTextureFromSurface(Screen.Renderer, surfacePtr);
-            Errors.CheckNull(texture);
-            var rect = SDLFactory.MakeRect(
-                x: frame.x + 10 + (frame.w-20)/2 - surface.w/2,
-                y: frame.y + frame.h/2 - surface.h/2,
-                w: surface.w, h: surface.h
+            Text text = new Text(line, Screen.Font, Const.FontSize);
+            text.FillColor = fg;
+            text.OutLineColor = bg;
+
+            FloatRect rect = text.GetLocalBounds();
+            text.Position = new Vector2f(
+                x: frame.Left + frame.Width/2 - rect.Width/2,
+                y: frame.Top + frame.Height/2 - rect.Height/2
             );
-            err = SDL.SDL_RenderCopy(Screen.Renderer, texture, IntPtr.Zero, ref rect); Errors.Check(err);
             
-            SDL.SDL_FreeSurface(surfacePtr);
-            SDL.SDL_DestroyTexture(texture);
+            Screen.Window.Draw(text);
         }
     }
 }
