@@ -10,7 +10,7 @@ namespace shootingame
         public struct ShadePolygon {int[] vx, vy;}
         public static RenderWindow Window;
         public static uint Width, Height;
-        public static Texture GameScene;
+        public static RectangleShape GameScene;
         public static Font Font;
         public static List<ShadePolygon> Shades;
 
@@ -18,7 +18,6 @@ namespace shootingame
         public static void Init()
         {
             VideoMode videoMode = VideoMode.FullscreenModes[0];
-            // Create the main window
             Window = new RenderWindow(
                 videoMode,
                 "Shootingame",
@@ -27,11 +26,9 @@ namespace shootingame
             Window.Closed += new EventHandler(OnClose);
             Width = videoMode.Width; Height = videoMode.Height;
 
-            GameScene = new Texture(Width, Height);
-            
-            // err = SDL.SDL_SetRenderTarget(Renderer, GameScene); Errors.Check(err);
+            GameScene = new RectangleShape(new Vector2f((float)Width, (float)Height));
 
-            // Font = SDL_ttf.TTF_OpenFont(Const.FontFile, Const.FontSize);
+            Font = new Font(Const.FontFile);
         }
 
         private static void OnClose(object sender, EventArgs e)
@@ -41,23 +38,16 @@ namespace shootingame
         }
         public static void Quit()
         {
-            // SDL.SDL_DestroyWindow(Window);
-            // SDL.SDL_DestroyRenderer(Renderer);
-            // SDL.SDL_DestroyTexture(GameScene);
-            // SDL_ttf.TTF_CloseFont(Font);
+            Window.Close();
         }
 
         public static void Update()
         {
-            // int err; Errors.msg = "Screen.Update";
-            // err = SDL.SDL_SetRenderTarget(Renderer, GameScene); Errors.Check(err);
-            // err = SDL.SDL_RenderCopy(Renderer, Game.Background, IntPtr.Zero, IntPtr.Zero); Errors.Check(err);
-            Game.Player.Copy();
+            Window.Draw(GameScene);
+            Game.Player.Draw();
             CastShadows();
 
-            // err = SDL.SDL_SetRenderTarget(Renderer, IntPtr.Zero); Errors.Check(err);
-            // err = SDL.SDL_RenderCopy(Renderer, GameScene, IntPtr.Zero, IntPtr.Zero); Errors.Check(err);
-            // SDL.SDL_RenderPresent(Renderer);
+            Window.Display();
         }
 
         public static void ComputeShadows()
