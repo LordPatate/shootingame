@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using SDL2;
+using SFML.Graphics;
+using SFML.System;
 
 namespace shootingame
 {
@@ -17,13 +18,13 @@ namespace shootingame
 
     class Tile
     {
-        public SDL.SDL_Rect Rect;
+        public IntRect Rect;
         public Tile(int x = 0, int y = 0) {
-            Rect = SDLFactory.MakeRect(x, y, Const.TileWidth, Const.TileHeight);
+            Rect = new IntRect(x, y, Const.TileWidth, Const.TileHeight);
         }
     }
 
-    unsafe class Level
+    class Level
     {
         public static readonly LevelInfos[] levelInfos = {
             new LevelInfos( // Level 0
@@ -32,39 +33,35 @@ namespace shootingame
             ),
         };
 
-        public SDL.SDL_Rect Bounds;
-        public SDL.SDL_Point PlayerStartPos;
+        public IntRect Bounds;
+        public Vector2i PlayerStartPos;
         public List<Tile> Tiles;
 
         public void Init(LevelInfos infos)
         {
-            IntPtr surfacePtr = SDL_image.IMG_Load(infos.SourceFile);
-            if (surfacePtr == IntPtr.Zero) {
-                throw new Exception("Problem loading image");
-            }
-            SDL.SDL_Surface surface = *(SDL.SDL_Surface*)surfacePtr.ToPointer();
-            SDL.SDL_PixelFormat format = *(SDL.SDL_PixelFormat*)surface.format.ToPointer();
-
-            Bounds = SDLFactory.MakeRect(
-                x: Screen.Width/2 - surface.w*Const.TileWidth/2,
-                y: Screen.Height/2 - surface.h*Const.TileHeight/2,
-                w: surface.w*Const.TileWidth, h: surface.h*Const.TileHeight
+            Image image = new Image(infos.SourceFile);
+            Vector2u size = image.GetSize();
+            
+            Bounds = new IntRect(
+                left: Screen.Width/2 - size.X*Const.TileWidth/2,
+                y: Screen.Height/2 - size.Y*Const.TileHeight/2,
+                w: size.X*Const.TileWidth, h: size.Y*Const.TileHeight
             );
             Tiles = new List<Tile>();
             
             bool startPosFound = false;
 
-            for (int i = 0; i < surface.w; ++i)
-                for (int j = 0; j < surface.h; ++j)
+            for (int i = 0; i < size.X; ++i)
+                for (int j = 0; j < size.Y; ++j)
                 {
-                    byte* pixels = (byte*)surface.pixels.ToPointer();
-                    int x = j*surface.pitch + i*format.BytesPerPixel;
+                    byte[] pixels = image.Pixels;
+                    int x = (j*size.X + i)*4;
                     byte r = pixels[x], g = pixels[x+1], b = pixels[x+2], a = pixels[x+3];
 
                     if ((r|g|b) == 0 && (a) == 255) { // black pixel
                         Tiles.Add(new Tile(
-                            x: Bounds.x + i*Const.TileWidth,
-                            y: Bounds.y + j*Const.TileHeight
+                            x: Bounds.Left + i*Const.TileWidth,
+                            y: Bounds.Top + j*Const.TileHeight
                         ));
                         continue;
                     }
@@ -72,9 +69,9 @@ namespace shootingame
                         if (startPosFound) {
                             throw new Exception($"Invalid file \"{infos.SourceFile}\": too many player spawn points");
                         }
-                        PlayerStartPos = SDLFactory.MakePoint(
-                            x: Bounds.x + i*Const.TileWidth,
-                            y: Bounds.y + j*Const.TileHeight
+                        PlayerStartPos = new Vector2i(
+                            X: Bounds.Left + i*Const.TileWidth,
+                            Y: Bounds.Top + j*Const.TileHeight
                         );
                         startPosFound = true;
                     }
@@ -82,8 +79,6 @@ namespace shootingame
             if (!startPosFound) {
                 throw new Exception($"Invalid file \"{infos.SourceFile}\": no player spawn point");
             }
-
-            SDL.SDL_FreeSurface(surfacePtr);
         }
     }
 }
