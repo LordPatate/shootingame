@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using SFML.Window.Keyboard;
+using static SFML.Window.Keyboard;
 
 namespace shootingame
 {
@@ -54,7 +54,7 @@ namespace shootingame
                 return;
             }
 
-            projection.x += player.Rect.Width + 2;
+            projection.Left += player.Rect.Width + 2;
             if (Collision(ref projection, level)) {
                 OnWall(player, Const.Right);
                 return;
@@ -64,30 +64,30 @@ namespace shootingame
 
             // Movement
             if (Left) {
-                player.Inertia.X -= Const.airMovePower;
+                player.Inertia.X -= Const.AirMovePower;
                 player.Inertia.X = Math.Max(player.Inertia.X, -maxSpeed);
             }
             if (Right) {
-                player.Inertia.X += Const.airMovePower;
+                player.Inertia.X += Const.AirMovePower;
                 player.Inertia.X = Math.Min(player.Inertia.X, maxSpeed);
             }
             
             // Slowing
             if (player.Inertia.X > 0) {
-                player.Inertia.X -= Const.airSlow;
+                player.Inertia.X -= Const.AirSlow;
                 player.Inertia.X = Math.Max(player.Inertia.X, 0);
             } else {
-                player.Inertia.X += Const.airSlow;
+                player.Inertia.X += Const.AirSlow;
                 player.Inertia.X = Math.Min(player.Inertia.X, 0);
             }
             
             // Gravity
-            player.Inertia.Y += Const.gravity;
+            player.Inertia.Y += Const.Gravity;
         }
 
         public static bool Collision(ref IntRect projection, Level level)
         {
-            foreach (Tile tile in level.tiles) {
+            foreach (Tile tile in level.Tiles) {
                 var rect = tile.Rect;
                 if (projection.Intersects(rect)) {
                     projection = rect;
@@ -96,7 +96,7 @@ namespace shootingame
             }
             
             IntRect bounds = level.Bounds;
-            projection.Intersects(bounds, out overLap);
+            projection.Intersects(bounds, out IntRect overLap);
             if (projection.Equals(overLap)) {
                 projection.Left = bounds.Left + bounds.Width;
                 projection.Top = bounds.Top + bounds.Height;

@@ -17,12 +17,12 @@ namespace shootingame
         
         public static void Init()
         {
-            VideoMode videoMode = VideoMode.GetFullScreenModes()[0];
+            VideoMode videoMode = VideoMode.FullscreenModes[0];
             // Create the main window
             Window = new RenderWindow(
                 videoMode,
                 "Shootingame",
-                Style.Fullscreen
+                Styles.Fullscreen
             );
             Window.Closed += new EventHandler(OnClose);
             Width = videoMode.Width; Height = videoMode.Height;

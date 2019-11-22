@@ -40,12 +40,13 @@ namespace shootingame
         public void Init(LevelInfos infos)
         {
             Image image = new Image(infos.SourceFile);
-            Vector2u size = image.GetSize();
+            Vector2u size = image.Size;
             
             Bounds = new IntRect(
-                left: Screen.Width/2 - size.X*Const.TileWidth/2,
-                y: Screen.Height/2 - size.Y*Const.TileHeight/2,
-                w: size.X*Const.TileWidth, h: size.Y*Const.TileHeight
+                left: (int)Screen.Width/2 - (int)size.X*Const.TileWidth/2,
+                top: (int)Screen.Height/2 - (int)size.Y*Const.TileHeight/2,
+                width: (int)size.X*Const.TileWidth,
+                height: (int)size.Y*Const.TileHeight
             );
             Tiles = new List<Tile>();
             
@@ -55,7 +56,7 @@ namespace shootingame
                 for (int j = 0; j < size.Y; ++j)
                 {
                     byte[] pixels = image.Pixels;
-                    int x = (j*size.X + i)*4;
+                    long x = (j*size.X + i)*4;
                     byte r = pixels[x], g = pixels[x+1], b = pixels[x+2], a = pixels[x+3];
 
                     if ((r|g|b) == 0 && (a) == 255) { // black pixel
@@ -70,8 +71,8 @@ namespace shootingame
                             throw new Exception($"Invalid file \"{infos.SourceFile}\": too many player spawn points");
                         }
                         PlayerStartPos = new Vector2i(
-                            X: Bounds.Left + i*Const.TileWidth,
-                            Y: Bounds.Top + j*Const.TileHeight
+                            x: Bounds.Left + i*Const.TileWidth,
+                            y: Bounds.Top + j*Const.TileHeight
                         );
                         startPosFound = true;
                     }

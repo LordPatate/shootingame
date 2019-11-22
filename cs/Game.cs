@@ -2,7 +2,7 @@ using System;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using SFML.Window.Keyboard;
+using static SFML.Window.Keyboard;
 
 namespace shootingame
 {
@@ -107,7 +107,7 @@ namespace shootingame
             // Errors.CheckNull(texture);
             // SDL.SDL_FreeSurface(surfacePtr);
 
-            return new Texture();
+            return new Texture(0, 0);
         }
     }
 }

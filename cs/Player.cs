@@ -1,5 +1,6 @@
 using System;
-using SDL2;
+using SFML.Graphics;
+using SFML.System;
 
 namespace shootingame
 {
@@ -32,10 +33,11 @@ namespace shootingame
         {
             Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
 
-            Rect = new IntRect(width: scale(NormalStateDim.x), height: scale(NormalStateDim.y));
-            JumpEnabled = true;
+            Rect = new IntRect(0, 0, width: scale(NormalStateDim.X), height: scale(NormalStateDim.Y));
             Inertia =  new Vector2i();
-            HookPoint = null;
+            HookPoint = new Vector2i();
+            Hooked = false;
+            JumpEnabled = true;
 
             // IntPtr surfacePtr = SDL_image.IMG_Load(Const.PlayerSpriteSheet);
             // Errors.CheckNull(surfacePtr, "Load PlayerSpriteSheet");
@@ -43,7 +45,7 @@ namespace shootingame
             // Errors.CheckNull(Texture, "Player.Texture Creation");
             // SDL.SDL_FreeSurface(surfacePtr);
 
-            TextureArea = new IntRect(width: Const.PlayerSpriteWidth, height: Const.PlayerSpriteHeight);
+            TextureArea = new IntRect(0, 0, width: Const.PlayerSpriteWidth, height: Const.PlayerSpriteHeight);
         }
         
         public void Destroy()
