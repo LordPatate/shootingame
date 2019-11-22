@@ -10,7 +10,7 @@ namespace shootingame
     {
         public static bool Running;
         public static Player Player;
-        public static Texture Background;
+        public static RenderTexture Background;
         public static Level Level;
         public static Popup AskQuit;
 
