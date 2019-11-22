@@ -44,9 +44,11 @@ namespace shootingame
 
         public static void Update()
         {
-            Window.Draw(new Sprite(GameScene.Texture));
+            GameScene.Draw(new Sprite(Game.Background.Texture));
             Game.Player.Draw();
             CastShadows();
+
+            Window.Draw(new Sprite(GameScene.Texture));
 
             Window.Display();
         }
