@@ -1,15 +1,18 @@
 using System;
-using SDL2;
+using SFML.Graphics;
+using SFML.System;
+using SFML.Window;
+using SFML.Window.Keyboard;
 
 namespace shootingame
 {
-    unsafe class Game
+    class Game
     {
         public static bool Running;
         public static Player Player;
-        public static IntPtr Background;
+        public static Texture Background;
         public static Level Level;
-        private static Popup AskQuit;
+        public static Popup AskQuit;
 
         public static void Init()
         {
@@ -18,7 +21,7 @@ namespace shootingame
             Level = new Level();
             AskQuit = new Popup(
                 new string[] {
-                    "Do you really want to quit?",
+                    "Do you really want to quit?"
                 }, "Yes", "No"
             );
 
@@ -28,32 +31,14 @@ namespace shootingame
         public static void Quit()
         {
             Player.Destroy();
-            //SDL.SDL_DestroyTexture(Background);
             AskQuit.Destroy();
         }
 
         public static void Update()
         {
-            /*SDL.SDL_Event e;
-            while (SDL.SDL_PollEvent(out e) != 0)
-            {
-                switch (e.type) {
-                    case SDL.SDL_EventType.SDL_KEYDOWN:
-                        if (e.key.keysym.sym == SDL.SDL_Keycode.SDLK_ESCAPE) {
-                            if (AskQuit.Pop() == "Yes") {
-                                Running = false;
-                            }
-                            return;
-                        }
-                        break;
-                    case SDL.SDL_EventType.SDL_QUIT:
-                        if (AskQuit.Pop() == "Yes") {
-                            Running = false;
-                        }
-                        return;
-                }
-            }
-            */
+            if (IsKeyPressed(Key.Escape))
+                if (AskQuit.Pop() == "Yes")
+                    Running = false;
 
             Player.Update(Level);
         }
@@ -65,8 +50,8 @@ namespace shootingame
             LevelInfos infos = Level.levelInfos[id];
             Level.Init(infos);
 
-            Player.Rect.x = Level.PlayerStartPos.x;
-            Player.Rect.y = Level.PlayerStartPos.y;
+            Player.Rect.Left = Level.PlayerStartPos.X;
+            Player.Rect.Top = Level.PlayerStartPos.Y;
 
             // Background = SDL.SDL_CreateTexture(Screen.Renderer, SDL.SDL_PIXELFORMAT_RGBA8888,
             //     (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
@@ -83,8 +68,8 @@ namespace shootingame
         {
             int err; Errors.msg = "Game.DrawBackground";
 
-            IntPtr foreground = GetTexture(fg, 20, 17, 23);
-            IntPtr background = GetTexture(bg, 65, 60, 55);
+            Texture foreground = GetTexture(fg, 20, 17, 23);
+            Texture background = GetTexture(bg, 65, 60, 55);
 
             if (bg == "") {
                 // var rect = SDLFactory.MakeRect(w: Screen.Width, h: Screen.Height);
@@ -100,7 +85,7 @@ namespace shootingame
             // SDL.SDL_DestroyTexture(background);
         }
 
-        private static IntPtr GetTexture(string src, byte defaultR, byte defaultG, byte defaultB)
+        private static Texture GetTexture(string src, byte defaultR, byte defaultG, byte defaultB)
         {
             // int err; Errors.msg = "Game.GetTexture";
          
@@ -122,7 +107,7 @@ namespace shootingame
             // Errors.CheckNull(texture);
             // SDL.SDL_FreeSurface(surfacePtr);
 
-            // return texture;
+            return new Texture();
         }
     }
 }
