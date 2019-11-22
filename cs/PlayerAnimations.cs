@@ -1,50 +1,51 @@
 using System;
-using SDL2;
+using SFML.Graphics;
+using SFML.System;
 
 namespace shootingame
 {
     class PlayerAnimations
     {
-        private static readonly SDL.SDL_Point[] idleCoords = {
-            SDLFactory.MakePoint(0, 0), SDLFactory.MakePoint(0, 0),
-            SDLFactory.MakePoint(0, 1), SDLFactory.MakePoint(0, 1),
-            SDLFactory.MakePoint(0, 2), SDLFactory.MakePoint(0, 2),
-            SDLFactory.MakePoint(0, 3), SDLFactory.MakePoint(0, 3)
+        private static readonly Vector2i[] idleCoords = {
+            new Vector2i(0, 0), new Vector2i(0, 0),
+            new Vector2i(0, 1), new Vector2i(0, 1),
+            new Vector2i(0, 2), new Vector2i(0, 2),
+            new Vector2i(0, 3), new Vector2i(0, 3)
         };
-        private static readonly SDL.SDL_Point[] runningCoords = {
-            SDLFactory.MakePoint(1, 1), SDLFactory.MakePoint(1, 2),
-            SDLFactory.MakePoint(1, 3), SDLFactory.MakePoint(1, 4),
-            SDLFactory.MakePoint(1, 5), SDLFactory.MakePoint(1, 6)
+        private static readonly Vector2i[] runningCoords = {
+            new Vector2i(1, 1), new Vector2i(1, 2),
+            new Vector2i(1, 3), new Vector2i(1, 4),
+            new Vector2i(1, 5), new Vector2i(1, 6)
         };
-        private static readonly SDL.SDL_Point[] jumpingCoords = {
-            SDLFactory.MakePoint(2, 0), SDLFactory.MakePoint(2, 1),
-            SDLFactory.MakePoint(2, 2), SDLFactory.MakePoint(2, 2),
-            SDLFactory.MakePoint(2, 3), SDLFactory.MakePoint(2, 4)
+        private static readonly Vector2i[] jumpingCoords = {
+            new Vector2i(2, 0), new Vector2i(2, 1),
+            new Vector2i(2, 2), new Vector2i(2, 2),
+            new Vector2i(2, 3), new Vector2i(2, 4)
         };
-        private static readonly SDL.SDL_Point[] fallingCoords = {
-            SDLFactory.MakePoint(3, 1), SDLFactory.MakePoint(3, 2)
+        private static readonly Vector2i[] fallingCoords = {
+            new Vector2i(3, 1), new Vector2i(3, 2)
         };
-        private static readonly SDL.SDL_Point[] wallSlidingCoords = {
-            SDLFactory.MakePoint(11, 2), SDLFactory.MakePoint(11, 3)
+        private static readonly Vector2i[] wallSlidingCoords = {
+            new Vector2i(11, 2), new Vector2i(11, 3)
         };
-        private static readonly SDL.SDL_Point[] wallJumpingCoords = {
-            SDLFactory.MakePoint(11, 0), SDLFactory.MakePoint(11, 1)
+        private static readonly Vector2i[] wallJumpingCoords = {
+            new Vector2i(11, 0), new Vector2i(11, 1)
         };
 
-        private static readonly SDL.SDL_Point[][] spriteCoord = {
+        private static readonly Vector2i[][] spriteCoord = {
             idleCoords, runningCoords, jumpingCoords, fallingCoords, wallSlidingCoords, wallJumpingCoords
         };
 
         public static void SetTextureArea(Player player)
         {
             var spriteCoordArray = spriteCoord[(int)player.State];
-            SDL.SDL_Point coord = spriteCoordArray[player.Frame / Const.StepsPerFrame];
+            Vector2i coord = spriteCoordArray[player.Frame / Const.StepsPerFrame];
 
-            player.TextureArea = SDLFactory.MakeRect(
-                x: coord.y * Const.PlayerSpriteWidth,
-                y: coord.x * Const.PlayerSpriteHeight,
-                w: Const.PlayerSpriteWidth,
-                h: Const.PlayerSpriteHeight
+            player.TextureArea = new IntRect(
+                left: coord.Y * Const.PlayerSpriteWidth,
+                top: coord.X * Const.PlayerSpriteHeight,
+                width: Const.PlayerSpriteWidth,
+                height: Const.PlayerSpriteHeight
             );
 
             ++player.Frame;
