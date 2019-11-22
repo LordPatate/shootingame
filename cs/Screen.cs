@@ -27,7 +27,7 @@ namespace shootingame
             Window.Closed += new EventHandler(OnClose);
             Width = videoMode.Width; Height = videoMode.Height;
 
-            GameScene = new RenderTexture(Width, Height));
+            GameScene = new RenderTexture(Width, Height);
 
             Font = new Font(Const.FontFile);
         }
