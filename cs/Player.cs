@@ -15,25 +15,26 @@ namespace shootingame
 
     unsafe class Player
     {
-        // public SDL.SDL_Rect Rect;
-        // public IntPtr Texture;
-        // public SDL.SDL_Rect TextureArea;
+        public IntRect Rect;
+        public Texture Texture;
+        public IntRect TextureArea;
         public PlayerState State;
         public uint Frame;
         public bool Direction;
-        // public SDL.SDL_Point Inertia;
-        // public SDL.SDL_Point* HookPoint;
+        public Vector2i Inertia;
+        public Vector2i HookPoint;
+        public bool Hooked;
         public bool JumpEnabled;
 
-        public readonly SDL.SDL_Point NormalStateDim = SDLFactory.MakePoint(20, 37);
+        public readonly Vector2i NormalStateDim =  new Vector2i(20, 37);
 
         public Player()
         {
             Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
 
-            Rect = SDLFactory.MakeRect(w: scale(NormalStateDim.x), h: scale(NormalStateDim.y));
+            Rect = new IntRect(width: scale(NormalStateDim.x), height: scale(NormalStateDim.y));
             JumpEnabled = true;
-            Inertia = SDLFactory.MakePoint();
+            Inertia =  new Vector2i();
             HookPoint = null;
 
             // IntPtr surfacePtr = SDL_image.IMG_Load(Const.PlayerSpriteSheet);
@@ -42,12 +43,12 @@ namespace shootingame
             // Errors.CheckNull(Texture, "Player.Texture Creation");
             // SDL.SDL_FreeSurface(surfacePtr);
 
-            TextureArea = SDLFactory.MakeRect(w: Const.PlayerSpriteWidth, h: Const.PlayerSpriteHeight);
+            TextureArea = new IntRect(width: Const.PlayerSpriteWidth, height: Const.PlayerSpriteHeight);
         }
         
         public void Destroy()
         {
-            SDL.SDL_DestroyTexture(Texture);
+            // SDL.SDL_DestroyTexture(Texture);
         }
 
         public void Copy()
@@ -60,10 +61,10 @@ namespace shootingame
             
             Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
             int width = scale(Const.PlayerSpriteWidth), height = scale(Const.PlayerSpriteHeight);
-            SDL.SDL_Rect dst = SDLFactory.MakeRect(
-                x: Rect.x + Rect.w/2 - width/2,
-                y: Rect.y + Rect.h/2 - height/2,
-                w: width, h: height
+            IntRect dst = new IntRect(
+                left: Rect.Left + Rect.Width/2 - width/2,
+                top: Rect.Top + Rect.Height/2 - height/2,
+                width: width, height: height
             );
 
             // int err; Errors.msg = "Player.Copy";
@@ -78,7 +79,7 @@ namespace shootingame
                 JumpEnabled = true;
             }
 
-            if (Inertia.y >= 0) {
+            if (Inertia.Y >= 0) {
                 if (OnGround(level)) {
                     Controls.OnGround(this, level);
                     return;
@@ -86,8 +87,8 @@ namespace shootingame
                 SetState(PlayerState.Falling);
             }
 
-            MoveX(Inertia.x/Const.InertiaPerPixel, level);
-            MoveY(Inertia.y/Const.InertiaPerPixel, level);
+            MoveX(Inertia.X/Const.InertiaPerPixel, level);
+            MoveY(Inertia.Y/Const.InertiaPerPixel, level);
             
             Controls.InAir(this, level);
         }
@@ -101,53 +102,53 @@ namespace shootingame
         }
 
         public bool OnGround(Level level) {
-            SDL.SDL_Rect rightUnderFeet = SDLFactory.MakeRect(
-                x: Rect.x,
-                y: Rect.y + Rect.h,
-                w: Rect.w,
-                h: 1
+            IntRect rightUnderFeet = new IntRect(
+                left: Rect.Left,
+                top: Rect.Top + Rect.Height,
+                width: Rect.Width,
+                height: 1
             );
             return Controls.Collision(ref rightUnderFeet, level);
         }
 
         public void MoveX(int delta, Level level)
         {
-            SDL.SDL_Rect projection = SDLFactory.MakeRect(
-                x: Rect.x + delta,
-                y: Rect.y, w: Rect.w, h: Rect.h
+            IntRect projection = new IntRect(
+                left: Rect.Left + delta,
+                top: Rect.Top, width: Rect.Width, height: Rect.Height
             );
 
             if (Controls.Collision(ref projection, level)) {
                 if (delta > 0) {
-                    Rect.x = projection.x - Rect.w;
+                    Rect.Left = projection.x - Rect.Width;
                 } else {
-                    Rect.x = projection.x + projection.w;
+                    Rect.Left = projection.x + projection.w;
                 }
             }
             else
             {
-                Rect.x = projection.x;
+                Rect.Left = projection.x;
             }
         }
 
         public void MoveY(int delta, Level level)
         {
-            SDL.SDL_Rect projection = SDLFactory.MakeRect(
-                x: Rect.x,
-                y: Rect.y + delta,
-                w: Rect.w, h: Rect.h
+            IntRect projection = new IntRect(
+                left: Rect.Left,
+                top: Rect.Top + delta,
+                width: Rect.Width, height: Rect.Height
             );
 
             if (Controls.Collision(ref projection, level)) {
                 if (delta > 0) {
-                    Rect.y = projection.y - Rect.h;
+                    Rect.Top = projection.y - Rect.Height;
                 } else {
-                    Rect.y = projection.y + projection.h;
+                    Rect.Top = projection.y + projection.h;
                 }
             }
             else
             {
-                Rect.y = projection.y;
+                Rect.Top = projection.y;
             }
         }
     }
