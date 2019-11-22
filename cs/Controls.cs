@@ -1,36 +1,34 @@
 using System;
 using System.Collections.Generic;
-using SDL2;
+using SFML.Graphics;
+using SFML.System;
+using SFML.Window;
 
 namespace shootingame
 {
     unsafe class Controls
     {
         public static bool Left, Right, Jump;
-        public static int MouseX, MouseY;
+        public static Vector2i MousePos;
         public static bool LeftClick, RightClick;
         public static void Update()
         {
             // Keys
-            // IntPtr keyStatePtr = SDL.SDL_GetKeyboardState(out int numkeys);
-            // Errors.CheckNull(keyStatePtr, "Controls.Update");
-            // uint* keyState = (uint*)keyStatePtr.ToPointer();
-            
-            // Left = keyState[(int)SDL.SDL_Scancode.SDL_SCANCODE_A] == 1;
-            // Right = keyState[(int)SDL.SDL_Scancode.SDL_SCANCODE_D] == 1;
-            // Jump = keyState[(int)SDL.SDL_Scancode.SDL_SCANCODE_W] == 1;
+            Left = Keyboard.IsKeyPressed(Key.A) || Keyboard.IsKeyPressed(Key.Q);
+            Right = Keyboard.IsKeyPressed(Key.D);
+            Jump = Keyboard.IsKeyPressed(Key.W) || Keyboard.IsKeyPressed(Key.Z);
 
-            // // Mouse
-            // UInt32 mouseState = SDL.SDL_GetMouseState(out MouseX, out MouseY);
-            // LeftClick = (mouseState & SDL.SDL_BUTTON_LMASK) != 0;
-            // RightClick = (mouseState & SDL.SDL_BUTTON_RMASK) != 0;
+            // Mouse
+            MousePos = Mouse.GetPosition();
+            LeftClick = Mouse.IsButtonPressed(Mouse.Button.Left);
+            RightClick = Mouse.IsButtonPressed(Mouse.Button.Right);
         }
 
         public static void OnGround(Player player, Level level)
         {
             if (Jump && player.JumpEnabled) {
                 player.SetState(PlayerState.Jumping);
-                player.Inertia.y = -Const.JumpPower;
+                player.Inertia.Y = -Const.JumpPower;
                 player.JumpEnabled = false;
                 return;
             }
@@ -38,7 +36,7 @@ namespace shootingame
             
             if (Left == Right) {
                 player.SetState(PlayerState.Idle);
-                player.Inertia.x = 0;
+                player.Inertia.X = 0;
                 return;
             }
             Step(player, Left == Const.Left, level);
@@ -46,64 +44,64 @@ namespace shootingame
 
         public static void InAir(Player player, Level level)
         {
-            SDL.SDL_Rect projection = SDLFactory.MakeRect(
-                x: player.Rect.x - 1,
-                y: player.Rect.y, w: player.Rect.w, h: player.Rect.h
+            IntRect projection = new IntRect(
+                left: player.Rect.Left - 1,
+                top: player.Rect.Top, width: player.Rect.Width, height: player.Rect.Height
             );
             if (Collision(ref projection, level)) {
                 OnWall(player, Const.Left);
                 return;
             }
 
-            projection.x += player.Rect.w + 2;
+            projection.x += player.Rect.Width + 2;
             if (Collision(ref projection, level)) {
                 OnWall(player, Const.Right);
                 return;
             }
             
-            const int maxSpeed = Const.PlayerStep * Const.InertiaPerPixel;
+            Const int maxSpeed = Const.PlayerStep * Const.InertiaPerPixel;
 
             // Movement
             if (Left) {
-                player.Inertia.x -= Const.AirMovePower;
-                player.Inertia.x = Math.Max(player.Inertia.x, -maxSpeed);
+                player.Inertia.X -= Const.airMovePower;
+                player.Inertia.X = Math.Max(player.Inertia.X, -maxSpeed);
             }
             if (Right) {
-                player.Inertia.x += Const.AirMovePower;
-                player.Inertia.x = Math.Min(player.Inertia.x, maxSpeed);
+                player.Inertia.X += Const.airMovePower;
+                player.Inertia.X = Math.Min(player.Inertia.X, maxSpeed);
             }
             
             // Slowing
-            if (player.Inertia.x > 0) {
-                player.Inertia.x -= Const.AirSlow;
-                player.Inertia.x = Math.Max(player.Inertia.x, 0);
+            if (player.Inertia.X > 0) {
+                player.Inertia.X -= Const.airSlow;
+                player.Inertia.X = Math.Max(player.Inertia.X, 0);
             } else {
-                player.Inertia.x += Const.AirSlow;
-                player.Inertia.x = Math.Min(player.Inertia.x, 0);
+                player.Inertia.X += Const.airSlow;
+                player.Inertia.X = Math.Min(player.Inertia.X, 0);
             }
             
             // Gravity
-            player.Inertia.y += Const.Gravity;
+            player.Inertia.Y += Const.gravity;
         }
 
-        public static bool Collision(ref SDL.SDL_Rect projection, Level level)
+        public static bool Collision(ref IntRect projection, Level level)
         {
-            foreach (Tile tile in level.Tiles) {
+            foreach (Tile tile in level.tiles) {
                 var rect = tile.Rect;
-                //if ((int)SDL.SDL_HasIntersection(ref projection, ref rect) != 0) {
-                //     projection.x = rect.x; projection.y = rect.y;
-                //     projection.w = rect.w; projection.h = rect.h;
-                //     return true;
-                // }
+                if (projection.Intersects(rect) {
+                    projection.x = rect.x; projection.y = rect.y;
+                    projection.w = rect.w; projection.h = rect.h;
+                    return true;
+                }
             }
             
-            // SDL.SDL_Rect union, bounds = level.Bounds;
-            // SDL.SDL_UnionRect(ref projection, ref level.Bounds, out union);
-            // if ((int)SDL.SDL_RectEquals(ref level.Bounds, ref union) == 0) {
-            //     projection.x = bounds.x + bounds.w; projection.y = bounds.y + bounds.h;
-            //     projection.w = -bounds.w; projection.h = -bounds.h;
-            //     return true;
-            // }
+            IntRect bounds = level.Bounds;
+            projection.Intersects(bounds, out overLap);
+            if (projection.Equals(overLap)) {
+                projection.x = bounds.x + bounds.w; projection.y = bounds.y + bounds.h;
+                projection.w = -bounds.w; projection.h = -bounds.h;
+                return true;
+            }
             
             return false;
         }
@@ -114,10 +112,10 @@ namespace shootingame
 
             if (direction == Const.Left) {
                 player.MoveX(-Const.PlayerStep, level);
-                player.Inertia.x = -Const.PlayerStep * Const.InertiaPerPixel;
+                player.Inertia.X = -Const.PlayerStep * Const.InertiaPerPixel;
             } else {
                 player.MoveX(Const.PlayerStep, level);
-                player.Inertia.x = Const.PlayerStep * Const.InertiaPerPixel;
+                player.Inertia.X = Const.PlayerStep * Const.InertiaPerPixel;
             }
             player.Direction = direction;
         }
@@ -137,18 +135,18 @@ namespace shootingame
         private static void WallJump(Player player, bool direction)
         {
             player.SetState(PlayerState.WallJumping);
-            player.Inertia.y = - Const.JumpPower;
+            player.Inertia.Y = - Const.JumpPower;
             player.JumpEnabled = false;
             player.Direction = direction;
-            player.Inertia.x = Const.PlayerStep * Const.InertiaPerPixel;
+            player.Inertia.X = Const.PlayerStep * Const.InertiaPerPixel;
             if (direction == Const.Left)
-                player.Inertia.x *= -1;
+                player.Inertia.X *= -1;
         }
 
         private static void WallSlide(Player player, bool direction)
         {
             player.SetState(PlayerState.WallSliding);
-            player.Inertia.y -= Const.WallFriction;
+            player.Inertia.Y -= Const.WallFriction;
             player.Direction = direction;
         }
 
