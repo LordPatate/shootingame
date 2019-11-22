@@ -44,7 +44,7 @@ namespace shootingame
 
         public static void Update()
         {
-            Window.Draw(GameScene);
+            Window.Draw(new Sprite(GameScene.Texture));
             Game.Player.Draw();
             CastShadows();
 

@@ -9,13 +9,13 @@ namespace shootingame
     class PopupOption
     {
         public string Text;
-        public RectangleShape Shape;
+        public RenderTexture Texture;
         public IntRect Rect;
     }
     class Popup
     {
         public string[] Text;
-        public RectangleShape Shape;
+        public RenderTexture Texture;
         public IntRect Rect;
         public PopupOption[] Options;
         private PopupOption ClickedOption;
@@ -83,14 +83,12 @@ namespace shootingame
 
         private void Display()
         {
-            Screen.Window.Draw(Screen.GameScene);
-            Screen.Window.Draw(Shape);
+            Screen.Window.Draw(new Sprite(Screen.GameScene.Texture));
+                        
+            Screen.Window.Draw(new Sprite(Texture.Texture, Rect));
+            
             foreach (PopupOption option in Options) {
-                // Update size and position because of eventual resize when clicked
-                option.Shape.Size = new Vector2f((float)option.Rect.Width, (float)option.Rect.Height);
-                option.Shape.Position = new Vector2f((float)option.Rect.Left, (float)option.Rect.Top);
-
-                Screen.Window.Draw(option.Shape);
+                Screen.Window.Draw(new Sprite(option.Texture.Texture, option.Rect));
             }
 
             Screen.Window.Display();
@@ -116,7 +114,9 @@ namespace shootingame
         private void OnRelease(object sender, MouseButtonEventArgs mbe)
         {            
             if (mbe.Button == Mouse.Button.Left) {
-                ClickedOption.Rect = PreviousRect;
+                if (ClickedOption != null) {
+                    ClickedOption.Rect = PreviousRect;
+                }
                 foreach (PopupOption opt in Options) {
                     if (opt.Rect.Contains(mbe.X, mbe.Y)) {
                         if (opt == ClickedOption)
@@ -134,9 +134,8 @@ namespace shootingame
             var bgColor = new Color(red: 110, green: 100, blue: 100);
 
             // frame
-            Shape = new RectangleShape(new Vector2f((int)Rect.Width, (int)Rect.Height));
-            Shape.Position = new Vector2f((int)Rect.Left, (int)Rect.Top);
-            Shape.FillColor = bgColor;
+            Texture = new RenderTexture((uint)Rect.Width, (uint)Rect.Height);
+            Texture.Clear(bgColor);
 
             // text body
             int lineHeight = 20;
@@ -151,7 +150,7 @@ namespace shootingame
                     width: Rect.Width - 2*sideMargin,
                     height: lineHeight
                 );
-                CopyText(line, rect, new Color(0, 0, 0), bgColor);
+                CopyText(Texture, line, rect, new Color(0, 0, 0), bgColor);
 
                 ++i;
             }
@@ -161,16 +160,15 @@ namespace shootingame
             var buttonBG = new Color(0, 0, blue: 255);
             foreach (PopupOption option in Options)
             {
-                option.Shape = new RectangleShape(new Vector2f((float)option.Rect.Width, (float)option.Rect.Height));
-                option.Shape.Position = new Vector2f((float)option.Rect.Left, (float)option.Rect.Top);
-                option.Shape.FillColor = buttonBG;
+                option.Texture = new RenderTexture((uint)option.Rect.Width, (uint)option.Rect.Height);
+                option.Texture.Clear(buttonBG);
                 
                 var rect = new IntRect(0, 0, width: option.Rect.Width, height: option.Rect.Height);
-                CopyText(option.Text, rect, buttonFG, buttonBG);
+                CopyText(option.Texture, option.Text, rect, buttonFG, buttonBG);
             }
         }
 
-        private static void CopyText(string line, IntRect frame, Color fg, Color bg)
+        private static void CopyText(RenderTarget dst, string line, IntRect frame, Color fg, Color bg)
         {
             Text text = new Text(line, Screen.Font, Const.FontSize);
             text.FillColor = fg;
@@ -182,7 +180,7 @@ namespace shootingame
                 y: frame.Top + frame.Height/2 - rect.Height/2
             );
             
-            Screen.Window.Draw(text);
+            dst.Draw(text);
         }
     }
 }
