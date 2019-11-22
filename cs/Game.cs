@@ -45,8 +45,6 @@ namespace shootingame
 
         public static void LoadLevel(uint id)
         {
-            int err; Errors.msg = "Game.LoadLevel";
-
             LevelInfos infos = Level.levelInfos[id];
             Level.Init(infos);
 
@@ -66,8 +64,6 @@ namespace shootingame
 
         private static void DrawBackground(string bg, string fg)
         {
-            int err; Errors.msg = "Game.DrawBackground";
-
             Texture foreground = GetTexture(fg, 20, 17, 23);
             Texture background = GetTexture(bg, 65, 60, 55);
 
