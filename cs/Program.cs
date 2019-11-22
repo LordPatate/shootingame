@@ -18,6 +18,7 @@ namespace shootingame
             while (Game.Running)
             {
                 Screen.Update();
+                Screen.Window.DispatchEvents();
                 Task update = Task.Run(() => {
                     Game.Update();
                     Screen.ComputeShadows();
