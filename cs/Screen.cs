@@ -8,26 +8,27 @@ namespace shootingame
     class Screen
     {
         public struct ShadePolygon {int[] vx, vy;}
-        public static RenderWindow window;
-        public static uint width, height;
-        public static Texture gameScene;
-        public static Font font;
-        public static List<ShadePolygon> shades;
+        public static RenderWindow Window;
+        public static uint Width, Height;
+        public static Texture GameScene;
+        public static Font Font;
+        public static List<ShadePolygon> Shades;
+        public static Popup AskQuit;
 
         
         public static void Init()
         {
             VideoMode videoMode = VideoMode.GetFullScreenModes()[0];
             // Create the main window
-            RenderWindow window = new RenderWindow(
+            Window = new RenderWindow(
                 videoMode,
                 "Shootingame",
                 Style.Fullscreen
             );
-            window.Closed += new EventHandler(OnClose);
-            width = videoMode.width; height = videoMode.height;
+            Window.Closed += new EventHandler(OnClose);
+            Width = videoMode.Width; Height = videoMode.Height;
 
-            GameScene = new Texture(width, height);
+            GameScene = new Texture(Width, Height);
             
             // err = SDL.SDL_SetRenderTarget(Renderer, GameScene); Errors.Check(err);
 
@@ -36,9 +37,8 @@ namespace shootingame
 
         private static void OnClose(object sender, EventArgs e)
         {
-            // Close the window when OnClose event is received
-            RenderWindow window = (RenderWindow)sender;
-            window.Close();
+            if (AskQuit.Pop() == "Yes")
+                Game.Running = false;
         }
         public static void Quit()
         {
@@ -46,6 +46,7 @@ namespace shootingame
             // SDL.SDL_DestroyRenderer(Renderer);
             // SDL.SDL_DestroyTexture(GameScene);
             // SDL_ttf.TTF_CloseFont(Font);
+            AskQuit.Destroy();
         }
 
         public static void Update()
