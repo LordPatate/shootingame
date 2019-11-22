@@ -13,7 +13,6 @@ namespace shootingame
         public static Texture GameScene;
         public static Font Font;
         public static List<ShadePolygon> Shades;
-        public static Popup AskQuit;
 
         
         public static void Init()
@@ -37,7 +36,7 @@ namespace shootingame
 
         private static void OnClose(object sender, EventArgs e)
         {
-            if (AskQuit.Pop() == "Yes")
+            if (Game.AskQuit.Pop() == "Yes")
                 Game.Running = false;
         }
         public static void Quit()
@@ -46,7 +45,6 @@ namespace shootingame
             // SDL.SDL_DestroyRenderer(Renderer);
             // SDL.SDL_DestroyTexture(GameScene);
             // SDL_ttf.TTF_CloseFont(Font);
-            AskQuit.Destroy();
         }
 
         public static void Update()
