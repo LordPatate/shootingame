@@ -12,6 +12,7 @@ namespace shootingame
         }
         public static RectangleShape SpriteOf(RenderTexture render, IntRect rect)
         {
+            render.Display();
             return SpriteOf(WithTexture(render.Texture), rect);
         }
         public static RectangleShape SpriteOf(Texture texture, IntRect rect, IntRect textureRect)
@@ -20,6 +21,7 @@ namespace shootingame
         }
         public static RectangleShape SpriteOf(RenderTexture render, IntRect rect, IntRect textureRect)
         {
+            render.Display();
             return SpriteOf(WithTexture(render.Texture), rect, textureRect);
         }
 
