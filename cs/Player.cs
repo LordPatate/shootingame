@@ -53,7 +53,7 @@ namespace shootingame
             // SDL.SDL_DestroyTexture(Texture);
         }
 
-        public void Copy()
+        public void Draw()
         {
             PlayerAnimations.SetTextureArea(this);
 
