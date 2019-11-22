@@ -18,6 +18,9 @@ namespace shootingame
         public RectangleShape Shape;
         public IntRect Rect;
         public PopupOption[] Options;
+        private PopupOption ClickedOption;
+        private IntRect PreviousRect;
+        private string ChosenOption;
 
         public Popup(string[] text, params string[] options)
         {
@@ -31,7 +34,7 @@ namespace shootingame
                 width: Rect.Width * 90 / 100,
                 height: 60
             );
-            int width = buttonRow.width / options.Length;
+            int width = buttonRow.Width / options.Length;
             var buttonSpaces = new IntRect[options.Length];
             for (int i = 0; i < options.Length; ++i)
             {
@@ -51,64 +54,26 @@ namespace shootingame
 
         public string Pop()
         {
-            PopupOption clickedOption = null;
-            IntRect previousRect = Options[0].Rect;
-
-            string option = "";
-
-            while (option == "")
+            ClickedOption = null;
+            PreviousRect = Options[0].Rect;
+            
+            Screen.Window.MouseButtonPressed += OnClick;
+            Screen.Window.MouseButtonReleased += OnRelease;
+            
+            ChosenOption = "";
+            while (ChosenOption == "")
             {
                 Display();
 
-                Action inner = () =>
-                {
-                    while (Screen.Window.PollEvent(out Event e) != 0)
-                    {
-                        switch (e.Type)
-                        {
-                        case EventType.MouseButtonPressed:
-                            var mbe = e.MouseButton;
-                            
-                            if (mbe.Button == Mouse.Button.Right){
-                                option = "right click";
-                                return;
-                            }
-                            if (mbe.button == Mouse.Button.Left) {
-                                foreach (PopupOption opt in Options) {
-                                    if (opt.Rect.Contains(mbe.X, mbe.Y)) {
-                                        previousRect = opt.Rect;
-                                        opt.Rect = Geometry.ScaleRect(opt.Rect, 95, 95);
-                                        clickedOption = opt;
-                                        return;
-                                    }
-                                }
-                            }
-                            break;
-                        case EventType.MouseButtonReleased:
-                            var mbe = e.MouseButton;
-                            
-                            if (mbe.Button == Mouse.Button.Left) {
-                                clickedOption.Rect = previousRect;
-                                foreach (PopupOption opt in Options) {
-                                    if (opt.Contains(mbe.X, mbe.Y)) {
-                                        if (opt == clickedOption)
-                                            option = opt.Text;
-                                        
-                                        return;
-                                    }
-                                }
-                                clickedOption = null;
-                            }
-                        }
-
-                    }
-                };
-                inner();
+                Screen.Window.DispatchEvents();
 
                 Thread.Sleep(Const.GameStepDuration);
             }
 
-            return option;
+            Screen.Window.MouseButtonPressed -= OnClick;
+            Screen.Window.MouseButtonReleased -= OnRelease;
+
+            return ChosenOption;
         }
 
         public void Destroy()
@@ -129,6 +94,39 @@ namespace shootingame
             }
 
             Screen.Window.Display();
+        }
+
+        private void OnClick(object sender, MouseButtonEventArgs mbe)
+        {            
+            if (mbe.Button == Mouse.Button.Right){
+                ChosenOption = "right click";
+                return;
+            }
+            if (mbe.Button == Mouse.Button.Left) {
+                foreach (PopupOption opt in Options) {
+                    if (opt.Rect.Contains(mbe.X, mbe.Y)) {
+                        PreviousRect = opt.Rect;
+                        opt.Rect = Geometry.ScaleRect(opt.Rect, 95, 95);
+                        ClickedOption = opt;
+                        return;
+                    }
+                }
+            }
+        }
+        private void OnRelease(object sender, MouseButtonEventArgs mbe)
+        {            
+            if (mbe.Button == Mouse.Button.Left) {
+                ClickedOption.Rect = PreviousRect;
+                foreach (PopupOption opt in Options) {
+                    if (opt.Rect.Contains(mbe.X, mbe.Y)) {
+                        if (opt == ClickedOption)
+                            ChosenOption = opt.Text;
+                        
+                        return;
+                    }
+                }
+                ClickedOption = null;
+            }
         }
 
         private void CreateTextures()
@@ -176,7 +174,7 @@ namespace shootingame
         {
             Text text = new Text(line, Screen.Font, Const.FontSize);
             text.FillColor = fg;
-            text.OutLineColor = bg;
+            text.OutlineColor = bg;
 
             FloatRect rect = text.GetLocalBounds();
             text.Position = new Vector2f(
