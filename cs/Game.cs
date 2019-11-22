@@ -103,7 +103,7 @@ namespace shootingame
             // Errors.CheckNull(texture);
             // SDL.SDL_FreeSurface(surfacePtr);
 
-            return new Texture(0, 0);
+            return new Texture(Const.TileWidth, Const.TileHeight);
         }
     }
 }
