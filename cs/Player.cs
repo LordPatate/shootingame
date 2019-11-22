@@ -13,7 +13,7 @@ namespace shootingame
         WallJumping
     }
 
-    unsafe class Player
+    class Player
     {
         public IntRect Rect;
         public Texture Texture;
@@ -120,14 +120,14 @@ namespace shootingame
 
             if (Controls.Collision(ref projection, level)) {
                 if (delta > 0) {
-                    Rect.Left = projection.x - Rect.Width;
+                    Rect.Left = projection.Left - Rect.Width;
                 } else {
-                    Rect.Left = projection.x + projection.w;
+                    Rect.Left = projection.Left + projection.Width;
                 }
             }
             else
             {
-                Rect.Left = projection.x;
+                Rect.Left = projection.Left;
             }
         }
 
@@ -141,14 +141,14 @@ namespace shootingame
 
             if (Controls.Collision(ref projection, level)) {
                 if (delta > 0) {
-                    Rect.Top = projection.y - Rect.Height;
+                    Rect.Top = projection.Top - Rect.Height;
                 } else {
-                    Rect.Top = projection.y + projection.h;
+                    Rect.Top = projection.Top + projection.Height;
                 }
             }
             else
             {
-                Rect.Top = projection.y;
+                Rect.Top = projection.Top;
             }
         }
     }
