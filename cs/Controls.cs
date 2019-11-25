@@ -85,6 +85,9 @@ namespace shootingame
 
         public void Swing(Player player, Level level)
         {
+            Vector2i playerCOM = player.GetCOM();
+            int x = player.HookPoint.X, y = player.HookPoint.Y;
+            player.SetState(PlayerState.Swinging);
 
             MoveX(Inertia.X/Const.InertiaPerPixel, level);
             MoveY(Inertia.Y/Const.InertiaPerPixel, level);

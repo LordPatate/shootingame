@@ -31,9 +31,12 @@ namespace shootingame
         private static readonly Vector2i[] wallJumpingCoords = {
             new Vector2i(11, 0), new Vector2i(11, 1)
         };
+        private static readonly Vector2i[] swingingCoords = {
+            new Vector2i(11, 0), new Vector2i(11, 1)
+        };
 
         private static readonly Vector2i[][] spriteCoord = {
-            idleCoords, runningCoords, jumpingCoords, fallingCoords, wallSlidingCoords, wallJumpingCoords
+            idleCoords, runningCoords, jumpingCoords, fallingCoords, wallSlidingCoords, wallJumpingCoords, swingingCoords
         };
 
         public static void SetTextureArea(Player player)

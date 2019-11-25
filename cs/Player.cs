@@ -11,7 +11,8 @@ namespace shootingame
         Jumping,
         Falling,
         WallSliding,
-        WallJumping
+        WallJumping,
+        Swinging
     }
 
     class Player
