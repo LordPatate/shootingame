@@ -53,7 +53,7 @@ namespace shootingame
                 OnWall(player, Const.Left);
             }
 
-            projection.Left += player.Rect.Width + 2;
+            projection.Left += 2;
             if (Collision(ref projection, level)) {
                 OnWall(player, Const.Right);
             }
