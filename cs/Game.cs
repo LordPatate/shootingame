@@ -70,6 +70,7 @@ namespace shootingame
             foreach (var tile in Game.Level.Tiles) {
                 Background.Draw(Drawing.SpriteOf(foreground, tile.Rect));
             }
+            Background.Display();
         }
         private static Texture GetTexture(string src, Color defaultColor)
         {
