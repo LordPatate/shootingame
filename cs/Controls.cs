@@ -93,7 +93,7 @@ namespace shootingame
             double cos = Geometry.Cos(playerCOM, x, y);
             double sin = Geometry.Sin(playerCOM, x, y);
             int pullX = (int)Math.Round(Const.Gravity * Math.Abs(cos));
-            int pullY = (int)Math.Round(Const.Gravity * 2 * Math.Abs(sin));
+            int pullY = (int)Math.Round(Const.Gravity * 1.8 * Math.Abs(sin));
             
             if (cos < 0) {
                 player.Inertia.X -= pullX;
