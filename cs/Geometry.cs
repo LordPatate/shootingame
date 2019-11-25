@@ -45,7 +45,6 @@ namespace shootingame
 
             return (int)Math.Round(coefA*x + ordA);
         }
-
         public static Vector2i PointShade(IntRect bounds, Vector2i playerEye, int x, int y)
         {
             Vector2f a1 = new Vector2f(x, y), a2 = (Vector2f)playerEye;
@@ -77,6 +76,41 @@ namespace shootingame
 
             s.X = x;
             return s;
+        }
+
+        public static bool IntersectLine(IntRect rect, Vector2i point1, Vector2i point2)
+        {
+            int rectX1 = rect.Left, rectX2 = rect.Left + rect.Width,
+                rectY1 = rect.Top, rectY2 = rect.Top + rect.Height;
+            Vector2f a1 = (Vector2f)point1, a2 = (Vector2f)point2;
+
+            // easy cases
+            if ((x1 < rectX1 && x2 < rectX1) || (x1 > rectX2 && x2 > rectX2)
+            || (y1 < rectY1 && y2 < rectY1) || (y1 > rectY2 && y2 > rectY2))
+                return false;
+            
+            if (y1 == y2) { // horizontal line
+                return y1 >= rectY1 && y1 < rectY2;
+            }
+            if (x1 == x2) { // horizontal line
+                return x1 >= rectX1 && x1 < rectX2;
+            }
+
+            // top edge
+            int topX = HorizontalIntersection(a1, a2, rectY1);
+            if (topX > rectX1 && topX < rectX2) {
+                return true;
+            }
+
+            // bottom edge
+            int bottomX = HorizontalIntersection(a1, a2, rectY2);
+            if (bottomX > rectX1 && bottomX < rectX2) {
+                return true;
+            }
+
+            // left edge
+            int leftY = HorizontalIntersection(a1, a2, rectX1);
+            return leftY > rectY1 && leftY < rectY2
         }
 
         public static Vector2i HitPoint(IntRect rect, Vector2i point1, Vector2i point2)
