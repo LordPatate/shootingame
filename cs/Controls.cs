@@ -20,7 +20,7 @@ namespace shootingame
             Jump = IsKeyPressed(Key.W) || IsKeyPressed(Key.Z);
 
             // Mouse
-            MousePos = Mouse.GetPosition();
+            MousePos = Mouse.GetPosition(Screen.Window);
             LeftClick = Mouse.IsButtonPressed(Mouse.Button.Left);
             RightClick = Mouse.IsButtonPressed(Mouse.Button.Right);
         }
