@@ -110,7 +110,9 @@ namespace shootingame
                 top: Rect.Top, width: Rect.Width, height: Rect.Height
             );
 
-            if (Controls.Collision(ref projection, level)) {
+            if (Controls.Collision(ref projection, level))
+            {
+                Inertia.X = 0;
                 if (delta > 0) {
                     Rect.Left = projection.Left - Rect.Width;
                 } else {
@@ -131,7 +133,9 @@ namespace shootingame
                 width: Rect.Width, height: Rect.Height
             );
 
-            if (Controls.Collision(ref projection, level)) {
+            if (Controls.Collision(ref projection, level))
+            {
+                Inertia.Y = 0;
                 if (delta > 0) {
                     Rect.Top = projection.Top - Rect.Height;
                 } else {
