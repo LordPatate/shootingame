@@ -1,8 +1,8 @@
 shootingame
 shootingame.zip
 shootingame.exe
-cs/bin/
-cs/obj/
+**/bin/
+**/obj/
 *.pidb
 *.userprefs
 *.suo

@@ -12,7 +12,7 @@ namespace shootingame
         public string ForegroundImg;
 
         public LevelInfos(string src, string bg = "", string fg = "") {
-            SourceFile = src; BackgroundImg = bg; ForegroundImg = fg;
+            SourceFile = Const.LevelFolder + src; BackgroundImg = bg; ForegroundImg = fg;
         }
     }
 
@@ -28,7 +28,7 @@ namespace shootingame
     {
         public static readonly LevelInfos[] levelInfos = {
             new LevelInfos( // Level 0
-                src: "../levels/level0.png"
+                src: "level0.png"
             ),
         };
 

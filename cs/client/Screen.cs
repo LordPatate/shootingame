@@ -21,7 +21,7 @@ namespace shootingame
             Window = new RenderWindow(
                 videoMode,
                 "Shootingame",
-                Styles.Fullscreen
+                Styles.Default//Fullscreen
             );
             Window.Closed += new EventHandler(OnClose);
             Width = videoMode.Width; Height = videoMode.Height;
