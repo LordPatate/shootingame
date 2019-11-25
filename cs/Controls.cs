@@ -51,13 +51,11 @@ namespace shootingame
             );
             if (Collision(ref projection, level)) {
                 OnWall(player, Const.Left);
-                return;
             }
 
             projection.Left += player.Rect.Width + 2;
             if (Collision(ref projection, level)) {
                 OnWall(player, Const.Right);
-                return;
             }
             
             int maxSpeed = Const.PlayerStep * Const.InertiaPerPixel;
@@ -124,7 +122,7 @@ namespace shootingame
 
         private static void OnWall(Player player, bool wallSide)
         {
-            if (Jump) {
+            if (Jump && player.JumpEnabled) {
                 WallJump(player, !wallSide);
                 return;
             }
