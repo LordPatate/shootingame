@@ -83,14 +83,33 @@ namespace shootingame
             player.Inertia.Y += Const.Gravity;
         }
 
-        public void Swing(Player player, Level level)
+        public static void Swing(Player player, Level level)
         {
             Vector2i playerCOM = player.GetCOM();
             int x = player.HookPoint.X, y = player.HookPoint.Y;
+            
             player.SetState(PlayerState.Swinging);
 
-            MoveX(Inertia.X/Const.InertiaPerPixel, level);
-            MoveY(Inertia.Y/Const.InertiaPerPixel, level);
+            double cos = Geometry.Cos(playerCOM, x, y);
+            double sin = Geometry.Sin(playerCOM, x, y);
+            int pullX = (int)Math.Round(Const.Gravity * Math.Abs(cos));
+            int pullY = (int)Math.Round(Const.Gravity * 2 * Math.Abs(sin));
+            
+            if (cos < 0) {
+                player.Inertia.X -= pullX;
+            } else {
+                player.Inertia.X += pullX;
+            }
+            if (sin < 0) {
+                player.Inertia.Y -= pullY;
+            } else {
+                player.Inertia.Y += pullY;
+            }
+
+            player.Inertia.Y += Const.Gravity;
+
+            player.MoveX(player.Inertia.X/Const.InertiaPerPixel, level);
+            player.MoveY(player.Inertia.Y/Const.InertiaPerPixel, level);
         }
 
         public static bool Collision(ref IntRect projection, Level level)
