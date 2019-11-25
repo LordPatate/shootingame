@@ -78,5 +78,49 @@ namespace shootingame
             s.X = x;
             return s;
         }
+
+        public static Vector2i HitPoint(IntRect rect, Vector2i point1, Vector2i point2)
+        {
+            Vector2i hitPoint = new Vector2i();
+
+            int rectX1 = rect.Left, rectX2 = rect.Left + rect.Width,
+                rectY1 = rect.Top, rectY2 = rect.Top + rect.Height;
+            Vector2f a1 = (Vector2f)point1, a2 = (Vector2f)point2;
+            
+            double minDist = Double.PositiveInfinity;
+            Action<Vector2i> minimize = (point) => {
+                double dist = Dist(point1, point);
+                if (dist < minDist) {
+                    minDist = dist;
+                    hitPoint = point;
+                }
+            };
+
+            // top edge
+            int topX = HorizontalIntersection(a1, a2, rectY1);
+            if (topX > rectX1 && topX < rectX2) {
+                minimize(new Vector2i(topX, rectY1));
+            }
+
+            // bottom edge
+            int bottomX = HorizontalIntersection(a1, a2, rectY2);
+            if (bottomX > rectX1 && bottomX < rectX2) {
+                minimize(new Vector2i(bottomX, rectY2));
+            }
+
+            // left edge
+            int leftY = HorizontalIntersection(a1, a2, rectX1);
+            if (leftY > rectY1 && leftY < rectY2) {
+                minimize(new Vector2i(leftY, rectX1));
+            }
+
+            // right edge
+            int rihgtY = HorizontalIntersection(a1, a2, rectX2);
+            if (rihgtY > rectY1 && rihgtY < rectY2) {
+                minimize(new Vector2i(rihgtY, rectX2));
+            }
+
+            return hitPoint;
+        }
     }
 }
