@@ -82,9 +82,10 @@ namespace shootingame
             // Gravity
             player.Inertia.Y += Const.Gravity;
         }
-        
-        public void Swing(Level level)
+
+        public void Swing(Player player, Level level)
         {
+
             MoveX(Inertia.X/Const.InertiaPerPixel, level);
             MoveY(Inertia.Y/Const.InertiaPerPixel, level);
         }

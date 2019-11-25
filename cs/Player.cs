@@ -81,7 +81,7 @@ namespace shootingame
                     }
                 } else {
                     if (Geometry.Dist(GetCOM(), HookPoint) <= Const.HookMaxRange) {
-                        Controls.Swing(level);
+                        Controls.Swing(this, level);
                         return;
                     }
                     Hooked = false;
