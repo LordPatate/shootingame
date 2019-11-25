@@ -110,7 +110,7 @@ namespace shootingame
 
             // left edge
             int leftY = HorizontalIntersection(a1, a2, rectX1);
-            return leftY > rectY1 && leftY < rectY2
+            return leftY > rectY1 && leftY < rectY2;
         }
 
         public static Vector2i HitPoint(IntRect rect, Vector2i point1, Vector2i point2)
