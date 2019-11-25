@@ -48,6 +48,7 @@ namespace shootingame
             Game.Player.Draw();
             CastShadows();
 
+            GameScene.Display();
             Window.Draw(new Sprite(GameScene.Texture));
 
             Window.Display();
