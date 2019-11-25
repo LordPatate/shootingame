@@ -39,27 +39,18 @@ namespace shootingame
             Hooked = false;
             JumpEnabled = true;
 
-            // IntPtr surfacePtr = SDL_image.IMG_Load(Const.PlayerSpriteSheet);
-            // Errors.CheckNull(surfacePtr, "Load PlayerSpriteSheet");
-            // Texture = SDL.SDL_CreateTextureFromSurface(Screen.Renderer, surfacePtr);
-            // Errors.CheckNull(Texture, "Player.Texture Creation");
-            // SDL.SDL_FreeSurface(surfacePtr);
+            Texture = new Texture(Const.PlayerSpriteSheet);
 
             TextureArea = new IntRect(0, 0, width: Const.PlayerSpriteWidth, height: Const.PlayerSpriteHeight);
         }
         
         public void Destroy()
         {
-            // SDL.SDL_DestroyTexture(Texture);
         }
 
         public void Draw()
         {
             PlayerAnimations.SetTextureArea(this);
-
-            // SDL.SDL_RendererFlip flip = (Direction == Const.Left) ?
-            //     SDL.SDL_RendererFlip.SDL_FLIP_HORIZONTAL :
-            //     SDL.SDL_RendererFlip.SDL_FLIP_NONE;
             
             Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
             int width = scale(Const.PlayerSpriteWidth), height = scale(Const.PlayerSpriteHeight);
@@ -69,8 +60,7 @@ namespace shootingame
                 width: width, height: height
             );
 
-            // int err; Errors.msg = "Player.Copy";
-            // err = SDL.SDL_RenderCopyEx(Screen.Renderer, Texture, ref TextureArea, ref dst, 0, IntPtr.Zero, flip); Errors.Check(err);
+            Screen.GameScene.Draw(Drawing.SpriteOf(Texture, dst, TextureArea));
         }
 
         public void Update(Level level)

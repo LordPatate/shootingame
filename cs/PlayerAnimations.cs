@@ -47,6 +47,10 @@ namespace shootingame
                 width: Const.PlayerSpriteWidth,
                 height: Const.PlayerSpriteHeight
             );
+            if (player.Direction == Const.Left) {
+                player.TextureArea.Left += Const.PlayerSpriteWidth;
+                player.TextureArea.Width *= -1;
+            }
 
             ++player.Frame;
             player.Frame %= (uint)(spriteCoordArray.Length * Const.StepsPerFrame);
