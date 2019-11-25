@@ -58,7 +58,7 @@ namespace shootingame
 
         private static void DrawBackground(string bg, string fg)
         {
-            Texture foreground = GetTexture(fg, new Color(20, 17, 23));
+            Texture foreground = GetTexture(fg, new Color(0,0,0));//new Color(20, 17, 23));
             Texture background = GetTexture(bg, new Color(65, 60, 55));
 
             if (bg == "") {
