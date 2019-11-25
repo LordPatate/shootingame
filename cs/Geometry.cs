@@ -85,15 +85,15 @@ namespace shootingame
             Vector2f a1 = (Vector2f)point1, a2 = (Vector2f)point2;
 
             // easy cases
-            if ((x1 < rectX1 && x2 < rectX1) || (x1 > rectX2 && x2 > rectX2)
-            || (y1 < rectY1 && y2 < rectY1) || (y1 > rectY2 && y2 > rectY2))
+            if ((point1.X < rectX1 && point2.X < rectX1) || (point1.X > rectX2 && point2.X > rectX2)
+            || (point1.Y < rectY1 && point2.Y < rectY1) || (point1.Y > rectY2 && point2.Y > rectY2))
                 return false;
             
-            if (y1 == y2) { // horizontal line
-                return y1 >= rectY1 && y1 < rectY2;
+            if (point1.Y == point2.Y) { // horizontal line
+                return point1.Y >= rectY1 && point1.Y < rectY2;
             }
-            if (x1 == x2) { // horizontal line
-                return x1 >= rectX1 && x1 < rectX2;
+            if (point1.X == point2.X) { // horizontal line
+                return point1.X >= rectX1 && point1.X < rectX2;
             }
 
             // top edge
