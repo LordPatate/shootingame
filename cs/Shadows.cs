@@ -12,10 +12,10 @@ namespace shootingame
             var shades = new List<ConvexShape>();
 
             bounds = Game.Level.Bounds;
-            topLeft = new Vector2i(bounds.Top, bounds.Left);
-            topRight = new Vector2i(bounds.Top, bounds.Left + bounds.Width);
-            botLeft = new Vector2i(bounds.Top + bounds.Height, bounds.Left);
-            botRight = new Vector2i(bounds.Top + bounds.Height, bounds.Left + bounds.Width);
+            topLeft = new Vector2i(bounds.Left, bounds.Top);
+            topRight = new Vector2i(bounds.Left + bounds.Width, bounds.Top);
+            botLeft = new Vector2i(bounds.Left, bounds.Top + bounds.Height);
+            botRight = new Vector2i(bounds.Left + bounds.Width, bounds.Top + bounds.Height);
             playerRect = Game.Player.Rect;
             playerEye = new Vector2i(
                 x: playerRect.Left + playerRect.Width/2,
