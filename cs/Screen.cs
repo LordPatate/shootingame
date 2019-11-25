@@ -8,12 +8,11 @@ namespace shootingame
 {
     class Screen
     {
-        public struct ShadePolygon {int[] vx, vy;}
         public static RenderWindow Window;
         public static uint Width, Height;
         public static RenderTexture GameScene;
         public static Font Font;
-        public static List<ShadePolygon> Shades;
+        public static List<ConvexShape> Shades;
 
         
         public static void Init()
@@ -54,16 +53,12 @@ namespace shootingame
             Window.Display();
         }
 
-        public static void ComputeShadows()
-        {
-            Shades = new List<ShadePolygon>();
-        }
-
         public static void CastShadows()
         {
-            foreach (ShadePolygon shade in Shades)
+            foreach (ConvexShape shade in Shades)
             {
-                //SDL_gfx.SDL_FilledPolygonRGBA
+                shade.FillColor = new Color(0, 0, 0);
+                GameScene.Draw(shade);
             }
         }
     }

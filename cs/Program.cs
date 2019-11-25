@@ -14,14 +14,14 @@ namespace shootingame
             Screen.Init();
             Game.Init();
 
-            Screen.ComputeShadows();
+            Shadows.Compute();
             while (Game.Running)
             {
                 Screen.Update();
                 Screen.Window.DispatchEvents();
                 Task update = Task.Run(() => {
                     Game.Update();
-                    Screen.ComputeShadows();
+                    Shadows.Compute();
                 });
 
                 Thread.Sleep(Const.GameStepDuration);
