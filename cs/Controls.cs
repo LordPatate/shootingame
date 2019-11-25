@@ -97,7 +97,7 @@ namespace shootingame
             
             IntRect bounds = level.Bounds;
             projection.Intersects(bounds, out IntRect overLap);
-            if (projection.Equals(overLap)) {
+            if (!projection.Equals(overLap)) {
                 projection.Left = bounds.Left + bounds.Width;
                 projection.Top = bounds.Top + bounds.Height;
                 projection.Width = -bounds.Width;
