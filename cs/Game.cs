@@ -63,12 +63,12 @@ namespace shootingame
 
             if (bg == "") {
                 var rect = new IntRect(0, 0, width: (int)Screen.Width, height: (int)Screen.Height);
-                Background.Draw(new Sprite(foreground, rect));
-                Background.Draw(new Sprite(background, Level.Bounds));
+                Background.Draw(Drawing.SpriteOf(foreground, rect));
+                Background.Draw(Drawing.SpriteOf(background, Level.Bounds));
             }
 
             foreach (var tile in Game.Level.Tiles) {
-                Background.Draw(new Sprite(foreground, tile.Rect));
+                Background.Draw(Drawing.SpriteOf(foreground, tile.Rect));
             }
         }
         private static Texture GetTexture(string src, Color defaultColor)
