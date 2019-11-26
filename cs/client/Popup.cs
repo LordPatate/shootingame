@@ -6,13 +6,13 @@ using SFML.Window;
 
 namespace shootingame
 {
-    class PopupOption
+    public class PopupOption
     {
         public string Text;
         public RenderTexture Texture;
         public IntRect Rect;
     }
-    class Popup
+    public class Popup
     {
         public string[] Text;
         public RenderTexture Texture;

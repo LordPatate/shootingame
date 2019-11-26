@@ -1,6 +1,6 @@
 namespace shootingame
 {
-    class Const
+    public class Const
     {
         public const uint Red = 0x00ff0000, Green = 0x0000ff00,  Blue =  0x000000ff;
 
@@ -17,6 +17,8 @@ namespace shootingame
         InertiaPerPixel = 100,
         HookMaxRange = 170;
 
+        public const int NormalStateDimX = 20, NormalStateDimY = 37;
+
         public const int WindowWidth = 1120, WindowHeight = 630,
         TileWidth = 25, TileHeight = 25;
 
@@ -28,5 +30,8 @@ namespace shootingame
         public const int FontSize = 18;
 
         public const string LevelFolder = "../../levels/";
+
+        public const int ServerPort = 4242;
+        public const int ClientPort = 4343;
     }
 }

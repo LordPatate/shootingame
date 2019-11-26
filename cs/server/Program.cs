@@ -1,39 +1,97 @@
-﻿using System.IO;
+﻿using System.Linq;
+using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Net.Sockets;
 using System.Net;
 using System;
+using shootingame;
 
 namespace server
 {
     class Program
     {
+        static Level level = new Level();
+        static Dictionary<IPAddress, LightPlayer> players = new Dictionary<IPAddress, LightPlayer>();
+        static BinaryFormatter formatter = new BinaryFormatter();
         static void Main(string[] args)
-        {            
+        {
+            level.Init(Level.levelInfos[0]);
+            
+            Receiver receiver = new Receiver();
+            receiver.Connect(Const.ServerPort);
+            UdpClient sender = new UdpClient();
+            Console.WriteLine("Server ready to accept connections");
+            
             while (Prompt.ReadLine() != "quit")
             {
-                byte[] receivedBytes = Receiver.GetBytes();
+                byte[] receivedBytes = receiver.GetBytes();
                 if (receivedBytes is null)
                     continue;
                 
-                ProcessData(receivedBytes, Receiver.EndPoint);
+                ProcessData(receivedBytes, receiver.EndPoint, sender);
             }
 
-            Receiver.Close();
+            receiver.Close();
+            sender.Close();
         }
 
-        static void ProcessData(byte[] receivedBytes, IPEndPoint endPoint)
+        static void ProcessData(byte[] receivedBytes, IPEndPoint endPoint, UdpClient sender)
         {
-            Console.WriteLine($"Data was received from {endPoint.Address}");
-            
-            using MemoryStream stream = new MemoryStream(receivedBytes);
-            BinaryFormatter deserializer = new BinaryFormatter();
-            
-            shootingame.GameState state = (shootingame.GameState)deserializer.Deserialize(stream);
-            
-            for (int i = 0; i < state.PlayersPos.Length; ++i) {
-                Console.WriteLine($"Player {i}: X = {state.PlayersPos[i].X}, Y = {state.PlayersPos[i].Y}");
+            IPAddress address = endPoint.Address;
+            endPoint.Port = Const.ClientPort;
+            GameState state = GameState.FromBytes(formatter, receivedBytes);
+            switch (state.Type)
+            {
+                case GameState.RequestType.Connect:
+                    try {
+                        uint id = (uint)players.Count;
+                        players.Add(address, new LightPlayer(id, level));
+                        
+                        SendGameState(state.Type, id, endPoint, sender);
+                    
+                        Console.WriteLine($"Player {id} has joined");
+                    }
+                    catch (ArgumentException) {
+                        Console.Error.WriteLine($"Error: connect request: address {address} is already used by player {players[address].ID}");
+                    }
+                    break;
+                case GameState.RequestType.Disconnect:
+                    try {
+                        Console.WriteLine($"Player {players[address].ID} has left");
+                        players.Remove(address);
+                    }
+                    catch (KeyNotFoundException) {
+                        Console.Error.WriteLine($"Error: disconnect request: unknown player from {address}");
+                    }
+                    break;
+                case GameState.RequestType.Update:
+                    try {
+                        uint id = players[address].ID;
+                        if (id != state.PlayerID) {
+                            Console.Error.WriteLine($"Error: update request: player {id} is saying to be player {state.PlayerID}");
+                            return;
+                        }
+                        players[address] = state.Players[(int)id];
+                        SendGameState(state.Type, id, endPoint, sender);
+                    }
+                    catch (KeyNotFoundException) {
+                        Console.Error.WriteLine($"Error: update request: unknown player from {address}");
+                    }
+                    break;
             }
+        }
+
+        static void SendGameState(GameState.RequestType type, uint playerID, IPEndPoint endPoint, UdpClient sender)
+        {
+            GameState state = new GameState() {
+                Type = type,
+                PlayerID = playerID,
+                Players = players.Values.ToArray()
+            };
+
+            byte[] data = state.ToBytes(formatter);
+            sender.Send(data, data.Length, endPoint);
         }
     }
 }

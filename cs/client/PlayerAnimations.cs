@@ -4,7 +4,7 @@ using SFML.System;
 
 namespace shootingame
 {
-    class PlayerAnimations
+    public class PlayerAnimations
     {
         private static readonly Vector2i[] idleCoords = {
             new Vector2i(0, 0), new Vector2i(0, 0),

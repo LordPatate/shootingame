@@ -4,7 +4,7 @@ using SFML.System;
 
 namespace shootingame
 {
-    enum PlayerState
+    public enum PlayerState
     {
         Idle,
         Running,
@@ -15,26 +15,45 @@ namespace shootingame
         Swinging
     }
 
-    class Player
+    public class Player
     {
-        public IntRect Rect;
         public Texture Texture;
         public IntRect TextureArea;
+        public uint ID;
+        public IntRect Rect;
         public PlayerState State;
         public uint Frame;
         public bool Direction;
-        public Vector2i Inertia;
         public Vector2i HookPoint;
         public bool Hooked;
         public bool JumpEnabled;
+        public Vector2i Inertia;
 
-        public readonly Vector2i NormalStateDim =  new Vector2i(20, 37);
-
-        public Player()
+        public void FromLightPlayer(LightPlayer player) {
+            ID = player.ID;
+            Rect = new IntRect() {
+                Left = player.Rect.Left,
+                Top = player.Rect.Top,
+                Width = player.Rect.Width,
+                Height = player.Rect.Height
+            };
+            State = player.State;
+            Direction = player.Direction;
+            HookPoint = new Vector2i() {
+                X = player.HookPoint.X,
+                Y = player.HookPoint.Y
+            };
+            Hooked = player.Hooked;
+        }
+        public Player(LightPlayer player) {
+            FromLightPlayer(player);
+        }
+        public Player(uint id)
         {
+            ID = id;
             Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
 
-            Rect = new IntRect(0, 0, width: scale(NormalStateDim.X), height: scale(NormalStateDim.Y));
+            Rect = new IntRect(0, 0, width: scale(Const.NormalStateDimX), height: scale(Const.NormalStateDimY));
             Inertia =  new Vector2i();
             HookPoint = new Vector2i();
             Hooked = false;

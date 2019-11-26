@@ -6,7 +6,7 @@ using SFML.System;
 
 namespace shootingame
 {
-    class Screen
+    public class Screen
     {
         public static RenderWindow Window;
         public static uint Width, Height;
@@ -45,6 +45,11 @@ namespace shootingame
         {
             GameScene.Draw(new Sprite(Game.Background.Texture));
             Game.Player.Draw();
+            foreach (var lightPlayer in Game.OtherPlayers) {
+                Player player = new Player(lightPlayer);
+                player.Texture = Game.Player.Texture;
+                player.Draw();
+            }
             CastShadows();
 
             GameScene.Display();

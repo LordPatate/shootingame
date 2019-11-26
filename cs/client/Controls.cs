@@ -7,7 +7,7 @@ using static SFML.Window.Keyboard;
 
 namespace shootingame
 {
-    class Controls
+    public class Controls
     {
         public static bool Left, Right, Jump;
         public static Vector2i MousePos;

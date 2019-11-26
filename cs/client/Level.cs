@@ -5,7 +5,7 @@ using SFML.System;
 
 namespace shootingame
 {
-    struct LevelInfos
+    public struct LevelInfos
     {
         public string SourceFile;
         public string BackgroundImg;
@@ -16,7 +16,7 @@ namespace shootingame
         }
     }
 
-    class Tile
+    public class Tile
     {
         public IntRect Rect;
         public Tile(int x = 0, int y = 0) {
@@ -24,7 +24,7 @@ namespace shootingame
         }
     }
 
-    class Level
+    public class Level
     {
         public static readonly LevelInfos[] levelInfos = {
             new LevelInfos( // Level 0
@@ -33,7 +33,7 @@ namespace shootingame
         };
 
         public IntRect Bounds;
-        public Vector2i PlayerStartPos;
+        public List<Vector2i> SpawnPoints;
         public List<Tile> Tiles;
 
         public void Init(LevelInfos infos)
@@ -48,8 +48,7 @@ namespace shootingame
                 height: (int)size.Y*Const.TileHeight
             );
             Tiles = new List<Tile>();
-            
-            bool startPosFound = false;
+            SpawnPoints = new List<Vector2i>();
 
             for (int i = 0; i < size.X; ++i)
                 for (int j = 0; j < size.Y; ++j)
@@ -66,17 +65,13 @@ namespace shootingame
                         continue;
                     }
                     if ((r&a) == 255 && (g|b) == 0) { // red pixel
-                        if (startPosFound) {
-                            throw new Exception($"Invalid file \"{infos.SourceFile}\": too many player spawn points");
-                        }
-                        PlayerStartPos = new Vector2i(
+                        SpawnPoints.Add(new Vector2i(
                             x: Bounds.Left + i*Const.TileWidth,
                             y: Bounds.Top + j*Const.TileHeight
-                        );
-                        startPosFound = true;
+                        ));
                     }
                 }
-            if (!startPosFound) {
+            if (SpawnPoints.Count == 0) {
                 throw new Exception($"Invalid file \"{infos.SourceFile}\": no player spawn point");
             }
         }

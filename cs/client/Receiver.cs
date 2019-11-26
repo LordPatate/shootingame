@@ -3,12 +3,17 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 
-namespace server
+namespace shootingame
 {
-    class Receiver
+    public class Receiver
     {
-        public static IPEndPoint EndPoint;
-        public static byte[] GetBytes()
+        public IPEndPoint EndPoint;
+        public void Connect(int port)
+        {
+            client = new UdpClient(port);
+            EndPoint = new IPEndPoint(IPAddress.Any, port);
+        }
+        public byte[] GetBytes()
         {
             if (receiveTask is null) {
                 receiveTask = Task.Run(Reception);
@@ -22,19 +27,17 @@ namespace server
 
             return null;
         }
-        public static void Close()
+        public void Close()
         {
             client.Close();
         }
        
-        private static byte[] Reception()
+        private byte[] Reception()
         {
-            EndPoint = new IPEndPoint(IPAddress.Any, 4242);
-            Console.WriteLine("Waiting for data");
             return client.Receive(ref EndPoint);
         }
 
-        private static UdpClient client = new UdpClient(4242);
-        private static Task<byte[]> receiveTask;
+        private UdpClient client;
+        private Task<byte[]> receiveTask;
     }
 }

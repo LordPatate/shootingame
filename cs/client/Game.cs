@@ -1,60 +1,66 @@
-using System.Net;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Net.Sockets;
 using System;
+using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 
 namespace shootingame
 {
-    class Game
+    public class Game
     {
         public static bool Running;
         public static Player Player;
+        public static List<LightPlayer> OtherPlayers = new List<LightPlayer>();
         public static RenderTexture Background;
         public static Level Level;
 
         public static void Init()
         {
             Running = true;
-            Player = new Player();
             Level = new Level();
-
+            
+            GameState state = Client.ConnectToServer("127.0.0.1");
+            Player = new Player(state.PlayerID);
             LoadLevel(0);
+            UpdateFromGameState(state);
         }
 
         public static void Quit()
         {
             Player.Destroy();
+            if (Client.Connected)
+                Client.SendDisconnect();
+            else
+                Client.Disconnect();
         }
 
         public static void Update()
         {
+            if (!Client.Connected) {
+                Running = false;
+                return;
+            }
             Player.Update(Level);
 
-            using UdpClient client = new UdpClient("127.0.0.1", 4242);
-            GameState state = new GameState();
-            Array.Resize(ref state.PlayersPos, 1);
-            state.PlayersPos[0] = new GameState.Point() {X = Player.Rect.Left, Y = Player.Rect.Top};
-            MemoryStream stream = new MemoryStream();
-            BinaryFormatter serializer = new BinaryFormatter();
-            serializer.Serialize(stream, state);
-            stream.Seek(0, SeekOrigin.Begin);
-            byte[] data = new byte[stream.Length];
-            int nb = stream.Read(data, 0, data.Length);
-            stream.Close();
-            client.Send(data, nb);
+            Client.SendUpdate();
+            GameState state = Client.ReceiveUpdate();
+            if (state != null) {
+                UpdateFromGameState(state);
+            }
+        }
+        private static void UpdateFromGameState(GameState state)
+        {
+            OtherPlayers.Clear();
+            OtherPlayers.AddRange(state.Players);
+            LightPlayer myPlayer = OtherPlayers[(int)state.PlayerID];
+            Player.FromLightPlayer(myPlayer);
+            OtherPlayers.Remove(myPlayer);
         }
 
-        public static void LoadLevel(uint id)
+        private static void LoadLevel(uint id)
         {
             LevelInfos infos = Level.levelInfos[id];
             Level.Init(infos);
-
-            Player.Rect.Left = Level.PlayerStartPos.X;
-            Player.Rect.Top = Level.PlayerStartPos.Y;
 
             Background = new RenderTexture(Screen.Width, Screen.Height);
 
