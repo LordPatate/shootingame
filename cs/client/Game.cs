@@ -6,7 +6,6 @@ using System;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using static SFML.Window.Keyboard;
 
 namespace shootingame
 {
@@ -16,18 +15,12 @@ namespace shootingame
         public static Player Player;
         public static RenderTexture Background;
         public static Level Level;
-        public static Popup AskQuit;
 
         public static void Init()
         {
             Running = true;
             Player = new Player();
             Level = new Level();
-            AskQuit = new Popup(
-                new string[] {
-                    "Do you really want to quit?"
-                }, "Yes", "No"
-            );
 
             LoadLevel(0);
         }
@@ -35,15 +28,10 @@ namespace shootingame
         public static void Quit()
         {
             Player.Destroy();
-            AskQuit.Destroy();
         }
 
         public static void Update()
         {
-            if (IsKeyPressed(Key.Escape))
-                if (AskQuit.Pop() == "Yes")
-                    Running = false;
-
             Player.Update(Level);
 
             using UdpClient client = new UdpClient("localhost", 4242);

@@ -33,7 +33,7 @@ namespace shootingame
 
         private static void OnClose(object sender, EventArgs e)
         {
-            if (Game.AskQuit.Pop() == "Yes")
+            if (Program.AskQuit.Pop() == "Yes")
                 Game.Running = false;
         }
         public static void Quit()
