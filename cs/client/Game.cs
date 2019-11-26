@@ -34,7 +34,7 @@ namespace shootingame
         {
             Player.Update(Level);
 
-            using UdpClient client = new UdpClient("localhost", 4242);
+            using UdpClient client = new UdpClient("127.0.0.1", 4242);
             GameState state = new GameState();
             Array.Resize(ref state.PlayersPos, 1);
             state.PlayersPos[0] = new GameState.Point() {X = Player.Rect.Left, Y = Player.Rect.Top};
