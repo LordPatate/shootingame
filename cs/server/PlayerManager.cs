@@ -17,8 +17,8 @@ namespace server
             try {
                 id = (int)players[address].ID;
                 
-                if (playerIDs[id]) {
-                    playerIDs[id] = false;
+                if (freePlayerIDs[id]) {
+                    freePlayerIDs[id] = false;
                     lastUpdated[address] = DateTime.Now;
                     Console.WriteLine($"Player {id} has joined");
                 }
@@ -27,9 +27,9 @@ namespace server
                 }
             }
             catch (KeyNotFoundException) {
-                id = playerIDs.Count;
+                id = freePlayerIDs.Count;
                 players.Add(address, new LightPlayer((uint)id, level));
-                playerIDs.Add(false);
+                freePlayerIDs.Add(false);
                 lastUpdated.Add(address, DateTime.Now);
                 Console.WriteLine($"Player {id} has joined");
             }
@@ -40,7 +40,7 @@ namespace server
         public static void Remove(IPAddress address)
         {
             int id = (int)players[address].ID;
-            playerIDs[id] = true;
+            freePlayerIDs[id] = true;
             Console.WriteLine($"Player {id} has left");
         }
 
@@ -65,8 +65,12 @@ namespace server
         public static void Refresh()
         {
             DateTime now = DateTime.Now;
-            foreach (IPAddress address in lastUpdated.Keys)
+            foreach (var keyVal in players)
             {
+                if (freePlayerIDs[keyVal.Value.ID])
+                    continue;
+                
+                var address = keyVal.Key;
                 if (now - lastUpdated[address] >= timeout) {
                     Remove(address);
                 }
@@ -76,15 +80,15 @@ namespace server
         public static LightPlayer[] GetPlayers()
         {
             var array = players.Values.ToArray();
-            for (int i = 0; i < playerIDs.Count; ++i) {
-                if (playerIDs[i])
+            for (int i = 0; i < freePlayerIDs.Count; ++i) {
+                if (freePlayerIDs[i])
                     array[i] = null;
             }
             return array;
         }
 
         private static readonly TimeSpan timeout = new TimeSpan(0, 0, 3);
-        private static List<bool> playerIDs = new List<bool>();
+        private static List<bool> freePlayerIDs = new List<bool>();
         private static Dictionary<IPAddress, DateTime> lastUpdated = new Dictionary<IPAddress, DateTime>();
     }
 }

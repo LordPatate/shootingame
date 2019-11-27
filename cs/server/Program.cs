@@ -23,12 +23,16 @@ namespace server
             UdpClient sender = new UdpClient();
             Console.WriteLine("Server ready to accept connections");
             
+            int turn = 0;
             while (Prompt.ReadLine() != "quit")
             {
-                // Remove finished tasks
-                tasks = tasks.FindAll((task) => task.Status == TaskStatus.Running);
-
-                PlayerManager.Refresh();
+                ++turn;
+                turn %= 50;
+                if (turn == 0) {
+                    Task.WaitAll(tasks.ToArray());
+                    tasks.Clear();
+                    PlayerManager.Refresh();
+                }
 
                 byte[] receivedBytes = receiver.GetBytes();
                 if (receivedBytes is null)
