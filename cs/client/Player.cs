@@ -83,11 +83,11 @@ namespace shootingame
             if (Hooked) {
                 VertexArray line = new VertexArray(PrimitiveType.Lines);
                 line.Append(new Vertex(
-                    (Vector2f)GetCOM(),
+                    (Vector2f)Geometry.AdaptPoint(GetCOM()),
                     new Color(red: 255, 0, 0)
                 ));
                 line.Append(new Vertex(
-                    (Vector2f)HookPoint,
+                    (Vector2f)Geometry.AdaptPoint(HookPoint),
                     new Color(red: 255, 0, 0)
                 ));
                 Screen.GameScene.Draw(line);
@@ -152,10 +152,10 @@ namespace shootingame
 
         public Vector2i GetCOM()
         {
-            return Geometry.AdaptPoint(new Vector2i(
+            return new Vector2i(
                 x: Rect.Left + Rect.Width/2,
                 y: Rect.Top + Rect.Height/2 
-            ));
+            );
         }
 
         public bool TryHook(Level level, out Vector2i hookPoint)
@@ -163,7 +163,7 @@ namespace shootingame
             bool ok = false;
             Vector2i tmp = new Vector2i();
             
-            Vector2i playerCOM = GetCOM();
+            Vector2i playerCOM = Geometry.AdaptPoint(GetCOM());
             Vector2i proj = Geometry.PointShade(Game.Bounds, playerCOM, Controls.MousePos.X, Controls.MousePos.Y);
             double minDist = Double.PositiveInfinity;
             
@@ -187,6 +187,8 @@ namespace shootingame
             }
             
             hookPoint = tmp;
+            hookPoint.X -= Game.Bounds.Left;
+            hookPoint.Y -= Game.Bounds.Top;
             return ok;
         }
 
