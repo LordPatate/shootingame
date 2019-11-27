@@ -6,6 +6,28 @@ namespace shootingame
 {
     class Geometry
     {
+        public static IntRect AdaptRect(IntRect rect)
+        {
+            return new IntRect(
+                left: Game.Bounds.Left + rect.Left,
+                top: Game.Bounds.Top + rect.Top,
+                width: rect.Width, height: rect.Height
+            );
+        }
+        public static Vector2i AdaptPoint(Vector2i point)
+        {
+            return new Vector2i(
+                x: Game.Bounds.Left + point.X,
+                y: Game.Bounds.Top + point.Y
+            );
+        }
+        public static Vector2f AdaptPoint(Vector2f point)
+        {
+            return new Vector2f(
+                x: Game.Bounds.Left + point.X,
+                y: Game.Bounds.Top + point.Y
+            );
+        }
         public static IntRect ScaleRect(IntRect rect, int wPercent, int hPercent)
         {
             int width = rect.Width * wPercent / 100;
@@ -92,7 +114,7 @@ namespace shootingame
             if (point1.Y == point2.Y) { // horizontal line
                 return point1.Y >= rectY1 && point1.Y < rectY2;
             }
-            if (point1.X == point2.X) { // horizontal line
+            if (point1.X == point2.X) { // vertical line
                 return point1.X >= rectX1 && point1.X < rectX2;
             }
 
@@ -109,7 +131,7 @@ namespace shootingame
             }
 
             // left edge
-            int leftY = HorizontalIntersection(a1, a2, rectX1);
+            int leftY = VerticalIntersection(a1, a2, rectX1);
             return leftY > rectY1 && leftY < rectY2;
         }
 
@@ -143,15 +165,15 @@ namespace shootingame
             }
 
             // left edge
-            int leftY = HorizontalIntersection(a1, a2, rectX1);
+            int leftY = VerticalIntersection(a1, a2, rectX1);
             if (leftY > rectY1 && leftY < rectY2) {
-                minimize(new Vector2i(leftY, rectX1));
+                minimize(new Vector2i(rectX1, leftY));
             }
 
             // right edge
-            int rihgtY = HorizontalIntersection(a1, a2, rectX2);
+            int rihgtY = VerticalIntersection(a1, a2, rectX2);
             if (rihgtY > rectY1 && rihgtY < rectY2) {
-                minimize(new Vector2i(rihgtY, rectX2));
+                minimize(new Vector2i(rectX2, rihgtY));
             }
 
             return hitPoint;
