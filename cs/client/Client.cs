@@ -70,10 +70,6 @@ namespace shootingame
             }
             turnsWaiting = 0;
             state = GameState.FromBytes(formatter, data);
-
-            if (state.PlayerID != Game.Player.ID)
-                return null;
-
             if (state.Type == GameState.RequestType.Disconnect) {
                 Disconnect();
             }
