@@ -19,6 +19,7 @@ namespace server
                 
                 if (playerIDs[id]) {
                     playerIDs[id] = false;
+                    lastUpdated[address] = DateTime.Now;
                     Console.WriteLine($"Player {id} has joined");
                 }
                 else {
@@ -29,6 +30,7 @@ namespace server
                 id = playerIDs.Count;
                 players.Add(address, new LightPlayer((uint)id, level));
                 playerIDs.Add(false);
+                lastUpdated.Add(address, DateTime.Now);
                 Console.WriteLine($"Player {id} has joined");
             }
             
@@ -42,6 +44,35 @@ namespace server
             Console.WriteLine($"Player {id} has left");
         }
 
+        public static bool Update(IPAddress address, GameState state)
+        {
+            try {
+                uint id = players[address].ID;
+                if (id != state.PlayerID) {
+                    Console.Error.WriteLine($"Error: update request: player {id} is saying to be player {state.PlayerID}");
+                    return false;
+                }
+                lastUpdated[address] = DateTime.Now;
+                players[address] = state.Players[(int)id];
+                return true;
+            }
+            catch (KeyNotFoundException) {
+                Console.Error.WriteLine($"Error: update request: unknown player from {address}");
+                return false;
+            }
+        }
+
+        public static void Refresh()
+        {
+            DateTime now = DateTime.Now;
+            foreach (IPAddress key in players.Keys)
+            {
+                if (now - lastUpdated[key] >= timeout) {
+                    Remove(key);
+                }
+            }
+        }
+
         public static LightPlayer[] GetPlayers()
         {
             var array = players.Values.ToArray();
@@ -52,6 +83,8 @@ namespace server
             return array;
         }
 
+        private static readonly TimeSpan timeout = new TimeSpan(0, 0, 3);
         private static List<bool> playerIDs = new List<bool>();
+        private static Dictionary<IPAddress, DateTime> lastUpdated = new Dictionary<IPAddress, DateTime>();
     }
 }

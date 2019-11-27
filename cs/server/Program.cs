@@ -28,6 +28,8 @@ namespace server
                 // Remove finished tasks
                 tasks = tasks.FindAll((task) => task.Status == TaskStatus.Running);
 
+                PlayerManager.Refresh();
+
                 byte[] receivedBytes = receiver.GetBytes();
                 if (receivedBytes is null)
                     continue;
@@ -58,18 +60,8 @@ namespace server
                     PlayerManager.Remove(address);
                     break;
                 case GameState.RequestType.Update:
-                    try {
-                        uint id = PlayerManager.players[address].ID;
-                        if (id != state.PlayerID) {
-                            Console.Error.WriteLine($"Error: update request: player {id} is saying to be player {state.PlayerID}");
-                            return;
-                        }
-                        PlayerManager.players[address] = state.Players[(int)id];
-                        SendGameState(state.Type, id, endPoint, sender);
-                    }
-                    catch (KeyNotFoundException) {
-                        Console.Error.WriteLine($"Error: update request: unknown player from {address}");
-                    }
+                    if (PlayerManager.Update(address, state))
+                        SendGameState(state.Type, state.PlayerID, endPoint, sender);
                     break;
             }
         }
