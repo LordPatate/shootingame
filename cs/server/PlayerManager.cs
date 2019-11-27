@@ -79,11 +79,16 @@ namespace server
 
         public static LightPlayer[] GetPlayers()
         {
-            var array = players.Values.ToArray();
-            for (int i = 0; i < freePlayerIDs.Count; ++i) {
-                if (freePlayerIDs[i])
-                    array[i] = null;
+            var array = new LightPlayer[players.Count];
+            
+            foreach (var player in players.Values) {
+                int id = (int)player.ID;
+                
+                array[id] = (freePlayerIDs[id]) ?
+                    null:
+                    player;
             }
+
             return array;
         }
 
