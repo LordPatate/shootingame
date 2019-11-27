@@ -11,8 +11,9 @@ namespace shootingame
         public static bool Running;
         public static Player Player;
         public static List<LightPlayer> OtherPlayers = new List<LightPlayer>();
-        public static RenderTexture Background;
         public static Level Level;
+        public static RenderTexture Background;
+        public static IntRect Bounds;
 
         public static void Init()
         {
@@ -61,6 +62,12 @@ namespace shootingame
         {
             LevelInfos infos = Level.levelInfos[id];
             Level.Init(infos);
+            Bounds = new IntRect(
+                left: (int)Screen.Width/2 - Level.Bounds.Width/2,
+                top: (int)Screen.Height/2 - Level.Bounds.Height/2,
+                width: Level.Bounds.Width,
+                height: Level.Bounds.Height
+            );
 
             Background = new RenderTexture(Screen.Width, Screen.Height);
 
@@ -75,11 +82,16 @@ namespace shootingame
             if (bg == "") {
                 var rect = new IntRect(0, 0, width: (int)Screen.Width, height: (int)Screen.Height);
                 Background.Draw(Drawing.SpriteOf(foreground, rect));
-                Background.Draw(Drawing.SpriteOf(background, Level.Bounds));
+                Background.Draw(Drawing.SpriteOf(background, Bounds));
             }
 
             foreach (var tile in Game.Level.Tiles) {
-                Background.Draw(Drawing.SpriteOf(foreground, tile.Rect));
+                var rect = new IntRect(
+                    left: Bounds.Left + tile.Rect.Left,
+                    top: Bounds.Top + tile.Rect.Top,
+                    width: tile.Rect.Width, height: tile.Rect.Height
+                );
+                Background.Draw(Drawing.SpriteOf(foreground, rect));
             }
             Background.Display();
         }

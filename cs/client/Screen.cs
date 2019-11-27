@@ -63,6 +63,10 @@ namespace shootingame
             foreach (ConvexShape shade in Shades)
             {
                 shade.FillColor = new Color(0, 0, 0);
+                Vector2f pos = shade.Position;
+                pos.X += Game.Bounds.Left;
+                pos.Y += Game.Bounds.Top;
+                shade.Position = pos;
                 GameScene.Draw(shade);
             }
         }

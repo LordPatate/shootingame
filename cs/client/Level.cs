@@ -42,8 +42,8 @@ namespace shootingame
             Vector2u size = image.Size;
             
             Bounds = new IntRect(
-                left: (int)Screen.Width/2 - (int)size.X*Const.TileWidth/2,
-                top: (int)Screen.Height/2 - (int)size.Y*Const.TileHeight/2,
+                left: 0,
+                top: 0,
                 width: (int)size.X*Const.TileWidth,
                 height: (int)size.Y*Const.TileHeight
             );

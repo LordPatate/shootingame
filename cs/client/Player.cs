@@ -75,8 +75,8 @@ namespace shootingame
             Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
             int width = scale(Const.PlayerSpriteWidth), height = scale(Const.PlayerSpriteHeight);
             IntRect dst = new IntRect(
-                left: Rect.Left + Rect.Width/2 - width/2,
-                top: Rect.Top + Rect.Height/2 - height/2,
+                left: Game.Bounds.Left + Rect.Left + Rect.Width/2 - width/2,
+                top: Game.Bounds.Top + Rect.Top + Rect.Height/2 - height/2,
                 width: width, height: height
             );
 
