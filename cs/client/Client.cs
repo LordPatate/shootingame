@@ -51,13 +51,14 @@ namespace shootingame
         {
             byte[] data = receiver.GetBytes();
             if (data is null) {
-                if (turnsWaiting >= 10) {
+                if (turnsWaiting >= 10000) {
                     SendDisconnect();
                 } else {
                     ++turnsWaiting;
                 }
                 return null;
             }
+            turnsWaiting = 0;
             state = GameState.FromBytes(formatter, data);
             if (state.Type == GameState.RequestType.Disconnect) {
                 Disconnect();
