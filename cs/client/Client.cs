@@ -45,14 +45,23 @@ namespace shootingame
 
             byte[] data = state.ToBytes(formatter);
 
-            sender.Send(data, data.Length);
+            try {
+                sender.Send(data, data.Length);
+            }
+            catch (SocketException e) {
+                if (e.SocketErrorCode == SocketError.ConnectionRefused) {
+                    Console.Error.WriteLine("Error: connection lost");
+                    Disconnect();
+                }
+                else throw e;
+            }
         }
 
         public static GameState ReceiveUpdate()
         {
             byte[] data = receiver.GetBytes();
             if (data is null) {
-                if (turnsWaiting >= 10000) {
+                if (turnsWaiting >= 1000) {
                     SendDisconnect();
                 } else {
                     ++turnsWaiting;
@@ -73,7 +82,13 @@ namespace shootingame
             state.Type = GameState.RequestType.Disconnect;
             byte[] data = state.ToBytes(formatter);
             
-            sender.Send(data, data.Length);
+            try {
+                sender.Send(data, data.Length);
+            }
+            catch (SocketException e) {
+                if (e.SocketErrorCode != SocketError.ConnectionRefused)
+                    throw e;
+            }
             
             Disconnect();
         }
