@@ -35,6 +35,7 @@ namespace shootingame
             Hooked = player.Hooked;
         }
         public LightPlayer(uint id, Level level) {
+            ID = id;
             Vector2i spawnPoint = level.SpawnPoints[(int)id % level.SpawnPoints.Count];
             Pos.X = spawnPoint.X;
             Pos.Y = spawnPoint.Y;
