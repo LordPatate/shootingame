@@ -40,6 +40,7 @@ namespace shootingame
         public static void SendUpdate()
         {
             state.Type = GameState.RequestType.Update;
+            state.PlayerID = Game.Player.ID;
             state.Players[state.PlayerID] = new LightPlayer(Game.Player);
 
             byte[] data = state.ToBytes(formatter);
