@@ -42,6 +42,7 @@ namespace shootingame
         public static void SetTextureArea(Player player)
         {
             var spriteCoordArray = spriteCoord[(int)player.State];
+            player.Frame %= (uint)(spriteCoordArray.Length * Const.StepsPerFrame);
             Vector2i coord = spriteCoordArray[player.Frame / Const.StepsPerFrame];
 
             player.TextureArea = new IntRect(
@@ -56,7 +57,6 @@ namespace shootingame
             }
 
             ++player.Frame;
-            player.Frame %= (uint)(spriteCoordArray.Length * Const.StepsPerFrame);
         }
     }
 }
