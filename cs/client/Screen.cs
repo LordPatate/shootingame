@@ -45,9 +45,11 @@ namespace shootingame
         {
             GameScene.Draw(new Sprite(Game.Background.Texture));
             foreach (var lightPlayer in Game.Players) {
-                Player player = new Player(lightPlayer);
-                player.Texture = Game.Player.Texture;
-                player.Draw();
+                if (lightPlayer != null) {
+                    Player player = new Player(lightPlayer);
+                    player.Texture = Game.Player.Texture;
+                    player.Draw();
+                }
             }
             CastShadows();
 
