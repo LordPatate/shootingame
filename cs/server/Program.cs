@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Threading.Tasks;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -14,6 +15,7 @@ namespace server
         static Level level = new Level();
         static Dictionary<IPAddress, LightPlayer> players = new Dictionary<IPAddress, LightPlayer>();
         static BinaryFormatter formatter = new BinaryFormatter();
+        static List<Task> tasks = new List<Task>();
         static void Main(string[] args)
         {
             level.Init(Level.levelInfos[0]);
@@ -29,9 +31,10 @@ namespace server
                 if (receivedBytes is null)
                     continue;
                 
-                ProcessData(receivedBytes, receiver.EndPoint, sender);
+                tasks.Add(Task.Run(() => ProcessData(receivedBytes, receiver.EndPoint, sender)));
             }
 
+            Task.WaitAll(tasks.ToArray());
             receiver.Close();
             sender.Close();
         }
@@ -48,7 +51,7 @@ namespace server
                         uint id = (uint)players.Count;
                         players.Add(address, new LightPlayer(id, level));
                         
-                        SendGameState(state.Type, id, endPoint, sender);
+                        tasks.Add(SendGameState(state.Type, id, endPoint, sender));
                     
                         Console.WriteLine($"Player {id} has joined");
                     }
@@ -73,7 +76,7 @@ namespace server
                             return;
                         }
                         players[address] = state.Players[(int)id];
-                        SendGameState(state.Type, id, endPoint, sender);
+                        tasks.Add(SendGameState(state.Type, id, endPoint, sender));
                     }
                     catch (KeyNotFoundException) {
                         Console.Error.WriteLine($"Error: update request: unknown player from {address}");
@@ -82,7 +85,7 @@ namespace server
             }
         }
 
-        static void SendGameState(GameState.RequestType type, uint playerID, IPEndPoint endPoint, UdpClient sender)
+        static async Task SendGameState(GameState.RequestType type, uint playerID, IPEndPoint endPoint, UdpClient sender)
         {
             GameState state = new GameState() {
                 Type = type,
@@ -90,7 +93,8 @@ namespace server
                 Players = players.Values.ToArray()
             };
 
-            byte[] data = state.ToBytes(formatter);
+            byte[] data = new byte[1];
+            await Task.Run(() => data = state.ToBytes(formatter));
             sender.Send(data, data.Length, endPoint);
         }
     }
