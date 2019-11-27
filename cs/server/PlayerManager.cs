@@ -67,7 +67,7 @@ namespace server
             DateTime now = DateTime.Now;
             foreach (var keyVal in players)
             {
-                if (freePlayerIDs[keyVal.Value.ID])
+                if (freePlayerIDs[(int)keyVal.Value.ID])
                     continue;
                 
                 var address = keyVal.Key;
