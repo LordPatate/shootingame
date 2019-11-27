@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using System.Linq;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -12,8 +12,6 @@ namespace server
 {
     class Program
     {
-        static Level level = new Level();
-        static Dictionary<IPAddress, LightPlayer> players = new Dictionary<IPAddress, LightPlayer>();
         static BinaryFormatter formatter = new BinaryFormatter();
         static List<Task> tasks = new List<Task>();
         static void Main(string[] args)
@@ -27,6 +25,9 @@ namespace server
             
             while (Prompt.ReadLine() != "quit")
             {
+                // Remove finished tasks
+                tasks = tasks.FindAll((task) => task.Status == TaskStatus.Running);
+
                 byte[] receivedBytes = receiver.GetBytes();
                 if (receivedBytes is null)
                     continue;
@@ -47,36 +48,22 @@ namespace server
             switch (state.Type)
             {
                 case GameState.RequestType.Connect:
-                    try {
-                        uint id = (uint)players.Count;
-                        players.Add(address, new LightPlayer(id, level));
-                        
-                        tasks.Add(SendGameState(state.Type, id, endPoint, sender));
-                    
-                        Console.WriteLine($"Player {id} has joined");
-                    }
-                    catch (ArgumentException) {
-                        Console.Error.WriteLine($"Error: connect request: address {address} is already used by player {players[address].ID}");
-                    }
+                    int id = PlayerManager.Add(address);    
+                    if (id != -1)
+                        SendGameState(state.Type, (uint)id, endPoint, sender);
                     break;
                 case GameState.RequestType.Disconnect:
-                    try {
-                        Console.WriteLine($"Player {players[address].ID} has left");
-                        players.Remove(address);
-                    }
-                    catch (KeyNotFoundException) {
-                        Console.Error.WriteLine($"Error: disconnect request: unknown player from {address}");
-                    }
+                    PlayerManager.Remove(address);
                     break;
                 case GameState.RequestType.Update:
                     try {
-                        uint id = players[address].ID;
+                        uint id = PlayerManager.players[address].ID;
                         if (id != state.PlayerID) {
                             Console.Error.WriteLine($"Error: update request: player {id} is saying to be player {state.PlayerID}");
                             return;
                         }
-                        players[address] = state.Players[(int)id];
-                        tasks.Add(SendGameState(state.Type, id, endPoint, sender));
+                        PlayerManager.players[address] = state.Players[(int)id];
+                        SendGameState(state.Type, id, endPoint, sender);
                     }
                     catch (KeyNotFoundException) {
                         Console.Error.WriteLine($"Error: update request: unknown player from {address}");
@@ -85,16 +72,15 @@ namespace server
             }
         }
 
-        static async Task SendGameState(GameState.RequestType type, uint playerID, IPEndPoint endPoint, UdpClient sender)
+        static void SendGameState(GameState.RequestType type, uint playerID, IPEndPoint endPoint, UdpClient sender)
         {
             GameState state = new GameState() {
                 Type = type,
                 PlayerID = playerID,
-                Players = players.Values.ToArray()
+                Players = PlayerManager.GetPlayers()
             };
 
-            byte[] data = new byte[1];
-            await Task.Run(() => data = state.ToBytes(formatter));
+            byte[] data = state.ToBytes(formatter);
             sender.Send(data, data.Length, endPoint);
         }
     }
