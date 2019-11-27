@@ -34,6 +34,7 @@ namespace shootingame
             Rect.Left = player.Pos.X;
             Rect.Top = player.Pos.Y;
             State = player.State;
+            Frame = player.Frame;
             Direction = player.Direction;
             HookPoint = new Vector2i() {
                 X = player.HookPoint.X,

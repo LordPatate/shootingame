@@ -27,6 +27,7 @@ namespace shootingame
                 Y = player.Rect.Top
             };
             State = player.State;
+            Frame = player.Frame;
             Direction = player.Direction;
             HookPoint = new LightVect2() {
                 X = player.HookPoint.X,
