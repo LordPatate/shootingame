@@ -10,7 +10,7 @@ namespace shootingame
     {
         public static bool Running;
         public static Player Player;
-        public static List<LightPlayer> OtherPlayers = new List<LightPlayer>();
+        public static List<LightPlayer> Players = new List<LightPlayer>();
         public static Level Level;
         public static RenderTexture Background;
         public static IntRect Bounds;
@@ -52,10 +52,8 @@ namespace shootingame
         }
         private static void UpdateFromGameState(GameState state)
         {
-            OtherPlayers.Clear();
-            OtherPlayers.AddRange(state.Players);
-            LightPlayer myPlayer = OtherPlayers[(int)state.PlayerID];
-            OtherPlayers.Remove(myPlayer);
+            Players.Clear();
+            Players.AddRange(state.Players);
         }
 
         private static void LoadLevel(uint id)

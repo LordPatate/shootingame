@@ -44,8 +44,7 @@ namespace shootingame
         public static void Update()
         {
             GameScene.Draw(new Sprite(Game.Background.Texture));
-            Game.Player.Draw();
-            foreach (var lightPlayer in Game.OtherPlayers) {
+            foreach (var lightPlayer in Game.Players) {
                 Player player = new Player(lightPlayer);
                 player.Texture = Game.Player.Texture;
                 player.Draw();
