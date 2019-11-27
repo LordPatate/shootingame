@@ -54,7 +54,7 @@ namespace shootingame
             OtherPlayers.Clear();
             OtherPlayers.AddRange(state.Players);
             LightPlayer myPlayer = OtherPlayers[(int)state.PlayerID];
-            Player.FromLightPlayer(myPlayer);
+            //Player.FromLightPlayer(myPlayer);
             OtherPlayers.Remove(myPlayer);
         }
 
@@ -86,11 +86,7 @@ namespace shootingame
             }
 
             foreach (var tile in Game.Level.Tiles) {
-                var rect = new IntRect(
-                    left: Bounds.Left + tile.Rect.Left,
-                    top: Bounds.Top + tile.Rect.Top,
-                    width: tile.Rect.Width, height: tile.Rect.Height
-                );
+                var rect = Geometry.AdaptRect(tile.Rect);
                 Background.Draw(Drawing.SpriteOf(foreground, rect));
             }
             Background.Display();
