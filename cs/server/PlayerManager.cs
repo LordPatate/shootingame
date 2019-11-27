@@ -65,10 +65,10 @@ namespace server
         public static void Refresh()
         {
             DateTime now = DateTime.Now;
-            foreach (IPAddress key in players.Keys)
+            foreach (IPAddress address in lastUpdated.Keys)
             {
-                if (now - lastUpdated[key] >= timeout) {
-                    Remove(key);
+                if (now - lastUpdated[address] >= timeout) {
+                    Remove(address);
                 }
             }
         }
