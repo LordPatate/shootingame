@@ -122,7 +122,7 @@ namespace shootingame
                 }
             }
             
-            IntRect bounds = Game.Bounds;
+            IntRect bounds = level.Bounds;
             projection.Intersects(bounds, out IntRect overLap);
             if (!projection.Equals(overLap)) {
                 projection.Left = bounds.Left + bounds.Width;
