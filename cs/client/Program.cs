@@ -12,8 +12,11 @@ namespace shootingame
         public static Popup AskQuit;   
         static void Main(string[] args)
         {
+            string server = "127.0.0.1";
+            if (args.Length >= 1)
+                server = args[0];
             Screen.Init();
-            Game.Init();
+            Game.Init(server);
             AskQuit = new Popup(
                 new string[] {
                     "Do you really want to quit?"

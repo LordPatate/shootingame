@@ -15,12 +15,12 @@ namespace shootingame
         public static RenderTexture Background;
         public static IntRect Bounds;
 
-        public static void Init()
+        public static void Init(string server)
         {
             Running = true;
             Level = new Level();
             
-            GameState state = Client.ConnectToServer("127.0.0.1");
+            GameState state = Client.ConnectToServer(server);
             Player = new Player(state.PlayerID);
             LoadLevel(0);
             UpdateFromGameState(state);
