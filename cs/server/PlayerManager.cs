@@ -1,6 +1,9 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Net;
+using shootingame;
+
 namespace server
 {
     class PlayerManager
@@ -24,13 +27,12 @@ namespace server
             }
             catch (KeyNotFoundException) {
                 id = playerIDs.Count;
-                players.Add(address, new LightPlayer(id, level));
+                players.Add(address, new LightPlayer((uint)id, level));
                 playerIDs.Add(false);
                 Console.WriteLine($"Player {id} has joined");
             }
-            finally {
-                return id;
-            }
+            
+            return id;
         }
 
         public static void Remove(IPAddress address)
@@ -42,7 +44,7 @@ namespace server
 
         public static LightPlayer[] GetPlayers()
         {
-            var array = players.ToArray();
+            var array = players.Values.ToArray();
             for (int i = 0; i < playerIDs.Count; ++i) {
                 if (playerIDs[i])
                     array[i] = null;

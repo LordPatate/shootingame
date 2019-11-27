@@ -16,7 +16,7 @@ namespace server
         static List<Task> tasks = new List<Task>();
         static void Main(string[] args)
         {
-            level.Init(Level.levelInfos[0]);
+            PlayerManager.level.Init(Level.levelInfos[0]);
             
             Receiver receiver = new Receiver();
             receiver.Connect(Const.ServerPort);
@@ -48,9 +48,11 @@ namespace server
             switch (state.Type)
             {
                 case GameState.RequestType.Connect:
-                    int id = PlayerManager.Add(address);    
-                    if (id != -1)
-                        SendGameState(state.Type, (uint)id, endPoint, sender);
+                    {
+                        int id = PlayerManager.Add(address);
+                        if (id != -1)
+                            SendGameState(state.Type, (uint)id, endPoint, sender);
+                    }
                     break;
                 case GameState.RequestType.Disconnect:
                     PlayerManager.Remove(address);
