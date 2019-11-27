@@ -9,15 +9,11 @@ namespace shootingame
     public class LightPlayer
     {
         [Serializable()]
-        public struct LightRect {
-            public int Left, Top, Width, Height;
-        }
-        [Serializable()]
         public struct LightVect2 {
             public int X, Y;
         }
         public uint ID;
-        public LightRect Rect;
+        public LightVect2 Pos;
         public PlayerState State;
         public uint Frame;
         public bool Direction;
@@ -26,11 +22,9 @@ namespace shootingame
 
         public LightPlayer(Player player) {
             ID = player.ID;
-            Rect = new LightRect() {
-                Left = player.Rect.Left,
-                Top = player.Rect.Top,
-                Width = player.Rect.Width,
-                Height = player.Rect.Height
+            Pos = new LightVect2() {
+                X = player.Rect.Left,
+                Y = player.Rect.Top
             };
             State = player.State;
             Direction = player.Direction;
@@ -42,8 +36,8 @@ namespace shootingame
         }
         public LightPlayer(uint id, Level level) {
             Vector2i spawnPoint = level.SpawnPoints[(int)id % level.SpawnPoints.Count];
-            Rect.Left = spawnPoint.X;
-            Rect.Top = spawnPoint.Y;
+            Pos.X = spawnPoint.X;
+            Pos.Y = spawnPoint.Y;
         }
     }
 

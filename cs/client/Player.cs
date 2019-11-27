@@ -31,12 +31,8 @@ namespace shootingame
 
         public void FromLightPlayer(LightPlayer player) {
             ID = player.ID;
-            Rect = new IntRect() {
-                Left = player.Rect.Left,
-                Top = player.Rect.Top,
-                Width = player.Rect.Width,
-                Height = player.Rect.Height
-            };
+            Rect.Left = player.Pos.X;
+            Rect.Top = player.Pos.Y;
             State = player.State;
             Direction = player.Direction;
             HookPoint = new Vector2i() {
@@ -46,14 +42,16 @@ namespace shootingame
             Hooked = player.Hooked;
         }
         public Player(LightPlayer player) {
+            Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
+            Rect = new IntRect(0, 0, width: scale(Const.NormalStateDimX), height: scale(Const.NormalStateDimY));
             FromLightPlayer(player);
         }
         public Player(uint id)
         {
-            ID = id;
             Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
-
             Rect = new IntRect(0, 0, width: scale(Const.NormalStateDimX), height: scale(Const.NormalStateDimY));
+            
+            ID = id;
             Inertia =  new Vector2i();
             HookPoint = new Vector2i();
             Hooked = false;
@@ -74,18 +72,24 @@ namespace shootingame
             
             Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
             int width = scale(Const.PlayerSpriteWidth), height = scale(Const.PlayerSpriteHeight);
-            IntRect dst = new IntRect(
-                left: Game.Bounds.Left + Rect.Left + Rect.Width/2 - width/2,
-                top: Game.Bounds.Top + Rect.Top + Rect.Height/2 - height/2,
+            IntRect dst = Geometry.AdaptRect(new IntRect(
+                left: Rect.Left + Rect.Width/2 - width/2,
+                top: Rect.Top + Rect.Height/2 - height/2,
                 width: width, height: height
-            );
+            ));
 
             Screen.GameScene.Draw(Drawing.SpriteOf(Texture, dst, TextureArea));
 
             if (Hooked) {
                 VertexArray line = new VertexArray(PrimitiveType.Lines);
-                line.Append(new Vertex((Vector2f)GetCOM(), new Color(red: 255, 0, 0)));
-                line.Append(new Vertex((Vector2f)HookPoint, new Color(red: 255, 0, 0)));
+                line.Append(new Vertex(
+                    (Vector2f)GetCOM(),
+                    new Color(red: 255, 0, 0)
+                ));
+                line.Append(new Vertex(
+                    (Vector2f)HookPoint,
+                    new Color(red: 255, 0, 0)
+                ));
                 Screen.GameScene.Draw(line);
             }
         }
@@ -148,10 +152,10 @@ namespace shootingame
 
         public Vector2i GetCOM()
         {
-            return new Vector2i(
+            return Geometry.AdaptPoint(new Vector2i(
                 x: Rect.Left + Rect.Width/2,
                 y: Rect.Top + Rect.Height/2 
-            );
+            ));
         }
 
         public bool TryHook(Level level, out Vector2i hookPoint)
@@ -160,7 +164,7 @@ namespace shootingame
             Vector2i tmp = new Vector2i();
             
             Vector2i playerCOM = GetCOM();
-            Vector2i proj = Geometry.PointShade(level.Bounds, playerCOM, Controls.MousePos.X, Controls.MousePos.Y);
+            Vector2i proj = Geometry.PointShade(Game.Bounds, playerCOM, Controls.MousePos.X, Controls.MousePos.Y);
             double minDist = Double.PositiveInfinity;
             
             Action<Vector2i> minimize = (point) => {
@@ -175,8 +179,9 @@ namespace shootingame
 
             foreach (var tile in level.Tiles)
             {
-                if (Geometry.IntersectLine(tile.Rect, playerCOM, proj)) {
-                    var point = Geometry.HitPoint(tile.Rect, playerCOM, proj);
+                var rect = Geometry.AdaptRect(tile.Rect);
+                if (Geometry.IntersectLine(rect, playerCOM, proj)) {
+                    var point = Geometry.HitPoint(rect, playerCOM, proj);
                     minimize(point);
                 }
             }
