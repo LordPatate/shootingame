@@ -24,6 +24,7 @@ namespace shootingame
             Player = new Player(state.PlayerID);
             LoadLevel(0);
             UpdateFromGameState(state);
+            Player.FromLightPlayer(state.Players[(int)state.PlayerID]);
         }
 
         public static void Quit()
@@ -54,7 +55,6 @@ namespace shootingame
             OtherPlayers.Clear();
             OtherPlayers.AddRange(state.Players);
             LightPlayer myPlayer = OtherPlayers[(int)state.PlayerID];
-            //Player.FromLightPlayer(myPlayer);
             OtherPlayers.Remove(myPlayer);
         }
 
