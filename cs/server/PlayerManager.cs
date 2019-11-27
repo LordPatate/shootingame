@@ -87,7 +87,7 @@ namespace server
             return array;
         }
 
-        private static readonly TimeSpan timeout = new TimeSpan(0, 0, 3);
+        private static readonly TimeSpan timeout = new TimeSpan(0, 0, 30);
         private static List<bool> freePlayerIDs = new List<bool>();
         private static Dictionary<IPAddress, DateTime> lastUpdated = new Dictionary<IPAddress, DateTime>();
     }
