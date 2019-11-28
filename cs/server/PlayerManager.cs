@@ -77,8 +77,8 @@ namespace server
                     }
                 }
             }
-            catch (InvalidOperationException e) {
-                Console.Error.WriteLine($"Warning: unable to refresh player list: {e.Message}");
+            catch (AggregateException e) {
+                Console.Error.WriteLine($"Warning: unable to refresh player list: {e.InnerException.Message}");
             }
         }
 
