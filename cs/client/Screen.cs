@@ -14,6 +14,7 @@ namespace shootingame
         public static RenderTexture GameScene;
         public static Font Font;
         public static List<ConvexShape> Shades;
+        public static List<VertexArray> Echoes = new List<VertexArray>();
 
         public static void Init()
         {
@@ -41,6 +42,17 @@ namespace shootingame
                     player.Draw();
                 }
             }
+            foreach (var line in Echoes) {
+                GameScene.Draw(line);
+                var origin = line[0];
+                var dest = line[1];
+                origin.Color.A -= 16;
+                dest.Color.A -= 16;
+                line[0] = origin;
+                line[1] = dest;
+            }
+            Echoes.RemoveAll((line) => line[0].Color.A < 16);
+            
             CastShadows();
 
             GameScene.Display();

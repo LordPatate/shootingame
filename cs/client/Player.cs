@@ -215,6 +215,18 @@ namespace shootingame
         public void Shoot(Level level)
         {
             Vector2i hit = HitScan(level, true);
+            
+            VertexArray line = new VertexArray(PrimitiveType.Lines);
+            line.Append(new Vertex(
+                (Vector2f)Geometry.AdaptPoint(GetCOM()),
+                new Color(255, 255, blue: 200)
+            ));
+            line.Append(new Vertex(
+                (Vector2f)Geometry.AdaptPoint(hit),
+                new Color(255, 255, blue: 200)
+            ));
+            Screen.Echoes.Add(line);
+
             foreach (var lightPlayer in Game.Players)
             {
                 var player = new Player(lightPlayer);
