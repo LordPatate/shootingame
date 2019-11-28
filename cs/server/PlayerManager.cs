@@ -47,12 +47,12 @@ namespace server
         public static bool Update(IPAddress address, GameState state)
         {
             try {
+                lastUpdated[address] = DateTime.Now;
+                
                 uint id = players[address].ID;
                 if (id != state.PlayerID) {
-                    Console.Error.WriteLine($"Warning: update request: player {id} is saying to be player {state.PlayerID}");
                     return false;
                 }
-                lastUpdated[address] = DateTime.Now;
                 players[address] = state.Players[(int)id];
                 return true;
             }
