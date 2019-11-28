@@ -9,6 +9,7 @@ namespace shootingame
         public const int GameStepDuration = 10,
         StepsPerFrame = 10,
         PlayerStep = 5,
+        FramesBeforeFullSpeed = 30,
         Gravity = 30,
         JumpPower = 850,
         AirMovePower = 20,

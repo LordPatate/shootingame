@@ -138,13 +138,21 @@ namespace shootingame
         private static void Step(Player player, bool direction, Level level)
         {
             player.SetState(PlayerState.Running);
+            int inertiaDelta = Const.PlayerStep * Const.InertiaPerPixel / Const.FramesBeforeFullSpeed;
+            int maxSpeed = Const.PlayerStep * Const.InertiaPerPixel * Const.FramesBeforeFullSpeed;
 
             if (direction == Const.Left) {
                 player.MoveX(-Const.PlayerStep, level);
-                player.Inertia.X = -Const.PlayerStep * Const.InertiaPerPixel;
+                if (player.Inertia.X > 0)
+                    player.Inertia.X = 0;
+                player.Inertia.X -= inertiaDelta;
+                player.Inertia.X = Math.Max(player.Inertia.X, -maxSpeed);
             } else {
                 player.MoveX(Const.PlayerStep, level);
-                player.Inertia.X = Const.PlayerStep * Const.InertiaPerPixel;
+                if (player.Inertia.X < 0)
+                    player.Inertia.X = 0;
+                player.Inertia.X += inertiaDelta;
+                player.Inertia.X = Math.Min(player.Inertia.X, maxSpeed);
             }
             player.Direction = direction;
         }
@@ -167,7 +175,7 @@ namespace shootingame
             player.Inertia.Y = - Const.JumpPower;
             player.JumpEnabled = false;
             player.Direction = direction;
-            player.Inertia.X = Const.PlayerStep * Const.InertiaPerPixel;
+            player.Inertia.X = Const.PlayerStep * Const.InertiaPerPixel * 2/3;
             if (direction == Const.Left)
                 player.Inertia.X *= -1;
         }
