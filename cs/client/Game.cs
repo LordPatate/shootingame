@@ -11,6 +11,7 @@ namespace shootingame
         public static bool Running;
         public static Player Player;
         public static List<LightPlayer> Players = new List<LightPlayer>();
+        public static int LevelID;
         public static Level Level;
         public static RenderTexture Background;
         public static IntRect Bounds;
@@ -18,11 +19,15 @@ namespace shootingame
         public static void Init(string server)
         {
             Running = true;
-            Level = new Level();
             
             GameState state = Client.ConnectToServer(server);
             Player = new Player(state.PlayerID);
-            LoadLevel(0);
+            
+            LevelID = 0;
+            LevelInfos infos = Level.levelInfos[LevelID];
+            Level = new Level(infos);
+            LoadLevel(infos);
+            
             UpdateFromGameState(state);
             Player.FromLightPlayer(state.Players[(int)state.PlayerID]);
         }
@@ -56,10 +61,8 @@ namespace shootingame
             Players.AddRange(state.Players);
         }
 
-        private static void LoadLevel(uint id)
+        public static void LoadLevel(LevelInfos infos)
         {
-            LevelInfos infos = Level.levelInfos[id];
-            Level.Init(infos);
             Bounds = new IntRect(
                 left: (int)Screen.Width/2 - Level.Bounds.Width/2,
                 top: (int)Screen.Height/2 - Level.Bounds.Height/2,

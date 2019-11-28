@@ -6,15 +6,24 @@ using SFML.Window;
 
 namespace shootingame
 {
+    public class PopupText
+    {
+        public string[] Lines;
+        public uint FontSize;
+        public int LineHeight;
+        public int SideMargin;
+        public int TopSpace;
+    }
     public class PopupOption
     {
         public string Text;
+        public uint FontSize;
         public RenderTexture Texture;
         public IntRect Rect;
     }
     public class Popup
     {
-        public string[] Text;
+        public PopupText Text;
         public RenderTexture Texture;
         public IntRect Rect;
         public PopupOption[] Options;
@@ -22,11 +31,18 @@ namespace shootingame
         private IntRect PreviousRect;
         private string ChosenOption;
 
+        protected Popup() {}
         public Popup(string[] text, params string[] options)
         {
-            Text = text;
             Rect = Geometry.ScaleRect(new IntRect(0, 0, width: (int)Screen.Width, height: (int)Screen.Height), 80, 80);
+            Text = new PopupText() { Lines = text, FontSize = Const.FontSize };
             Options = new PopupOption[options.Length];
+
+            Text.LineHeight = 20;
+            Text.SideMargin = 10;
+            int maxHeight = Rect.Height*80/100;
+            int paragraphSize = text.Length*Text.LineHeight;
+            Text.TopSpace = maxHeight/2 - paragraphSize/2;
 
             var buttonRow = new IntRect(
                 left: Rect.Left + Rect.Width*5/100,
@@ -44,9 +60,11 @@ namespace shootingame
                 space.Width = width;
                 space.Height = buttonRow.Height;
 
-                Options[i] = new PopupOption();
-                Options[i].Rect = Geometry.ScaleRect(space, 75, 90);
-                Options[i].Text = options[i];
+                Options[i] = new PopupOption() {
+                    Rect = Geometry.ScaleRect(space, 75, 90),
+                    Text = options[i],
+                    FontSize = Const.FontSize
+                };
             }
 
             CreateTextures();
@@ -74,11 +92,6 @@ namespace shootingame
             Screen.Window.MouseButtonReleased -= OnRelease;
 
             return ChosenOption;
-        }
-
-        public void Destroy()
-        {
-            
         }
 
         private void Display()
@@ -129,7 +142,7 @@ namespace shootingame
             }
         }
 
-        private void CreateTextures()
+        protected void CreateTextures()
         {
             var bgColor = new Color(red: 110, green: 100, blue: 100);
 
@@ -138,21 +151,16 @@ namespace shootingame
             Texture.Clear(bgColor);
 
             // text body
-            int lineHeight = 20;
-            int sideMargin = 10;
-            int maxHeight = Rect.Height*80/100;
-            int paragraphSize = Text.Length*lineHeight;
-            int topSpace = maxHeight/2 - paragraphSize/2;
             int i = 0;
-            foreach (string line in Text)
+            foreach (string line in Text.Lines)
             {
                 var rect = new IntRect(
-                    left: sideMargin,
-                    top: topSpace + i*lineHeight, 
-                    width: Rect.Width - 2*sideMargin,
-                    height: lineHeight
+                    left: Text.SideMargin,
+                    top: Text.TopSpace + i*Text.LineHeight, 
+                    width: Rect.Width - 2*Text.SideMargin,
+                    height: Text.LineHeight
                 );
-                DrawText(Texture, line, rect, new Color(0, 0, 0), bgColor);
+                DrawText(Texture, line, rect, new Color(0, 0, 0), bgColor, Text.FontSize);
 
                 ++i;
             }
@@ -166,13 +174,13 @@ namespace shootingame
                 option.Texture.Clear(buttonBG);
                 
                 var rect = new IntRect(0, 0, width: option.Rect.Width, height: option.Rect.Height);
-                DrawText(option.Texture, option.Text, rect, buttonFG, buttonBG);
+                DrawText(option.Texture, option.Text, rect, buttonFG, buttonBG, option.FontSize);
             }
         }
 
-        private static void DrawText(RenderTarget dst, string line, IntRect frame, Color fg, Color bg)
+        private static void DrawText(RenderTarget dst, string line, IntRect frame, Color fg, Color bg, uint fontSize)
         {
-            Text text = new Text(line, Screen.Font, Const.FontSize);
+            Text text = new Text(line, Screen.Font, fontSize);
             text.FillColor = fg;
             text.OutlineColor = bg;
 

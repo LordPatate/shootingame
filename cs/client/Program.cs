@@ -17,6 +17,10 @@ namespace shootingame
                 server = args[0];
             Screen.Init();
             Game.Init(server);
+            Menu menu = new Menu(
+                "Game paused",
+                "Resume", "Toggle fullscreen", "Quit"
+            );
             AskQuit = new Popup(
                 new string[] {
                     "Do you really want to quit?"
@@ -29,9 +33,20 @@ namespace shootingame
                 Screen.Update();
                 Screen.Window.DispatchEvents();
                 
-                if (IsKeyPressed(Key.Escape))
-                    if (AskQuit.Pop() == "Yes")
-                        Game.Running = false;
+                if (IsKeyPressed(Key.Escape)) {
+                    string menuChoice = menu.Pop();
+                    while (menuChoice != "Resume")
+                    {
+                        if (menuChoice == "Quit" && AskQuit.Pop() == "Yes") {
+                            Game.Running = false;
+                            break;
+                        }
+                        if (menuChoice == "Toogle fullscreen") {
+                            Screen.ToggleFullscreen();
+                        }
+                        menuChoice = menu.Pop();
+                    }
+                }
                 
                 Task update = Task.Run(() => {
                     Game.Update();
@@ -42,7 +57,6 @@ namespace shootingame
                 update.Wait();
             }
 
-            AskQuit.Destroy();
             Game.Quit();
             Screen.Quit();
         }

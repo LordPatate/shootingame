@@ -36,7 +36,7 @@ namespace shootingame
         public List<Vector2i> SpawnPoints;
         public List<Tile> Tiles;
 
-        public void Init(LevelInfos infos)
+        public Level(LevelInfos infos)
         {
             Image image = new Image(infos.SourceFile);
             Vector2u size = image.Size;

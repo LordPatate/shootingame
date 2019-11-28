@@ -27,7 +27,7 @@ namespace shootingame
         PlayerScalePercent = 120;
 
         public const string FontFile = "../../resources/fonts/DejaVuSans.ttf";
-        public const int FontSize = 18;
+        public const uint FontSize = 18;
 
         public const string LevelFolder = "../../levels/";
 
