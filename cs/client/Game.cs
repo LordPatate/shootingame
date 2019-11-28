@@ -34,7 +34,6 @@ namespace shootingame
 
         public static void Quit()
         {
-            Player.Destroy();
             if (Client.Connected)
                 Client.SendDisconnect();
             else
