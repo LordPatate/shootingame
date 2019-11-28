@@ -17,11 +17,8 @@ namespace shootingame
 
         public static void Init()
         {
-            NewWindow();
-
-            GameScene = new RenderTexture(Width, Height);
-
             Font = new Font(Const.FontFile);
+            NewWindow();
         }
         public static void ToggleFullscreen()
         {
@@ -63,6 +60,9 @@ namespace shootingame
         }
 
         private static void NewWindow() {
+            if (Window != null) {
+                Window.Close();
+            }
             VideoMode videoMode;
             if (fullscreen) {
                 videoMode = VideoMode.FullscreenModes[0];
@@ -82,6 +82,16 @@ namespace shootingame
             Window.Closed += new EventHandler(OnClose);            
             Width = videoMode.Width; Height = videoMode.Height;            
             GameScene = new RenderTexture(Width, Height);
+            
+            Program.PauseMenu = new Menu(
+                "Game paused",
+                "Resume", "Toggle fullscreen", "Quit"
+            );
+            Program.AskQuit = new Popup(
+                new string[] {
+                    "Do you really want to quit?"
+                }, "Yes", "No"
+            );
 
             if (Game.Level != null) {
                 LevelInfos infos = Level.levelInfos[Game.LevelID];

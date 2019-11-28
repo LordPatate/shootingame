@@ -9,7 +9,8 @@ namespace shootingame
 {
     class Program
     {
-        public static Popup AskQuit;   
+        public static Popup AskQuit;
+        public static Menu PauseMenu;   
         static void Main(string[] args)
         {
             string server = "127.0.0.1";
@@ -17,15 +18,6 @@ namespace shootingame
                 server = args[0];
             Screen.Init();
             Game.Init(server);
-            Menu menu = new Menu(
-                "Game paused",
-                "Resume", "Toggle fullscreen", "Quit"
-            );
-            AskQuit = new Popup(
-                new string[] {
-                    "Do you really want to quit?"
-                }, "Yes", "No"
-            );
 
             Shadows.Compute();
             while (Game.Running)
@@ -34,17 +26,17 @@ namespace shootingame
                 Screen.Window.DispatchEvents();
                 
                 if (IsKeyPressed(Key.Escape)) {
-                    string menuChoice = menu.Pop();
+                    string menuChoice = PauseMenu.Pop();
                     while (menuChoice != "Resume")
                     {
                         if (menuChoice == "Quit" && AskQuit.Pop() == "Yes") {
                             Game.Running = false;
                             break;
                         }
-                        if (menuChoice == "Toogle fullscreen") {
+                        if (menuChoice == "Toggle fullscreen") {
                             Screen.ToggleFullscreen();
                         }
-                        menuChoice = menu.Pop();
+                        menuChoice = PauseMenu.Pop();
                     }
                 }
                 
