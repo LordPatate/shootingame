@@ -49,7 +49,7 @@ namespace server
             try {
                 uint id = players[address].ID;
                 if (id != state.PlayerID) {
-                    Console.Error.WriteLine($"Error: update request: player {id} is saying to be player {state.PlayerID}");
+                    Console.Error.WriteLine($"Warning: update request: player {id} is saying to be player {state.PlayerID}");
                     return false;
                 }
                 lastUpdated[address] = DateTime.Now;
@@ -64,16 +64,21 @@ namespace server
 
         public static void Refresh()
         {
-            DateTime now = DateTime.Now;
-            foreach (var keyVal in players)
-            {
-                if (freePlayerIDs[(int)keyVal.Value.ID])
-                    continue;
-                
-                var address = keyVal.Key;
-                if (now - lastUpdated[address] >= timeout) {
-                    Remove(address);
+            try {
+                DateTime now = DateTime.Now;
+                foreach (var keyVal in players)
+                {
+                    if (freePlayerIDs[(int)keyVal.Value.ID])
+                        continue;
+                    
+                    var address = keyVal.Key;
+                    if (now - lastUpdated[address] >= timeout) {
+                        Remove(address);
+                    }
                 }
+            }
+            catch (InvalidOperationException e) {
+                Console.Error.WriteLine($"Warning: unable to refresh player list: {e.Message}");
             }
         }
 
