@@ -27,18 +27,18 @@ namespace shootingame
                 width: Rect.Width * 80 / 100,
                 height: Rect.Height*80/100 - 10
             );
-            int width = buttonBox.Width / options.Length;
+            int height = buttonBox.Height / options.Length;
             var buttonSpaces = new IntRect[options.Length];
             for (int i = 0; i < options.Length; ++i)
             {
                 var space = buttonSpaces[i];
-                space.Left = buttonBox.Left + width*i;
-                space.Top = buttonBox.Top;
-                space.Width = width;
-                space.Height = buttonBox.Height;
+                space.Left = buttonBox.Left;
+                space.Top = buttonBox.Top + height*i;
+                space.Width = buttonBox.Width;
+                space.Height = height;
 
                 Options[i] = new PopupOption() {
-                    Rect = Geometry.ScaleRect(space, 75, 90),
+                    Rect = Geometry.ScaleRect(space, 90, 75),
                     Text = options[i],
                     FontSize = Const.FontSize
                 };
