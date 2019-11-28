@@ -16,7 +16,7 @@ namespace server
         static List<Task> tasks = new List<Task>();
         static void Main(string[] args)
         {
-            PlayerManager.level.Init(Level.levelInfos[0]);
+            PlayerManager.level = new Level(Level.levelInfos[0]);
             
             Receiver receiver = new Receiver();
             receiver.Connect(Const.ServerPort);

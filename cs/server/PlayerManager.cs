@@ -8,7 +8,7 @@ namespace server
 {
     class PlayerManager
     {
-        public static Level level = new Level();
+        public static Level level;
         public static Dictionary<IPAddress, LightPlayer> players = new Dictionary<IPAddress, LightPlayer>();
 
         public static int Add(IPAddress address)
