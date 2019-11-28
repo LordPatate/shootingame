@@ -17,7 +17,7 @@ namespace shootingame
         WallFriction = 10,
         InertiaPerPixel = 100,
         HookMaxRange = 170,
-        GunCoolDown = 200;
+        GunCoolDown = 50;
 
         public const int NormalStateDimX = 20, NormalStateDimY = 37;
 
