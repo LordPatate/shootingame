@@ -83,9 +83,10 @@ namespace server
 
         public static LightPlayer[] GetPlayers()
         {
-            var array = new LightPlayer[players.Count];
+            var cpy = new Dictionary<IPAddress, LightPlayer>(players);
+            var array = new LightPlayer[cpy.Count];
             
-            foreach (var player in players.Values) {
+            foreach (var player in cpy.Values) {
                 int id = player.ID;
                 
                 array[id] = (freePlayerIDs[id]) ?
