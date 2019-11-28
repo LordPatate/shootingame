@@ -64,21 +64,20 @@ namespace server
 
         public static void Refresh()
         {
-            try {
-                DateTime now = DateTime.Now;
-                foreach (var keyVal in players)
-                {
-                    if (freePlayerIDs[keyVal.Value.ID])
-                        continue;
-                    
-                    var address = keyVal.Key;
-                    if (now - lastUpdated[address] >= timeout) {
-                        Remove(address);
-                    }
+            DateTime now = DateTime.Now;
+            List<IPAddress> toRemove = new List<IPAddress>();
+            foreach (var keyVal in players)
+            {
+                if (freePlayerIDs[keyVal.Value.ID])
+                    continue;
+                
+                var address = keyVal.Key;
+                if (now - lastUpdated[address] >= timeout) {
+                    toRemove.Add(address);
                 }
             }
-            catch (AggregateException e) {
-                Console.Error.WriteLine($"Warning: unable to refresh player list: {e.InnerException.Message}");
+            foreach (var address in toRemove) {
+                Remove(address);
             }
         }
 
