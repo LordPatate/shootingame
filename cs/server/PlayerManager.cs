@@ -15,7 +15,7 @@ namespace server
         {
             int id = -1;
             try {
-                id = (int)players[address].ID;
+                id = players[address].ID;
                 
                 if (freePlayerIDs[id]) {
                     freePlayerIDs[id] = false;
@@ -28,7 +28,7 @@ namespace server
             }
             catch (KeyNotFoundException) {
                 id = freePlayerIDs.Count;
-                players.Add(address, new LightPlayer((uint)id, level));
+                players.Add(address, new LightPlayer(id, level));
                 freePlayerIDs.Add(false);
                 lastUpdated.Add(address, DateTime.Now);
                 Console.WriteLine($"Player {id} has joined");
@@ -39,7 +39,7 @@ namespace server
 
         public static void Remove(IPAddress address)
         {
-            int id = (int)players[address].ID;
+            int id = players[address].ID;
             freePlayerIDs[id] = true;
             Console.WriteLine($"Player {id} has left");
         }
@@ -49,11 +49,11 @@ namespace server
             try {
                 lastUpdated[address] = DateTime.Now;
                 
-                uint id = players[address].ID;
+                int id = players[address].ID;
                 if (id != state.PlayerID) {
                     return false;
                 }
-                players[address] = state.Players[(int)id];
+                players[address] = state.Players[id];
                 return true;
             }
             catch (KeyNotFoundException) {
@@ -68,7 +68,7 @@ namespace server
                 DateTime now = DateTime.Now;
                 foreach (var keyVal in players)
                 {
-                    if (freePlayerIDs[(int)keyVal.Value.ID])
+                    if (freePlayerIDs[keyVal.Value.ID])
                         continue;
                     
                     var address = keyVal.Key;
@@ -87,7 +87,7 @@ namespace server
             var array = new LightPlayer[players.Count];
             
             foreach (var player in players.Values) {
-                int id = (int)player.ID;
+                int id = player.ID;
                 
                 array[id] = (freePlayerIDs[id]) ?
                     null:

@@ -12,13 +12,14 @@ namespace shootingame
         public struct LightVect2 {
             public int X, Y;
         }
-        public uint ID;
+        public int ID;
         public LightVect2 Pos;
         public PlayerState State;
         public uint Frame;
         public bool Direction;
         public LightVect2 HookPoint;
         public bool Hooked;
+        public int ShotID;
 
         public LightPlayer(Player player) {
             ID = player.ID;
@@ -34,10 +35,11 @@ namespace shootingame
                 Y = player.HookPoint.Y
             };
             Hooked = player.Hooked;
+            ShotID = player.ShotId;
         }
-        public LightPlayer(uint id, Level level) {
+        public LightPlayer(int id, Level level) {
             ID = id;
-            Vector2i spawnPoint = level.SpawnPoints[(int)id % level.SpawnPoints.Count];
+            Vector2i spawnPoint = level.SpawnPoints[id % level.SpawnPoints.Count];
             Pos.X = spawnPoint.X;
             Pos.Y = spawnPoint.Y;
         }
@@ -53,7 +55,7 @@ namespace shootingame
             Disconnect
         }
         public LightPlayer[] Players;
-        public uint PlayerID;
+        public int PlayerID;
 
         public RequestType Type;
 

@@ -57,7 +57,7 @@ namespace server
                     {
                         int id = PlayerManager.Add(address);
                         if (id != -1)
-                            SendGameState(state.Type, (uint)id, endPoint, sender);
+                            SendGameState(state.Type, id, endPoint, sender);
                     }
                     break;
                 case GameState.RequestType.Disconnect:
@@ -70,7 +70,7 @@ namespace server
             }
         }
 
-        static void SendGameState(GameState.RequestType type, uint playerID, IPEndPoint endPoint, UdpClient sender)
+        static void SendGameState(GameState.RequestType type, int playerID, IPEndPoint endPoint, UdpClient sender)
         {
             GameState state = new GameState() {
                 Type = type,

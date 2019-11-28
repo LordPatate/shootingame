@@ -19,15 +19,17 @@ namespace shootingame
     {
         public Texture Texture;
         public IntRect TextureArea;
-        public uint ID;
+        public int ID;
         public IntRect Rect;
         public PlayerState State;
         public uint Frame;
         public bool Direction;
         public Vector2i HookPoint;
         public bool Hooked;
+        public int ShotId;
         public bool JumpEnabled;
         public Vector2i Inertia;
+        public uint GunCoolDown;
 
         public void FromLightPlayer(LightPlayer player) {
             ID = player.ID;
@@ -47,7 +49,7 @@ namespace shootingame
             Rect = new IntRect(0, 0, width: scale(Const.NormalStateDimX), height: scale(Const.NormalStateDimY));
             FromLightPlayer(player);
         }
-        public Player(uint id)
+        public Player(int id)
         {
             Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
             Rect = new IntRect(0, 0, width: scale(Const.NormalStateDimX), height: scale(Const.NormalStateDimY));
@@ -56,15 +58,13 @@ namespace shootingame
             Inertia =  new Vector2i();
             HookPoint = new Vector2i();
             Hooked = false;
+            ShotId = -1;
             JumpEnabled = true;
+            GunCoolDown = 0;
 
             Texture = new Texture(Const.PlayerSpriteSheet);
 
             TextureArea = new IntRect(0, 0, width: Const.PlayerSpriteWidth, height: Const.PlayerSpriteHeight);
-        }
-        
-        public void Destroy()
-        {
         }
 
         public void Draw()
@@ -101,7 +101,9 @@ namespace shootingame
 
             if (Controls.RightClick) {
                 if (!Hooked) {
-                    if (Hooked = TryHook(level, out Vector2i hookPoint)) {
+                    Vector2i hookPoint = HitScan(level, false);
+                    if (Geometry.Dist(GetCOM(), HookPoint) <= Const.HookMaxRange) {
+                        Hooked = true;
                         HookPoint = hookPoint;
                     }
                 } else {
@@ -113,6 +115,13 @@ namespace shootingame
                 }
             } else {
                 Hooked = false;
+            }
+
+            ShotId = -1;
+            if (GunCoolDown > 0) --GunCoolDown;
+            if (GunCoolDown == 0 && Controls.LeftClick) {
+                Shoot(level);
+                GunCoolDown = Const.GunCoolDown;
             }
 
             if (!JumpEnabled && !Controls.Jump) {
@@ -159,10 +168,9 @@ namespace shootingame
             );
         }
 
-        public bool TryHook(Level level, out Vector2i hookPoint)
+        private Vector2i HitScan(Level level, bool hitPlayers)
         {
-            bool ok = false;
-            Vector2i tmp = new Vector2i();
+            Vector2i hit = new Vector2i();
             
             Vector2i playerCOM = Geometry.AdaptPoint(GetCOM());
             Vector2i proj = Geometry.PointShade(Game.Bounds, playerCOM, Controls.MousePos.X, Controls.MousePos.Y);
@@ -170,10 +178,9 @@ namespace shootingame
             
             Action<Vector2i> minimize = (point) => {
                 double dist = Geometry.Dist(playerCOM, point);
-                if (dist < minDist && dist <= Const.HookMaxRange) {
+                if (dist < minDist) {
                     minDist = dist;
-                    tmp = point;
-                    ok = true;
+                    hit = point;
                 }
             };
             minimize(proj);
@@ -186,11 +193,36 @@ namespace shootingame
                     minimize(point);
                 }
             }
+            if (hitPlayers) {
+                foreach (var lightPlayer in Game.Players)
+                {
+                    if (lightPlayer.ID == ID)
+                        continue;
+                    var player = new Player(lightPlayer);
+                    var rect = Geometry.AdaptRect(player.Rect);
+                    if (Geometry.IntersectLine(rect, playerCOM, proj)) {
+                        var point = Geometry.HitPoint(rect, playerCOM, proj);
+                        minimize(point);
+                    }
+                }
+            }
             
-            hookPoint = tmp;
-            hookPoint.X -= Game.Bounds.Left;
-            hookPoint.Y -= Game.Bounds.Top;
-            return ok;
+            hit.X -= Game.Bounds.Left;
+            hit.Y -= Game.Bounds.Top;
+            return hit;
+        }
+
+        public void Shoot(Level level)
+        {
+            Vector2i hit = HitScan(level, true);
+            foreach (var lightPlayer in Game.Players)
+            {
+                var player = new Player(lightPlayer);
+                if (player.Rect.Contains(hit.X, hit.Y)) {
+                    ShotId = lightPlayer.ID;
+                    return;
+                }
+            }
         }
 
         public void MoveX(int delta, Level level)
