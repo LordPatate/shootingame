@@ -102,7 +102,7 @@ namespace shootingame
             if (Controls.RightClick) {
                 if (!Hooked) {
                     Vector2i hookPoint = HitScan(level, false);
-                    if (Geometry.Dist(GetCOM(), HookPoint) <= Const.HookMaxRange) {
+                    if (Geometry.Dist(GetCOM(), hookPoint) <= Const.HookMaxRange) {
                         Hooked = true;
                         HookPoint = hookPoint;
                     }
