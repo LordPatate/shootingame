@@ -27,7 +27,7 @@ namespace shootingame
                 
                 if (IsKeyPressed(Key.Escape)) {
                     string menuChoice = PauseMenu.Pop();
-                    while (menuChoice != "Resume")
+                    while (menuChoice != "Resume" && menuChoice != "right click")
                     {
                         if (menuChoice == "Quit" && AskQuit.Pop() == "Yes") {
                             Game.Running = false;
