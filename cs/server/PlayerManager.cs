@@ -55,7 +55,8 @@ namespace server
                     return false;
                 }
                 
-                players[address] = state.Players[0];
+                UpdatePlayer(address, state.Players[0]);
+                
                 if (state.Shots != null) {
                     LightShot shot = state.Shots[0];
                     shots.Add(shot);
@@ -116,6 +117,24 @@ namespace server
             }
 
             return array;
+        }
+
+        private static void UpdatePlayer(IPAddress address, LightPlayer clientPlayer)
+        {
+            LightPlayer player = players[address];
+            player.Pos = clientPlayer.Pos;
+            player.State = clientPlayer.State;
+            player.Frame = clientPlayer.Frame;
+            player.Direction = clientPlayer.Direction;
+            player.HookPoint = clientPlayer.HookPoint;
+            player.Hooked = clientPlayer.Hooked;
+
+            if (player.HasRespawned) {
+                player.ReSpawn = false;
+                player.HasRespawned = false;
+            }
+            else if (player.ReSpawn)
+                player.HasRespawned = true;
         }
 
         private static LightPlayer FindTarget(LightShot shot)
