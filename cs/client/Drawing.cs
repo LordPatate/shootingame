@@ -52,7 +52,7 @@ namespace shootingame
 
         public static void DrawText(
             RenderTarget dst, string line, IntRect frame,
-            Color fg, Color bg, uint fontSize, TextAlignment alignment
+            Color fg, Color bg, uint fontSize, TextAlignment alignment = TextAlignment.Center
         )
         {
             Text text = new Text(line, Screen.Font, fontSize);

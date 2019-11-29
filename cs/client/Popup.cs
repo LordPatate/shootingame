@@ -162,7 +162,7 @@ namespace shootingame
                 );
                 Drawing.DrawText(
                     Texture, line, rect,
-                    new Color(0, 0, 0), bgColor, Text.FontSize, TextAlignment.Center
+                    new Color(0, 0, 0), bgColor, Text.FontSize
                 );
 
                 ++i;
@@ -179,7 +179,7 @@ namespace shootingame
                 var rect = new IntRect(0, 0, width: option.Rect.Width, height: option.Rect.Height);
                 Drawing.DrawText(
                     option.Texture, option.Text, rect,
-                    buttonFG, buttonBG, option.FontSize, TextAlignment.Center
+                    buttonFG, buttonBG, option.FontSize
                 );
             }
         }
