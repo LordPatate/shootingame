@@ -71,6 +71,9 @@ namespace shootingame
             int i = 0;
             foreach (var player in Game.Players)
             {
+                if (player == null)
+                    continue;
+                
                 var rect = new IntRect(
                     0, top: lineHeight*i,
                     width: (int)Screen.Width, height: lineHeight
