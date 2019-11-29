@@ -38,6 +38,6 @@ server releases are archives named `shootingame-server-<OS_TYPE>.zip`.
 
 Make sure you are in the same folder as the executable you want to run.
 
-**Server:** `server[.exe]`
+**Server:** `server[.exe] [<LevelID>]`
 
 **Client:** `shootingame[.exe] <IP address of the server>`
