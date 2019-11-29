@@ -51,11 +51,7 @@ namespace shootingame
             GameScene.Display();
             Window.Draw(new Sprite(GameScene.Texture));
 
-            var rect = new IntRect(
-                0, 0, width: (int)Screen.Width, height: 30
-            );
-            Color fg = new Color(255, 255, 255), bg = new Color(0, 0, 0, 0);
-            Drawing.DrawText(Window, $"Score: {Game.Player.Score}", rect, fg, bg, 30);
+            DrawScores();
 
             Window.Display();
         }
@@ -67,6 +63,29 @@ namespace shootingame
                 shade.FillColor = new Color(0, 0, 0);
                 shade.Position = Geometry.AdaptPoint(shade.Position);
                 GameScene.Draw(shade);
+            }
+        }
+
+        public static void DrawScores() {
+            int lineHeight = 20;
+            int i = 0;
+            foreach (var player in Game.Players)
+            {
+                var rect = new IntRect(
+                    0, top: lineHeight*i,
+                    width: (int)Screen.Width, height: lineHeight
+                );
+                Color fg = (player.ID == Game.Player.ID) ?
+                    new Color(255, 255, 0):
+                    new Color(255, 255, 255);
+                Color bg = new Color(0, 0, 0, 100);
+                
+                Drawing.DrawText(
+                    Window, $"Player {player.ID}: {player.Score}", rect,
+                    fg, bg, Const.FontSize, TextAlignment.Left
+                );
+
+                ++i;
             }
         }
 
