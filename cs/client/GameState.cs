@@ -18,6 +18,7 @@ namespace shootingame
     public class LightPlayer
     {
         public int ID;
+        public int Score;
         public LightVect2 Pos;
         public PlayerState State;
         public uint Frame;
@@ -27,6 +28,7 @@ namespace shootingame
 
         public LightPlayer(Player player) {
             ID = player.ID;
+            Score = player.Score;
             Pos = new LightVect2() {
                 X = player.Rect.Left,
                 Y = player.Rect.Top

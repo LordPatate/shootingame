@@ -41,6 +41,7 @@ namespace server
         {
             int id = players[address].ID;
             freePlayerIDs[id] = true;
+            players[address] = new LightPlayer(id, level);
             Console.WriteLine($"Player {id} has left");
         }
 
@@ -56,7 +57,22 @@ namespace server
                 
                 players[address] = state.Players[0];
                 if (state.Shots != null) {
-                    shots.Add(state.Shots[0]);
+                    LightShot shot = state.Shots[0];
+                    shots.Add(shot);
+
+                    foreach (var keyVal in players) {
+                        LightPlayer lightPlayer = keyVal.Value;
+
+                        if (freePlayerIDs[lightPlayer.ID])
+                            continue;
+                        
+                        Player player = new Player(lightPlayer);
+                        if (player.Rect.Contains(shot.Dest.X, shot.Dest.Y)) {
+                            players[address].Score += 1;
+                            players[keyVal.Key] = new LightPlayer(lightPlayer.ID, level);
+                            players[keyVal.Key].Score = lightPlayer.Score;
+                        }
+                    }
                 }
                 return true;
             }

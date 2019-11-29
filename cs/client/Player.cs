@@ -20,6 +20,7 @@ namespace shootingame
         public Texture Texture;
         public IntRect TextureArea;
         public int ID;
+        public int Score;
         public IntRect Rect;
         public PlayerState State;
         public uint Frame;
@@ -34,6 +35,7 @@ namespace shootingame
 
         public void FromLightPlayer(LightPlayer player) {
             ID = player.ID;
+            Score = player.Score;
             Rect.Left = player.Pos.X;
             Rect.Top = player.Pos.Y;
             State = player.State;
@@ -56,6 +58,7 @@ namespace shootingame
             Rect = new IntRect(0, 0, width: scale(Const.NormalStateDimX), height: scale(Const.NormalStateDimY));
             
             ID = id;
+            Score = 0;
             Inertia =  new Vector2i();
             HookPoint = new Vector2i();
             Hooked = false;
