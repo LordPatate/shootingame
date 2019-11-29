@@ -1,8 +1,16 @@
 shootingame
 shootingame.zip
 shootingame.exe
+shootingame-linux.zip
+shootingame-server-linux.zip
+shootingame-win.zip
+shootingame-server-win.zip
 **/bin/
 **/obj/
 *.pidb
 *.userprefs
 *.suo
+shootingame-linux.zip
+shootingame-server-linux.zip
+shootingame-win.zip
+shootingame-server-win.zip
