@@ -59,20 +59,12 @@ namespace server
                 if (state.Shots != null) {
                     LightShot shot = state.Shots[0];
                     shots.Add(shot);
-
-                    foreach (var keyVal in players) {
-                        LightPlayer lightPlayer = keyVal.Value;
-
-                        if (freePlayerIDs[lightPlayer.ID])
-                            continue;
-                        
-                        Player player = new Player(lightPlayer);
-                        if (player.Rect.Contains(shot.Dest.X, shot.Dest.Y)) {
-                            players[address].Score += 1;
-                            players[keyVal.Key] = new LightPlayer(lightPlayer.ID, level);
-                            players[keyVal.Key].Score = lightPlayer.Score;
-                        }
-                    }
+                    
+                    var keyVal = findTarget(shot);
+                    LightPlayer lightPlayer = keyVal.Value;
+                    players[address].Score += 1;
+                    players[keyVal.Key] = new LightPlayer(lightPlayer.ID, level);
+                    players[keyVal.Key].Score = lightPlayer.Score;
                 }
                 return true;
             }
@@ -124,6 +116,26 @@ namespace server
             }
 
             return array;
+        }
+
+        private static KeyValuePair findTarget(LightShot shot)
+        {
+            foreach (var keyVal in players) {
+                LightPlayer lightPlayer = keyVal.Value;
+
+                if (freePlayerIDs[lightPlayer.ID])
+                    continue;
+                
+                Player player = new Player(lightPlayer);
+                player.MakeRect();
+                player.Rect.Left = lightPlayer.Pos.X;
+                player.Rect.Top = lightPlayer.Pos.Y;
+                if (Geometry.ScaleRect(player.Rect, 105, 105).Contains(shot.Dest.X, shot.Dest.Y)) {
+                    return keyVal;
+                }
+            }
+
+            return null;
         }
 
         private static readonly TimeSpan timeout = new TimeSpan(0, 0, 30);

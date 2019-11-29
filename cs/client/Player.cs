@@ -48,14 +48,12 @@ namespace shootingame
             Hooked = player.Hooked;
         }
         public Player(LightPlayer player) {
-            Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
-            Rect = new IntRect(0, 0, width: scale(Const.NormalStateDimX), height: scale(Const.NormalStateDimY));
+            MakeRect();
             FromLightPlayer(player);
         }
         public Player(int id)
         {
-            Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
-            Rect = new IntRect(0, 0, width: scale(Const.NormalStateDimX), height: scale(Const.NormalStateDimY));
+            MakeRect();
             
             ID = id;
             Score = 0;
@@ -173,6 +171,12 @@ namespace shootingame
                 x: Rect.Left + Rect.Width/2,
                 y: Rect.Top + Rect.Height/2 
             );
+        }
+        
+        public void MakeRect()
+        {
+            Func<int, int> scale = (x) => x * Const.PlayerScalePercent / 100;
+            Rect = new IntRect(0, 0, width: scale(Const.NormalStateDimX), height: scale(Const.NormalStateDimY));
         }
 
         private Vector2i HitScan(Level level, bool hitPlayers)

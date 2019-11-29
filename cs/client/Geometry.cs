@@ -4,7 +4,7 @@ using SFML.System;
 
 namespace shootingame
 {
-    class Geometry
+    public class Geometry
     {
         public static IntRect AdaptRect(IntRect rect)
         {
