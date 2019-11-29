@@ -4,6 +4,8 @@ A small dumb 2D game where you get to shoot people.
 ## Install
 
 * Find the release that you need depending on your OS.
+
+    See release page: https://github.com/LordPatate/shootingame/releases.
 Client releases are archives named `shootingame-<OS_TYPE>.zip` ;
 server releases are archives named `shootingame-server-<OS_TYPE>.zip`.
 
