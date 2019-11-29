@@ -44,14 +44,7 @@ namespace shootingame
             }
             foreach (var line in Echoes) {
                 GameScene.Draw(line);
-                var origin = line[0];
-                var dest = line[1];
-                origin.Color.A -= 16;
-                dest.Color.A -= 16;
-                line[0] = origin;
-                line[1] = dest;
             }
-            Echoes.RemoveAll((line) => line[0].Color.A < 16);
             
             CastShadows();
 

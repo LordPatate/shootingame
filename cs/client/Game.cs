@@ -48,16 +48,57 @@ namespace shootingame
             }
             Player.Update(Level);
 
-            Client.SendUpdate();
-            GameState state = Client.ReceiveUpdate();
+            GameState state = MakeGameState();
+            Client.SendUpdate(state);
+            state = Client.ReceiveUpdate();
             if (state != null) {
                 UpdateFromGameState(state);
             }
+        }
+        private static GameState MakeGameState()
+        {
+            GameState state = new GameState();
+            state.Type = GameState.RequestType.Update;
+            state.PlayerID = Player.ID;
+            state.Players = new LightPlayer[] { new LightPlayer(Player) };
+            
+            state.Shots = null;
+            if (Player.Shot) {
+                state.Shots = new LightShot[] {
+                    new LightShot() {
+                        Origin = new LightVect2() { X = Player.GetCOM().X, Y = Player.GetCOM().Y },
+                        Dest = new LightVect2() { X = Player.ShotPoint.X, Y = Player.ShotPoint.Y },
+                        Alpha = 255
+                    }
+                };
+            }
+
+            return state;
         }
         private static void UpdateFromGameState(GameState state)
         {
             Players.Clear();
             Players.AddRange(state.Players);
+
+            if (state.Shots == null) {
+                return;
+            }
+            Screen.Echoes.Clear();
+            for (int i = 0; i < state.Shots.Length; ++i) {
+                LightShot shot = state.Shots[i];
+                Color color = new Color(255, 220, 200, alpha: shot.Alpha);
+                VertexArray line = new VertexArray(PrimitiveType.Lines);                
+                line.Append(new Vertex(
+                    Geometry.AdaptPoint(new Vector2f(shot.Origin.X, shot.Origin.Y)),
+                    color
+                ));
+                line.Append(new Vertex(
+                    Geometry.AdaptPoint(new Vector2f(shot.Dest.X, shot.Dest.Y)),
+                    color
+                ));
+                
+                Screen.Echoes.Add(line);
+            }
         }
 
         public static void LoadLevel(LevelInfos infos)

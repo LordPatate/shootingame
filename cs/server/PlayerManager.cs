@@ -53,7 +53,11 @@ namespace server
                 if (id != state.PlayerID) {
                     return false;
                 }
-                players[address] = state.Players[id];
+                
+                players[address] = state.Players[0];
+                if (state.Shots != null) {
+                    shots.Add(state.Shots[0]);
+                }
                 return true;
             }
             catch (KeyNotFoundException) {
@@ -79,6 +83,15 @@ namespace server
             foreach (var address in toRemove) {
                 Remove(address);
             }
+
+            for (int i = 0; i < shots.Count; ++i) {
+                byte alpha = (byte)(shots[i].Alpha - 16);
+                shots[i] = new LightShot() {
+                    Origin = shots[i].Origin, Dest = shots[i].Dest,
+                    Alpha = alpha
+                };
+            }
+            shots.RemoveAll((shot) => shot.Alpha < 16);
         }
 
         public static LightPlayer[] GetPlayers()
@@ -100,5 +113,6 @@ namespace server
         private static readonly TimeSpan timeout = new TimeSpan(0, 0, 30);
         private static List<bool> freePlayerIDs = new List<bool>();
         private static Dictionary<IPAddress, DateTime> lastUpdated = new Dictionary<IPAddress, DateTime>();
+        public static List<LightShot> shots = new List<LightShot>();        
     }
 }

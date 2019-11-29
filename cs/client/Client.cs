@@ -14,6 +14,7 @@ namespace shootingame
             sender = new UdpClient(host, Const.ServerPort);
             receiver.Connect(Const.ClientPort);
 
+            GameState state = new GameState();
             state.Type = GameState.RequestType.Connect;
             data = state.ToBytes(formatter);
             sender.Send(data, data.Length);
@@ -37,12 +38,8 @@ namespace shootingame
             throw new Exception($"Failed to connect to server {host}");
         }
 
-        public static void SendUpdate()
+        public static void SendUpdate(GameState state)
         {
-            state.Type = GameState.RequestType.Update;
-            state.PlayerID = Game.Player.ID;
-            state.Players[state.PlayerID] = new LightPlayer(Game.Player);
-
             byte[] data = state.ToBytes(formatter);
 
             try {
@@ -69,7 +66,7 @@ namespace shootingame
                 return null;
             }
             turnsWaiting = 0;
-            state = GameState.FromBytes(formatter, data);
+            GameState state = GameState.FromBytes(formatter, data);
             if (state.Type == GameState.RequestType.Disconnect) {
                 Disconnect();
             }
@@ -79,6 +76,7 @@ namespace shootingame
 
         public static void SendDisconnect()
         {
+            GameState state = new GameState();
             state.Type = GameState.RequestType.Disconnect;
             byte[] data = state.ToBytes(formatter);
             
@@ -102,7 +100,6 @@ namespace shootingame
         private static UdpClient sender;
         private static Receiver receiver = new Receiver();
         private static BinaryFormatter formatter = new BinaryFormatter();
-        private static GameState state = new GameState();
         private static uint turnsWaiting = 0;
     }
 }

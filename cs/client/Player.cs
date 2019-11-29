@@ -26,10 +26,11 @@ namespace shootingame
         public bool Direction;
         public Vector2i HookPoint;
         public bool Hooked;
-        public int ShotId;
         public bool JumpEnabled;
         public Vector2i Inertia;
         public uint GunCoolDown;
+        public Vector2i ShotPoint;
+        public bool Shot;
 
         public void FromLightPlayer(LightPlayer player) {
             ID = player.ID;
@@ -58,9 +59,10 @@ namespace shootingame
             Inertia =  new Vector2i();
             HookPoint = new Vector2i();
             Hooked = false;
-            ShotId = -1;
             JumpEnabled = true;
             GunCoolDown = 0;
+            ShotPoint = new Vector2i();
+            Shot = false;
 
             Texture = new Texture(Const.PlayerSpriteSheet);
 
@@ -117,10 +119,11 @@ namespace shootingame
                 Hooked = false;
             }
 
-            ShotId = -1;
+            Shot = false;
             if (GunCoolDown > 0) --GunCoolDown;
             if (GunCoolDown == 0 && Controls.LeftClick) {
-                Shoot(level);
+                ShotPoint = HitScan(level, true);
+                Shot = true;
                 GunCoolDown = Const.GunCoolDown;
             }
 
@@ -210,31 +213,6 @@ namespace shootingame
             hit.X -= Game.Bounds.Left;
             hit.Y -= Game.Bounds.Top;
             return hit;
-        }
-
-        public void Shoot(Level level)
-        {
-            Vector2i hit = HitScan(level, true);
-            
-            VertexArray line = new VertexArray(PrimitiveType.Lines);
-            line.Append(new Vertex(
-                (Vector2f)Geometry.AdaptPoint(GetCOM()),
-                new Color(255, 255, blue: 200)
-            ));
-            line.Append(new Vertex(
-                (Vector2f)Geometry.AdaptPoint(hit),
-                new Color(255, 255, blue: 200)
-            ));
-            Screen.Echoes.Add(line);
-
-            foreach (var lightPlayer in Game.Players)
-            {
-                var player = new Player(lightPlayer);
-                if (player.Rect.Contains(hit.X, hit.Y)) {
-                    ShotId = lightPlayer.ID;
-                    return;
-                }
-            }
         }
 
         public void MoveX(int delta, Level level)

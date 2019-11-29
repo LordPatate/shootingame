@@ -6,12 +6,17 @@ using SFML.System;
 namespace shootingame
 {
     [Serializable()]
+    public struct LightVect2 {
+        public int X, Y;
+    }
+    [Serializable()]
+    public struct LightShot {
+        public LightVect2 Origin, Dest;
+        public byte Alpha;
+    }
+    [Serializable()]
     public class LightPlayer
     {
-        [Serializable()]
-        public struct LightVect2 {
-            public int X, Y;
-        }
         public int ID;
         public LightVect2 Pos;
         public PlayerState State;
@@ -19,7 +24,6 @@ namespace shootingame
         public bool Direction;
         public LightVect2 HookPoint;
         public bool Hooked;
-        public int ShotID;
 
         public LightPlayer(Player player) {
             ID = player.ID;
@@ -35,7 +39,6 @@ namespace shootingame
                 Y = player.HookPoint.Y
             };
             Hooked = player.Hooked;
-            ShotID = player.ShotId;
         }
         public LightPlayer(int id, Level level) {
             ID = id;
@@ -55,6 +58,7 @@ namespace shootingame
             Disconnect
         }
         public LightPlayer[] Players;
+        public LightShot[] Shots;
         public int PlayerID;
 
         public RequestType Type;

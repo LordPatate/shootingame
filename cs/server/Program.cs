@@ -27,7 +27,7 @@ namespace server
             while (Prompt.ReadLine() != "quit")
             {
                 ++turn;
-                turn %= 50;
+                turn %= 500000;
                 if (turn == 0) {
                     Task.WaitAll(tasks.ToArray());
                     tasks.Clear();
@@ -75,7 +75,8 @@ namespace server
             GameState state = new GameState() {
                 Type = type,
                 PlayerID = playerID,
-                Players = PlayerManager.GetPlayers()
+                Players = PlayerManager.GetPlayers(),
+                Shots = PlayerManager.shots.ToArray()
             };
 
             byte[] data = state.ToBytes(formatter);
