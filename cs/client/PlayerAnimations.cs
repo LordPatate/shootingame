@@ -55,8 +55,6 @@ namespace shootingame
                 player.TextureArea.Left += Const.PlayerSpriteWidth;
                 player.TextureArea.Width *= -1;
             }
-
-            ++player.Frame;
         }
     }
 }

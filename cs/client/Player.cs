@@ -99,6 +99,7 @@ namespace shootingame
 
         public void Update(Level level)
         {
+            ++Frame;
             Controls.Update();
 
             if (Controls.RightClick) {
@@ -199,7 +200,7 @@ namespace shootingame
             if (hitPlayers) {
                 foreach (var lightPlayer in Game.Players)
                 {
-                    if (lightPlayer.ID == ID)
+                    if (lightPlayer == null || lightPlayer.ID == ID)
                         continue;
                     var player = new Player(lightPlayer);
                     var rect = Geometry.AdaptRect(player.Rect);
