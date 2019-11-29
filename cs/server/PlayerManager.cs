@@ -60,11 +60,11 @@ namespace server
                     LightShot shot = state.Shots[0];
                     shots.Add(shot);
                     
-                    var keyVal = findTarget(shot);
-                    LightPlayer lightPlayer = keyVal.Value;
-                    players[address].Score += 1;
-                    players[keyVal.Key] = new LightPlayer(lightPlayer.ID, level);
-                    players[keyVal.Key].Score = lightPlayer.Score;
+                    var target = FindTarget(shot);
+                    if (target != null) {
+                        target.ReSpawn = true;
+                        players[address].Score += 1;
+                    }
                 }
                 return true;
             }
@@ -118,11 +118,9 @@ namespace server
             return array;
         }
 
-        private static KeyValuePair findTarget(LightShot shot)
+        private static LightPlayer FindTarget(LightShot shot)
         {
-            foreach (var keyVal in players) {
-                LightPlayer lightPlayer = keyVal.Value;
-
+            foreach (var lightPlayer in players.Values) {
                 if (freePlayerIDs[lightPlayer.ID])
                     continue;
                 
@@ -131,7 +129,7 @@ namespace server
                 player.Rect.Left = lightPlayer.Pos.X;
                 player.Rect.Top = lightPlayer.Pos.Y;
                 if (Geometry.ScaleRect(player.Rect, 105, 105).Contains(shot.Dest.X, shot.Dest.Y)) {
-                    return keyVal;
+                    return lightPlayer;
                 }
             }
 

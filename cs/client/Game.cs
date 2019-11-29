@@ -80,6 +80,13 @@ namespace shootingame
             Players.Clear();
             Players.AddRange(state.Players);
 
+            LightPlayer lightPlayer = Players[Player.ID];
+            if (lightPlayer.ReSpawn) {
+                Vector2i spawnPoint = Level.SpawnPoints[Player.ID % Level.SpawnPoints.Count];
+                Player.Rect.Left = spawnPoint.X;
+                Player.Rect.Top = spawnPoint.Y;
+            }
+
             if (state.Shots == null) {
                 return;
             }

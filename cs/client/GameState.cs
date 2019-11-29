@@ -25,6 +25,7 @@ namespace shootingame
         public bool Direction;
         public LightVect2 HookPoint;
         public bool Hooked;
+        public bool ReSpawn;
 
         public LightPlayer(Player player) {
             ID = player.ID;
