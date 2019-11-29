@@ -160,7 +160,7 @@ namespace shootingame
                     width: Rect.Width - 2*Text.SideMargin,
                     height: Text.LineHeight
                 );
-                DrawText(Texture, line, rect, new Color(0, 0, 0), bgColor, Text.FontSize);
+                Drawing.DrawText(Texture, line, rect, new Color(0, 0, 0), bgColor, Text.FontSize);
 
                 ++i;
             }
@@ -174,23 +174,8 @@ namespace shootingame
                 option.Texture.Clear(buttonBG);
                 
                 var rect = new IntRect(0, 0, width: option.Rect.Width, height: option.Rect.Height);
-                DrawText(option.Texture, option.Text, rect, buttonFG, buttonBG, option.FontSize);
+                Drawing.DrawText(option.Texture, option.Text, rect, buttonFG, buttonBG, option.FontSize);
             }
-        }
-
-        private static void DrawText(RenderTarget dst, string line, IntRect frame, Color fg, Color bg, uint fontSize)
-        {
-            Text text = new Text(line, Screen.Font, fontSize);
-            text.FillColor = fg;
-            text.OutlineColor = bg;
-
-            FloatRect rect = text.GetLocalBounds();
-            text.Position = new Vector2f(
-                x: frame.Left + frame.Width/2 - rect.Width/2,
-                y: frame.Top + frame.Height/2 - rect.Height/2
-            );
-            
-            dst.Draw(text);
         }
     }
 }

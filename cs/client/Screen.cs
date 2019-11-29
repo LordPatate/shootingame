@@ -51,6 +51,12 @@ namespace shootingame
             GameScene.Display();
             Window.Draw(new Sprite(GameScene.Texture));
 
+            var rect = new IntRect(
+                0, 0, width: (int)Screen.Width, height: 30
+            );
+            Color fg = new Color(255, 255, 255), bg = new Color(0, 0, 0, 0);
+            Drawing.DrawText(Window, $"Score: {Game.Player.Score}", rect, fg, bg, 30);
+
             Window.Display();
         }
 

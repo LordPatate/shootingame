@@ -45,5 +45,22 @@ namespace shootingame
             
             return shape;
         }
+
+
+
+        public static void DrawText(RenderTarget dst, string line, IntRect frame, Color fg, Color bg, uint fontSize)
+        {
+            Text text = new Text(line, Screen.Font, fontSize);
+            text.FillColor = fg;
+            text.OutlineColor = bg;
+
+            FloatRect rect = text.GetLocalBounds();
+            text.Position = new Vector2f(
+                x: frame.Left + frame.Width/2 - rect.Width/2,
+                y: frame.Top + frame.Height/2 - rect.Height/2
+            );
+            
+            dst.Draw(text);
+        }
     }
 }
