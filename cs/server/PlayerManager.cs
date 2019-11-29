@@ -133,8 +133,6 @@ namespace server
                 player.ReSpawn = false;
                 player.HasRespawned = false;
             }
-            else if (player.ReSpawn)
-                player.HasRespawned = true;
         }
 
         private static LightPlayer FindTarget(LightShot shot)

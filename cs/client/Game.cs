@@ -85,6 +85,7 @@ namespace shootingame
                 Vector2i spawnPoint = Level.SpawnPoints[Player.ID % Level.SpawnPoints.Count];
                 Player.Rect.Left = spawnPoint.X;
                 Player.Rect.Top = spawnPoint.Y;
+                Player.HasRespawned = true;
             }
 
             if (state.Shots == null) {

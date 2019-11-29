@@ -43,6 +43,7 @@ namespace shootingame
                 Y = player.HookPoint.Y
             };
             Hooked = player.Hooked;
+            HasRespawned = player.HasRespawned;
         }
         public LightPlayer(int id, Level level) {
             ID = id;

@@ -32,6 +32,7 @@ namespace shootingame
         public uint GunCoolDown;
         public Vector2i ShotPoint;
         public bool Shot;
+        public bool HasRespawned;
 
         public void FromLightPlayer(LightPlayer player) {
             ID = player.ID;
@@ -64,6 +65,7 @@ namespace shootingame
             GunCoolDown = 0;
             ShotPoint = new Vector2i();
             Shot = false;
+            HasRespawned = false;
 
             Texture = new Texture(Const.PlayerSpriteSheet);
 
