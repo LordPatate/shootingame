@@ -147,7 +147,7 @@ namespace server
                 player.MakeRect();
                 player.Rect.Left = lightPlayer.Pos.X;
                 player.Rect.Top = lightPlayer.Pos.Y;
-                if (Geometry.ScaleRect(player.Rect, 105, 105).Contains(shot.Dest.X, shot.Dest.Y)) {
+                if (Geometry.ScaleRect(player.Rect, 120, 120).Contains(shot.Dest.X, shot.Dest.Y)) {
                     return lightPlayer;
                 }
             }
