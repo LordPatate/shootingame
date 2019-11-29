@@ -3,6 +3,10 @@ using SFML.System;
 
 namespace shootingame
 {
+    enum TextAlignment
+    {
+        Left, Center, Right
+    }
     class Drawing
     {
         public static RectangleShape SpriteOf(Texture texture, IntRect rect)
@@ -46,18 +50,37 @@ namespace shootingame
         }
 
 
-
-        public static void DrawText(RenderTarget dst, string line, IntRect frame, Color fg, Color bg, uint fontSize)
+        public static void DrawText(
+            RenderTarget dst, string line, IntRect frame,
+            Color fg, Color bg, uint fontSize, TextAlignment alignment
+        )
         {
             Text text = new Text(line, Screen.Font, fontSize);
             text.FillColor = fg;
             text.OutlineColor = bg;
 
             FloatRect rect = text.GetLocalBounds();
-            text.Position = new Vector2f(
-                x: frame.Left + frame.Width/2 - rect.Width/2,
-                y: frame.Top + frame.Height/2 - rect.Height/2
-            );
+            switch (alignment)
+            {
+                case TextAlignment.Left:
+                    text.Position = new Vector2f(
+                        x: frame.Left,
+                        y: frame.Top
+                    );
+                    break;
+                case TextAlignment.Center:
+                    text.Position = new Vector2f(
+                        x: frame.Left + frame.Width/2 - rect.Width/2,
+                        y: frame.Top + frame.Height/2 - rect.Height/2
+                    );
+                    break;
+                case TextAlignment.Right:
+                    text.Position = new Vector2f(
+                        x: frame.Left + frame.Width - rect.Width,
+                        y: frame.Top + frame.Height - rect.Height
+                    );
+                    break;
+            }
             
             dst.Draw(text);
         }

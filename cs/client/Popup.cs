@@ -160,7 +160,10 @@ namespace shootingame
                     width: Rect.Width - 2*Text.SideMargin,
                     height: Text.LineHeight
                 );
-                Drawing.DrawText(Texture, line, rect, new Color(0, 0, 0), bgColor, Text.FontSize);
+                Drawing.DrawText(
+                    Texture, line, rect,
+                    new Color(0, 0, 0), bgColor, Text.FontSize, TextAlignment.Center
+                );
 
                 ++i;
             }
@@ -174,7 +177,10 @@ namespace shootingame
                 option.Texture.Clear(buttonBG);
                 
                 var rect = new IntRect(0, 0, width: option.Rect.Width, height: option.Rect.Height);
-                Drawing.DrawText(option.Texture, option.Text, rect, buttonFG, buttonBG, option.FontSize);
+                Drawing.DrawText(
+                    option.Texture, option.Text, rect,
+                    buttonFG, buttonBG, option.FontSize, TextAlignment.Center
+                );
             }
         }
     }
