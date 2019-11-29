@@ -16,7 +16,13 @@ namespace server
         static List<Task> tasks = new List<Task>();
         static void Main(string[] args)
         {
-            PlayerManager.level = new Level(Level.levelInfos[0]);
+            PlayerManager.levelID = 0;
+            if (args.Length >= 1) {
+                if (Int32.TryParse(args[0], out int i))
+                    PlayerManager.levelID = i;
+            }
+            Console.WriteLine($"Starting server with level {PlayerManager.levelID}");
+            PlayerManager.level = new Level(Level.levelInfos[PlayerManager.levelID]);
             
             Receiver receiver = new Receiver();
             receiver.Connect(Const.ServerPort);
@@ -74,6 +80,7 @@ namespace server
         {
             GameState state = new GameState() {
                 Type = type,
+                LevelID = PlayerManager.levelID,
                 PlayerID = playerID,
                 Players = PlayerManager.GetPlayers(),
                 Shots = PlayerManager.shots.ToArray()

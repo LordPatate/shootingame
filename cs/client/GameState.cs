@@ -65,6 +65,7 @@ namespace shootingame
         public LightPlayer[] Players;
         public LightShot[] Shots;
         public int PlayerID;
+        public int LevelID;
 
         public RequestType Type;
 

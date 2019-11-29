@@ -23,7 +23,7 @@ namespace shootingame
             GameState state = Client.ConnectToServer(server);
             Player = new Player(state.PlayerID);
             
-            LevelID = 0;
+            LevelID = state.LevelID;
             LevelInfos infos = Level.levelInfos[LevelID];
             Level = new Level(infos);
             LoadLevel(infos);
@@ -57,10 +57,11 @@ namespace shootingame
         }
         private static GameState MakeGameState()
         {
-            GameState state = new GameState();
-            state.Type = GameState.RequestType.Update;
-            state.PlayerID = Player.ID;
-            state.Players = new LightPlayer[] { new LightPlayer(Player) };
+            GameState state = new GameState() {
+                Type = GameState.RequestType.Update,
+                PlayerID = Player.ID,
+                Players = new LightPlayer[] { new LightPlayer(Player) },
+            };
             
             state.Shots = null;
             if (Player.Shot) {
@@ -81,6 +82,15 @@ namespace shootingame
             Players.AddRange(state.Players);
 
             LightPlayer lightPlayer = Players[Player.ID];
+            
+            if (state.LevelID != LevelID) {
+                LevelID = state.LevelID;
+                var infos = Level.levelInfos[LevelID];
+                Level = new Level(infos);
+                LoadLevel(infos);
+                lightPlayer.ReSpawn = true;
+            }
+            
             Player.HasRespawned = lightPlayer.HasRespawned;
             if (lightPlayer.ReSpawn) {
                 Vector2i spawnPoint = Level.SpawnPoints[Player.ID % Level.SpawnPoints.Count];

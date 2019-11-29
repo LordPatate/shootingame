@@ -30,6 +30,9 @@ namespace shootingame
             new LevelInfos( // Level 0
                 src: "level0.png"
             ),
+            new LevelInfos( //level 1
+                src: "level1.png"
+            )
         };
 
         public IntRect Bounds;
