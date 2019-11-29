@@ -8,17 +8,13 @@ namespace shootingame
     public class Receiver
     {
         public IPEndPoint EndPoint;
-        public void Connect(int port)
+        public void Connect(int port = 0)
         {
-            client = new UdpClient(port);
-            EndPoint = new IPEndPoint(IPAddress.Any, port);
+	    client = new UdpClient(port);
+            receiveTask = Task.Run(Reception);
         }
         public byte[] GetBytes()
         {
-            if (receiveTask is null) {
-                receiveTask = Task.Run(Reception);
-                return null;
-            }
             if (receiveTask.IsCompleted) {
                 byte[] bytes = receiveTask.Result;
                 receiveTask = Task.Run(Reception);
@@ -34,7 +30,10 @@ namespace shootingame
        
         private byte[] Reception()
         {
-            return client.Receive(ref EndPoint);
+	    IPEndPoint e = new IPEndPoint(IPAddress.Any, 0);
+            byte[] data = client.Receive(ref e);
+	    EndPoint = e;
+	    return data;
         }
 
         private UdpClient client;

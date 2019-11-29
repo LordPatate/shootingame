@@ -54,23 +54,21 @@ namespace server
 
         static void ProcessData(byte[] receivedBytes, IPEndPoint endPoint, UdpClient sender)
         {
-            IPAddress address = endPoint.Address;
-            endPoint.Port = Const.ClientPort;
             GameState state = GameState.FromBytes(formatter, receivedBytes);
             switch (state.Type)
             {
                 case GameState.RequestType.Connect:
                     {
-                        int id = PlayerManager.Add(address);
+                        int id = PlayerManager.Add(endPoint);
                         if (id != -1)
                             SendGameState(state.Type, id, endPoint, sender);
                     }
                     break;
                 case GameState.RequestType.Disconnect:
-                    PlayerManager.Remove(address);
+                    PlayerManager.Remove(endPoint);
                     break;
                 case GameState.RequestType.Update:
-                    if (PlayerManager.Update(address, state))
+                    if (PlayerManager.Update(endPoint, state))
                         SendGameState(state.Type, state.PlayerID, endPoint, sender);
                     break;
             }
@@ -87,7 +85,8 @@ namespace server
             };
 
             byte[] data = state.ToBytes(formatter);
-            sender.Send(data, data.Length, endPoint);
+            sender.Send(data, data.Length,
+	        endPoint.Address.ToString(), endPoint.Port + 1);
         }
     }
 }

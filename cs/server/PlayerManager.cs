@@ -10,53 +10,53 @@ namespace server
     {
         public static Level level;
         public static int levelID;
-        public static Dictionary<IPAddress, LightPlayer> players = new Dictionary<IPAddress, LightPlayer>();
+        public static Dictionary<IPEndPoint, LightPlayer> players = new Dictionary<IPEndPoint, LightPlayer>();
 
-        public static int Add(IPAddress address)
+        public static int Add(IPEndPoint endPoint)
         {
             int id = -1;
             try {
-                id = players[address].ID;
+                id = players[endPoint].ID;
                 
                 if (freePlayerIDs[id]) {
                     freePlayerIDs[id] = false;
-                    lastUpdated[address] = DateTime.Now;
+                    lastUpdated[endPoint] = DateTime.Now;
                     Console.WriteLine($"Player {id} has joined");
                 }
                 else {
-                    Console.Error.WriteLine($"Error: connect request: address {address} is already used by player {id}");
+                    Console.Error.WriteLine($"Error: connect request: endPoint {endPoint} is already used by player {id}");
                 }
             }
             catch (KeyNotFoundException) {
                 id = freePlayerIDs.Count;
-                players.Add(address, new LightPlayer(id, level));
+                players.Add(endPoint, new LightPlayer(id, level));
                 freePlayerIDs.Add(false);
-                lastUpdated.Add(address, DateTime.Now);
+                lastUpdated.Add(endPoint, DateTime.Now);
                 Console.WriteLine($"Player {id} has joined");
             }
             
             return id;
         }
 
-        public static void Remove(IPAddress address)
+        public static void Remove(IPEndPoint endPoint)
         {
-            int id = players[address].ID;
+            int id = players[endPoint].ID;
             freePlayerIDs[id] = true;
-            players[address] = new LightPlayer(id, level);
+            players[endPoint] = new LightPlayer(id, level);
             Console.WriteLine($"Player {id} has left");
         }
 
-        public static bool Update(IPAddress address, GameState state)
+        public static bool Update(IPEndPoint endPoint, GameState state)
         {
             try {
-                lastUpdated[address] = DateTime.Now;
+                lastUpdated[endPoint] = DateTime.Now;
                 
-                int id = players[address].ID;
+                int id = players[endPoint].ID;
                 if (id != state.PlayerID) {
                     return false;
                 }
                 
-                UpdatePlayer(address, state.Players[0]);
+                UpdatePlayer(endPoint, state.Players[0]);
                 
                 if (state.Shots != null) {
                     LightShot shot = state.Shots[0];
@@ -65,13 +65,13 @@ namespace server
                     var target = FindTarget(shot);
                     if (target != null) {
                         target.ReSpawn = true;
-                        players[address].Score += 1;
+                        players[endPoint].Score += 1;
                     }
                 }
                 return true;
             }
             catch (KeyNotFoundException) {
-                Console.Error.WriteLine($"Error: update request: unknown player from {address}");
+                Console.Error.WriteLine($"Error: update request: unknown player from {endPoint}");
                 return false;
             }
         }
@@ -79,19 +79,19 @@ namespace server
         public static void Refresh()
         {
             DateTime now = DateTime.Now;
-            List<IPAddress> toRemove = new List<IPAddress>();
+            List<IPEndPoint> toRemove = new List<IPEndPoint>();
             foreach (var keyVal in players)
             {
                 if (freePlayerIDs[keyVal.Value.ID])
                     continue;
                 
-                var address = keyVal.Key;
-                if (now - lastUpdated[address] >= timeout) {
-                    toRemove.Add(address);
+                var endPoint = keyVal.Key;
+                if (now - lastUpdated[endPoint] >= timeout) {
+                    toRemove.Add(endPoint);
                 }
             }
-            foreach (var address in toRemove) {
-                Remove(address);
+            foreach (var endPoint in toRemove) {
+                Remove(endPoint);
             }
 
             for (int i = 0; i < shots.Count; ++i) {
@@ -106,7 +106,7 @@ namespace server
 
         public static LightPlayer[] GetPlayers()
         {
-            var cpy = new Dictionary<IPAddress, LightPlayer>(players);
+            var cpy = new Dictionary<IPEndPoint, LightPlayer>(players);
             var array = new LightPlayer[cpy.Count];
             
             foreach (var player in cpy.Values) {
@@ -120,9 +120,9 @@ namespace server
             return array;
         }
 
-        private static void UpdatePlayer(IPAddress address, LightPlayer clientPlayer)
+        private static void UpdatePlayer(IPEndPoint endPoint, LightPlayer clientPlayer)
         {
-            LightPlayer player = players[address];
+            LightPlayer player = players[endPoint];
             player.Pos = clientPlayer.Pos;
             player.State = clientPlayer.State;
             player.Frame = clientPlayer.Frame;
@@ -156,7 +156,7 @@ namespace server
 
         private static readonly TimeSpan timeout = new TimeSpan(0, 0, 30);
         private static List<bool> freePlayerIDs = new List<bool>();
-        private static Dictionary<IPAddress, DateTime> lastUpdated = new Dictionary<IPAddress, DateTime>();
+        private static Dictionary<IPEndPoint, DateTime> lastUpdated = new Dictionary<IPEndPoint, DateTime>();
         public static List<LightShot> shots = new List<LightShot>();        
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Net.Sockets;
+using System.Net;
 namespace shootingame
 {
     class Client
@@ -12,7 +13,7 @@ namespace shootingame
         {
             byte[] data;
             sender = new UdpClient(host, Const.ServerPort);
-            receiver.Connect(Const.ClientPort);
+            receiver.Connect(((IPEndPoint)sender.Client.LocalEndPoint).Port + 1);
 
             GameState state = new GameState();
             state.Type = GameState.RequestType.Connect;
