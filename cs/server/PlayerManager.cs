@@ -129,7 +129,7 @@ namespace server
             player.HookPoint = clientPlayer.HookPoint;
             player.Hooked = clientPlayer.Hooked;
 
-            if (player.HasRespawned) {
+            if (clientPlayer.HasRespawned) {
                 player.ReSpawn = false;
                 player.HasRespawned = false;
             }
