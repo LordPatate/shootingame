@@ -81,6 +81,7 @@ namespace shootingame
             Players.AddRange(state.Players);
 
             LightPlayer lightPlayer = Players[Player.ID];
+            Player.HasRespawned = lightPlayer.HasRespawned;
             if (lightPlayer.ReSpawn) {
                 Vector2i spawnPoint = Level.SpawnPoints[Player.ID % Level.SpawnPoints.Count];
                 Player.Rect.Left = spawnPoint.X;
