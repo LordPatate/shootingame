@@ -24,9 +24,8 @@ namespace server
             Console.WriteLine($"Starting server with level {PlayerManager.levelID}");
             PlayerManager.level = new Level(Level.levelInfos[PlayerManager.levelID]);
             
-            Receiver receiver = new Receiver();
-            receiver.Connect(Const.ServerPort);
-            UdpClient sender = new UdpClient();
+            UdpClient client = new UdpClient(Const.ServerPort);
+            Receiver receiver = new Receiver(client);
             Console.WriteLine("Server ready to accept connections");
             
             int turn = 0;
@@ -44,15 +43,15 @@ namespace server
                 if (receivedBytes is null)
                     continue;
                 
-                tasks.Add(Task.Run(() => ProcessData(receivedBytes, receiver.EndPoint, sender)));
+                tasks.Add(Task.Run(() => ProcessData(receivedBytes, receiver.EndPoint, client)));
             }
 
             Task.WaitAll(tasks.ToArray());
             receiver.Close();
-            sender.Close();
+            client.Close();
         }
 
-        static void ProcessData(byte[] receivedBytes, IPEndPoint endPoint, UdpClient sender)
+        static void ProcessData(byte[] receivedBytes, IPEndPoint endPoint, UdpClient client)
         {
             GameState state = GameState.FromBytes(formatter, receivedBytes);
             switch (state.Type)
@@ -61,7 +60,7 @@ namespace server
                     {
                         int id = PlayerManager.Add(endPoint);
                         if (id != -1)
-                            SendGameState(state.Type, id, endPoint, sender);
+                            SendGameState(state.Type, id, endPoint, client);
                     }
                     break;
                 case GameState.RequestType.Disconnect:
@@ -69,12 +68,12 @@ namespace server
                     break;
                 case GameState.RequestType.Update:
                     if (PlayerManager.Update(endPoint, state))
-                        SendGameState(state.Type, state.PlayerID, endPoint, sender);
+                        SendGameState(state.Type, state.PlayerID, endPoint, client);
                     break;
             }
         }
 
-        static void SendGameState(GameState.RequestType type, int playerID, IPEndPoint endPoint, UdpClient sender)
+        static void SendGameState(GameState.RequestType type, int playerID, IPEndPoint endPoint, UdpClient client)
         {
             GameState state = new GameState() {
                 Type = type,
@@ -85,8 +84,8 @@ namespace server
             };
 
             byte[] data = state.ToBytes(formatter);
-            sender.Send(data, data.Length,
-	        endPoint.Address.ToString(), endPoint.Port + 1);
+            client.Send(data, data.Length,
+	        endPoint.Address.ToString(), endPoint.Port);
         }
     }
 }

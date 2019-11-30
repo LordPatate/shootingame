@@ -12,13 +12,14 @@ namespace shootingame
         public static GameState ConnectToServer(string host)
         {
             byte[] data;
-            sender = new UdpClient(host, Const.ServerPort);
-            receiver.Connect(((IPEndPoint)sender.Client.LocalEndPoint).Port + 1);
+            client = new UdpClient(0);
+            client.Connect(host, Const.ServerPort);
+            receiver = new Receiver(client);
 
             GameState state = new GameState();
             state.Type = GameState.RequestType.Connect;
             data = state.ToBytes(formatter);
-            sender.Send(data, data.Length);
+            client.Send(data, data.Length);
         
             for (uint i = 0; i < 5; ++i) {
                 data = receiver.GetBytes();
@@ -44,7 +45,7 @@ namespace shootingame
             byte[] data = state.ToBytes(formatter);
 
             try {
-                sender.Send(data, data.Length);
+                client.Send(data, data.Length);
             }
             catch (SocketException e) {
                 if (e.SocketErrorCode == SocketError.ConnectionRefused) {
@@ -82,7 +83,7 @@ namespace shootingame
             byte[] data = state.ToBytes(formatter);
             
             try {
-                sender.Send(data, data.Length);
+                client.Send(data, data.Length);
             }
             catch (SocketException e) {
                 if (e.SocketErrorCode != SocketError.ConnectionRefused)
@@ -94,12 +95,12 @@ namespace shootingame
         public static void Disconnect()
         {
             Connected = false;
-            sender.Close();
+            client.Close();
             receiver.Close();
         }
 
-        private static UdpClient sender;
-        private static Receiver receiver = new Receiver();
+        private static UdpClient client;
+        private static Receiver receiver;
         private static BinaryFormatter formatter = new BinaryFormatter();
         private static uint turnsWaiting = 0;
     }

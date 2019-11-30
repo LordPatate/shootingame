@@ -22,6 +22,7 @@ namespace server
                     freePlayerIDs[id] = false;
                     lastUpdated[endPoint] = DateTime.Now;
                     Console.WriteLine($"Player {id} has joined");
+                    Console.WriteLine($"    on {endPoint}");
                 }
                 else {
                     Console.Error.WriteLine($"Error: connect request: endPoint {endPoint} is already used by player {id}");
@@ -33,6 +34,7 @@ namespace server
                 freePlayerIDs.Add(false);
                 lastUpdated.Add(endPoint, DateTime.Now);
                 Console.WriteLine($"Player {id} has joined");
+                Console.WriteLine($"    on {endPoint}");
             }
             
             return id;
