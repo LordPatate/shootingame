@@ -22,7 +22,7 @@ namespace shootingame
             client.Send(data, data.Length);
         
             for (uint i = 0; i < 5; ++i) {
-                data = receiver.GetBytes();
+                data = receiver.GetBytes(out IPEndPoint endPoint);
                 
                 if (data != null) {
                     state = GameState.FromBytes(formatter, data);
@@ -58,7 +58,7 @@ namespace shootingame
 
         public static GameState ReceiveUpdate()
         {
-            byte[] data = receiver.GetBytes();
+            byte[] data = receiver.GetBytes(out IPEndPoint endPoint);
             if (data is null) {
                 if (turnsWaiting >= 1000) {
                     SendDisconnect();

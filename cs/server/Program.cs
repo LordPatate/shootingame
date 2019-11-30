@@ -39,11 +39,11 @@ namespace server
                     PlayerManager.Refresh();
                 }
 
-                byte[] receivedBytes = receiver.GetBytes();
+                byte[] receivedBytes = receiver.GetBytes(out IPEndPoint endPoint);
                 if (receivedBytes is null)
                     continue;
                 
-                tasks.Add(Task.Run(() => ProcessData(receivedBytes, receiver.EndPoint, client)));
+                tasks.Add(Task.Run(() => ProcessData(receivedBytes, endPoint, client)));
             }
 
             Task.WaitAll(tasks.ToArray());
