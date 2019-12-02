@@ -49,7 +49,6 @@ namespace shootingame
             }
             catch (SocketException e) {
                 if (e.SocketErrorCode == SocketError.ConnectionRefused) {
-                    Console.Error.WriteLine("Error: connection lost");
                     Disconnect();
                 }
                 else throw e;

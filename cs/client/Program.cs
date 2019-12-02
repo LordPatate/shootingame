@@ -28,7 +28,7 @@ namespace shootingame
                 Screen.Update();
                 Screen.Window.DispatchEvents();
                 
-                if (Popup.ActivePopups == 0) {
+                if (Popup.ActivePopups.Count == 0) {
                     if (IsKeyPressed(Key.Escape)) {
                         PauseMenu.Pop();
                     }

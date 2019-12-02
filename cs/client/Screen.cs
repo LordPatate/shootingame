@@ -34,14 +34,6 @@ namespace shootingame
 
         public static void Update()
         {
-            if (Program.PauseMenu.IsActive) {
-                Program.PauseMenu.Display();
-                return;
-            }
-            if (Program.AskQuit.IsActive) {
-                Program.AskQuit.Display();
-                return;
-            }
             GameScene.Draw(new Sprite(Game.Background.Texture));
             foreach (var lightPlayer in Game.Players) {
                 if (lightPlayer != null) {
@@ -60,6 +52,11 @@ namespace shootingame
             Window.Draw(new Sprite(GameScene.Texture));
 
             DrawScores();
+            
+            foreach (var popup in Popup.ActivePopups) {
+                popup.Display();
+                return;
+            }
 
             Window.Display();
         }

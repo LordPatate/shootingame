@@ -1,3 +1,4 @@
+using System.Threading;
 using System;
 using System.Collections.Generic;
 using SFML.Graphics;
@@ -51,6 +52,11 @@ namespace shootingame
                     }, "Okay... :("
                 );
                 disconnected.Pop();
+                while (disconnected.IsActive) {
+                    Screen.Update();
+                    Screen.Window.DispatchEvents();
+                    Thread.Sleep(Const.GameStepDuration);
+                }
                 return;
             }
             Player.Update(Level);

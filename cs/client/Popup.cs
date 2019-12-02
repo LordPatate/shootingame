@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System;
 using System.Threading;
 using SFML.Graphics;
@@ -23,7 +25,7 @@ namespace shootingame
     }
     public class Popup
     {
-        public static int ActivePopups = 0;
+        public static List<Popup> ActivePopups = new List<Popup>();
         public PopupText Text;
         public RenderTexture Texture;
         public IntRect Rect;
@@ -84,7 +86,7 @@ namespace shootingame
             
             ChosenOption = null;
             IsActive = true;
-            ++ActivePopups;
+            ActivePopups.Insert(0, this);
         }
 
         public void Display()
@@ -149,7 +151,7 @@ namespace shootingame
             Screen.Window.MouseButtonPressed -= OnClick;
             Screen.Window.MouseButtonReleased -= OnRelease;
             IsActive = false;
-            --ActivePopups;
+            ActivePopups.Remove(this);
             ChosenOption = text;
         }
 
