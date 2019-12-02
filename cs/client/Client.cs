@@ -58,22 +58,31 @@ namespace shootingame
 
         public static GameState ReceiveUpdate()
         {
-            byte[] data = receiver.GetBytes(out IPEndPoint endPoint);
-            if (data is null) {
-                if (turnsWaiting >= 1000) {
-                    SendDisconnect();
-                } else {
-                    ++turnsWaiting;
+            try {
+                byte[] data = receiver.GetBytes(out IPEndPoint endPoint);
+                if (data is null) {
+                    if (turnsWaiting >= 1000) {
+                        SendDisconnect();
+                    } else {
+                        ++turnsWaiting;
+                    }
+                    return null;
                 }
+                turnsWaiting = 0;
+                GameState state = GameState.FromBytes(formatter, data);
+                if (state.Type == GameState.RequestType.Disconnect) {
+                    Disconnect();
+                }
+                
+                return state;
+            }
+            catch (SocketException e) {
+                if (e.SocketErrorCode != SocketError.ConnectionRefused)
+                    throw e;
+                
+                Disconnect();
                 return null;
             }
-            turnsWaiting = 0;
-            GameState state = GameState.FromBytes(formatter, data);
-            if (state.Type == GameState.RequestType.Disconnect) {
-                Disconnect();
-            }
-            
-            return state;
         }
 
         public static void SendDisconnect()

@@ -45,6 +45,12 @@ namespace shootingame
         {
             if (!Client.Connected) {
                 Running = false;
+                var disconnected = new Popup(
+                    new string[] {
+                        "You got disconnected from server."
+                    }, "Okay... :("
+                );
+                disconnected.Pop();
                 return;
             }
             Player.Update(Level);

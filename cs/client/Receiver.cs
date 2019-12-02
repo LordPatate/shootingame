@@ -17,6 +17,9 @@ namespace shootingame
         {
             if (receiveTask.IsCompleted) {
                 var result = receiveTask.Result;
+                if (result == null) {
+                    throw new SocketException((int)SocketError.ConnectionRefused);
+                }
                 receiveTask = Task.Run(Reception);
 
                 endPoint = result.EndPoint;
@@ -33,9 +36,17 @@ namespace shootingame
        
         private BytesAndEndPoint Reception()
         {
-	        IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
-            byte[] data = client.Receive(ref ep);
-            return new BytesAndEndPoint() { Data = data, EndPoint = ep };
+            try {
+                IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
+                byte[] data = client.Receive(ref ep);
+                return new BytesAndEndPoint() { Data = data, EndPoint = ep };
+            }
+            catch (SocketException e) {
+                if (e.SocketErrorCode != SocketError.ConnectionRefused)
+                    throw e;
+                
+                return null;
+            }
         }
 
         private UdpClient client;
