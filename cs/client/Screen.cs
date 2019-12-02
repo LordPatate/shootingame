@@ -86,9 +86,10 @@ namespace shootingame
                 
                 rect.Top += rect.Height;
                 fg.B = (player.ID == Game.Player.ID) ? (byte)0 : (byte)255;
+                string playerName = (player.Name == null) ? $"Player {player.ID}" : player.Name;
                 
                 Drawing.DrawText(
-                    Window, $"{player.Score} | Player {player.ID}", rect,
+                    Window, $"{player.Score} | {playerName}", rect,
                     fg, bg, Const.FontSize, TextAlignment.Left
                 );
             }

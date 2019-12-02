@@ -127,6 +127,7 @@ namespace server
         private static void UpdatePlayer(IPEndPoint endPoint, LightPlayer clientPlayer)
         {
             LightPlayer player = players[endPoint];
+            player.Name = clientPlayer.Name;
             player.Pos = clientPlayer.Pos;
             player.State = clientPlayer.State;
             player.Frame = clientPlayer.Frame;

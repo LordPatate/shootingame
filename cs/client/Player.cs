@@ -20,6 +20,7 @@ namespace shootingame
         public Texture Texture;
         public IntRect TextureArea;
         public int ID;
+        public string Name;
         public int Score;
         public IntRect Rect;
         public PlayerState State;
@@ -52,11 +53,12 @@ namespace shootingame
             MakeRect();
             FromLightPlayer(player);
         }
-        public Player(int id)
+        public Player(int id, string name)
         {
             MakeRect();
             
             ID = id;
+            Name = name;
             Score = 0;
             Inertia =  new Vector2i();
             HookPoint = new Vector2i();

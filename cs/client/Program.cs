@@ -14,10 +14,13 @@ namespace shootingame
         static void Main(string[] args)
         {
             string server = "127.0.0.1";
+            string name = null;
             if (args.Length >= 1)
                 server = args[0];
+            if (args.Length >= 2)
+                name = args[1];
             Screen.Init();
-            Game.Init(server);
+            Game.Init(server, name);
 
             Shadows.Compute();
             while (Game.Running)
