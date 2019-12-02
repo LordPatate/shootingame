@@ -34,6 +34,14 @@ namespace shootingame
 
         public static void Update()
         {
+            if (Program.PauseMenu.IsActive) {
+                Program.PauseMenu.Display();
+                return;
+            }
+            if (Program.AskQuit.IsActive) {
+                Program.AskQuit.Display();
+                return;
+            }
             GameScene.Draw(new Sprite(Game.Background.Texture));
             foreach (var lightPlayer in Game.Players) {
                 if (lightPlayer != null) {
@@ -136,8 +144,7 @@ namespace shootingame
         }
         private static void OnClose(object sender, EventArgs e)
         {
-            if (Program.AskQuit.Pop() == "Yes")
-                Game.Running = false;
+            Program.AskQuit.Pop();
         }
     }
 }

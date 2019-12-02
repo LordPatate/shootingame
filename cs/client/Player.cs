@@ -105,7 +105,6 @@ namespace shootingame
         public void Update(Level level)
         {
             ++Frame;
-            Controls.Update();
 
             if (Controls.RightClick) {
                 if (!Hooked) {

@@ -23,10 +23,12 @@ namespace shootingame
     }
     public class Popup
     {
+        public static int ActivePopups = 0;
         public PopupText Text;
         public RenderTexture Texture;
         public IntRect Rect;
         public PopupOption[] Options;
+        public bool IsActive;
         private PopupOption ClickedOption;
         private IntRect PreviousRect;
         private string ChosenOption;
@@ -37,6 +39,8 @@ namespace shootingame
             Rect = Geometry.ScaleRect(new IntRect(0, 0, width: (int)Screen.Width, height: (int)Screen.Height), 80, 80);
             Text = new PopupText() { Lines = text, FontSize = Const.FontSize };
             Options = new PopupOption[options.Length];
+            IsActive = false;
+            ChosenOption = null;
 
             Text.LineHeight = 20;
             Text.SideMargin = 10;
@@ -70,7 +74,7 @@ namespace shootingame
             CreateTextures();
         }
 
-        public string Pop()
+        public void Pop()
         {
             ClickedOption = null;
             PreviousRect = Options[0].Rect;
@@ -78,23 +82,12 @@ namespace shootingame
             Screen.Window.MouseButtonPressed += OnClick;
             Screen.Window.MouseButtonReleased += OnRelease;
             
-            ChosenOption = "";
-            while (ChosenOption == "")
-            {
-                Display();
-
-                Screen.Window.DispatchEvents();
-
-                Thread.Sleep(Const.GameStepDuration);
-            }
-
-            Screen.Window.MouseButtonPressed -= OnClick;
-            Screen.Window.MouseButtonReleased -= OnRelease;
-
-            return ChosenOption;
+            ChosenOption = null;
+            IsActive = true;
+            ++ActivePopups;
         }
 
-        private void Display()
+        public void Display()
         {
             Screen.Window.Draw(new Sprite(Screen.GameScene.Texture));
                         
@@ -106,11 +99,20 @@ namespace shootingame
 
             Screen.Window.Display();
         }
+        public string GetChoice()
+        {
+            if (ChosenOption == null) {
+                return null;
+            }
+            string opt = ChosenOption;
+            ChosenOption = null;
+            return opt;
+        }
 
         private void OnClick(object sender, MouseButtonEventArgs mbe)
         {            
             if (mbe.Button == Mouse.Button.Right){
-                ChosenOption = "right click";
+                SetChosenOption("right click");
                 return;
             }
             if (mbe.Button == Mouse.Button.Left) {
@@ -133,13 +135,22 @@ namespace shootingame
                 foreach (PopupOption opt in Options) {
                     if (opt.Rect.Contains(mbe.X, mbe.Y)) {
                         if (opt == ClickedOption)
-                            ChosenOption = opt.Text;
+                            SetChosenOption(opt.Text);
                         
                         return;
                     }
                 }
                 ClickedOption = null;
             }
+        }
+
+        private void SetChosenOption(string text)
+        {
+            Screen.Window.MouseButtonPressed -= OnClick;
+            Screen.Window.MouseButtonReleased -= OnRelease;
+            IsActive = false;
+            --ActivePopups;
+            ChosenOption = text;
         }
 
         protected void CreateTextures()

@@ -28,19 +28,15 @@ namespace shootingame
                 Screen.Update();
                 Screen.Window.DispatchEvents();
                 
-                if (IsKeyPressed(Key.Escape)) {
-                    string menuChoice = PauseMenu.Pop();
-                    while (menuChoice != "Resume" && menuChoice != "right click")
-                    {
-                        if (menuChoice == "Quit" && AskQuit.Pop() == "Yes") {
-                            Game.Running = false;
-                            break;
-                        }
-                        if (menuChoice == "Toggle fullscreen") {
-                            Screen.ToggleFullscreen();
-                        }
-                        menuChoice = PauseMenu.Pop();
+                if (Popup.ActivePopups == 0) {
+                    if (IsKeyPressed(Key.Escape)) {
+                        PauseMenu.Pop();
                     }
+                    PauseMenuDispatch();
+                    if (AskQuit.GetChoice() == "Yes") {
+                        Game.Running = false;
+                    }
+                    Controls.Update();
                 }
                 
                 Task update = Task.Run(() => {
@@ -55,6 +51,18 @@ namespace shootingame
             Game.Quit();
             Screen.Quit();
         }
-        
+
+        private static void PauseMenuDispatch()
+        {
+            switch (PauseMenu.GetChoice())
+            {
+                case "Quit":
+                    AskQuit.Pop();
+                    break;
+                case "Toggle fullscreen":
+                    Screen.ToggleFullscreen();
+                    break;
+            }
+        }        
     }
 }
