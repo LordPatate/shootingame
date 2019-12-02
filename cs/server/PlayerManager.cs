@@ -82,7 +82,9 @@ namespace server
         {
             DateTime now = DateTime.Now;
             List<IPEndPoint> toRemove = new List<IPEndPoint>();
-            foreach (var keyVal in players)
+            
+            var cpy = new Dictionary<IPEndPoint, LightPlayer>(players);
+            foreach (var keyVal in cpy)
             {
                 if (freePlayerIDs[keyVal.Value.ID])
                     continue;

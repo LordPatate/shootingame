@@ -34,9 +34,8 @@ namespace server
                 ++turn;
                 turn %= 500000;
                 if (turn == 0) {
-                    Task.WaitAll(tasks.ToArray());
-                    tasks.Clear();
-                    PlayerManager.Refresh();
+                    tasks.RemoveAll((task) => task.Status != TaskStatus.Running);
+                    tasks.Add(Task.Run(PlayerManager.Refresh));
                 }
 
                 byte[] receivedBytes = receiver.GetBytes(out IPEndPoint endPoint);
