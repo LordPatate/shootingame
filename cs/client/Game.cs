@@ -14,6 +14,7 @@ namespace shootingame
         public static int LevelID;
         public static Level Level;
         public static RenderTexture Background;
+        public static RenderTexture Foreground;
         public static IntRect Bounds;
 
         public static void Init(string server)
@@ -129,27 +130,30 @@ namespace shootingame
                 height: Level.Bounds.Height
             );
 
-            Background = new RenderTexture(Screen.Width, Screen.Height);
-
-            DrawBackground(infos.BackgroundImg, infos.ForegroundImg);
+            DrawScene(infos.BackgroundImg, infos.ForegroundImg);
         }
 
-        private static void DrawBackground(string bg, string fg)
+        private static void DrawScene(string bg, string fg)
         {
-            Texture foreground = GetTexture(fg, new Color(0,0,0));//new Color(20, 17, 23));
+            Texture foreground = GetTexture(fg, new Color(20, 17, 23));
             Texture background = GetTexture(bg, new Color(65, 60, 55));
+
+            Background = new RenderTexture(Screen.Width, Screen.Height);
 
             if (bg == "") {
                 var rect = new IntRect(0, 0, width: (int)Screen.Width, height: (int)Screen.Height);
                 Background.Draw(Drawing.SpriteOf(foreground, rect));
                 Background.Draw(Drawing.SpriteOf(background, Bounds));
             }
+            Background.Display();
+
+            Foreground = new RenderTexture(Screen.Width, Screen.Height);
 
             foreach (var tile in Game.Level.Tiles) {
                 var rect = Geometry.AdaptRect(tile.Rect);
-                Background.Draw(Drawing.SpriteOf(foreground, rect));
+                Foreground.Draw(Drawing.SpriteOf(foreground, rect));
             }
-            Background.Display();
+            Foreground.Display();
         }
         private static Texture GetTexture(string src, Color defaultColor)
         {

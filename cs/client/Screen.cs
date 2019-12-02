@@ -45,8 +45,8 @@ namespace shootingame
             foreach (var line in Echoes) {
                 GameScene.Draw(line);
             }
-            
             CastShadows();
+            GameScene.Draw(new Sprite(Game.Foreground.Texture));
 
             GameScene.Display();
             Window.Draw(new Sprite(GameScene.Texture));
@@ -68,27 +68,29 @@ namespace shootingame
 
         public static void DrawScores() {
             int lineHeight = 20;
-            int i = 0;
+            Color bg = new Color(0, 0, 0, 100);
+            Color fg = new Color(255, 255, 255);
+            var rect = new IntRect(
+                0, 0,
+                width: (int)Screen.Width, height: lineHeight
+            );
+            Drawing.DrawText(
+                Window, "# Scoreboard", rect,
+                fg, bg, Const.FontSize, TextAlignment.Left
+            );
+
             foreach (var player in Game.Players)
             {
                 if (player == null)
                     continue;
                 
-                var rect = new IntRect(
-                    0, top: lineHeight*i,
-                    width: (int)Screen.Width, height: lineHeight
-                );
-                Color fg = (player.ID == Game.Player.ID) ?
-                    new Color(255, 255, 0):
-                    new Color(255, 255, 255);
-                Color bg = new Color(0, 0, 0, 100);
+                rect.Top += rect.Height;
+                fg.B = (player.ID == Game.Player.ID) ? (byte)0 : (byte)255;
                 
                 Drawing.DrawText(
-                    Window, $"Player {player.ID}: {player.Score}", rect,
+                    Window, $"{player.Score} | Player {player.ID}", rect,
                     fg, bg, Const.FontSize, TextAlignment.Left
                 );
-
-                ++i;
             }
         }
 
