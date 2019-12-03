@@ -28,13 +28,11 @@ namespace shootingame
                 Screen.Update();
                 Screen.Window.DispatchEvents();
                 
+                PauseMenuDispatch();
+                AskQuitDispatch();
                 if (Popup.ActivePopups.Count == 0) {
                     if (IsKeyPressed(Key.Escape)) {
                         PauseMenu.Pop();
-                    }
-                    PauseMenuDispatch();
-                    if (AskQuit.GetChoice() == "Yes") {
-                        Game.Running = false;
                     }
                     Controls.Update();
                 }
@@ -63,6 +61,18 @@ namespace shootingame
                     Screen.ToggleFullscreen();
                     break;
             }
-        }        
+        }
+        private static void AskQuitDispatch()
+        {
+            switch (AskQuit.GetChoice())
+            {
+                case "Yes":
+                    Game.Running = false;
+                    break;
+                case "No":
+                    PauseMenu.Pop();
+                    break;
+            }
+        }  
     }
 }
