@@ -14,38 +14,32 @@ namespace server
 
         public static int Add(IPEndPoint endPoint)
         {
-            int id = -1;
-            try {
-                id = players[endPoint].ID;
-                
-                if (freePlayerIDs[id]) {
-                    freePlayerIDs[id] = false;
-                    lastUpdated[endPoint] = DateTime.Now;
-                    Console.WriteLine($"Player {id} has joined");
-                    Console.WriteLine($"    on {endPoint}");
-                }
-                else {
-                    Console.Error.WriteLine($"Error: connect request: endPoint {endPoint} is already used by player {id}");
-                }
-            }
-            catch (KeyNotFoundException) {
+            int id = freePlayerIDs.FindIndex((x) => x);
+            if (id == -1) {
                 id = freePlayerIDs.Count;
-                players.Add(endPoint, new LightPlayer(id, level));
                 freePlayerIDs.Add(false);
-                lastUpdated.Add(endPoint, DateTime.Now);
-                Console.WriteLine($"Player {id} has joined");
-                Console.WriteLine($"    on {endPoint}");
             }
-            
+            else {
+                freePlayerIDs[id] = false;
+            }
+            lastUpdated.Add(endPoint, DateTime.Now);
+            players.Add(endPoint, new LightPlayer(id, level));
+            Console.WriteLine($"Player {id} has joined");
             return id;
         }
-
         public static void Remove(IPEndPoint endPoint)
         {
             int id = players[endPoint].ID;
+            string name = players[endPoint].Name;
             freePlayerIDs[id] = true;
-            players[endPoint] = new LightPlayer(id, level);
-            Console.WriteLine($"Player {id} has left");
+            players.Remove(endPoint);
+            lastUpdated.Remove(endPoint);
+            
+            string msg = $"Player {id} has left";
+            if (name != null) {
+                msg += $" (was {name})";
+            }
+            Console.WriteLine(msg);
         }
 
         public static bool Update(IPEndPoint endPoint, GameState state)
@@ -110,15 +104,11 @@ namespace server
 
         public static LightPlayer[] GetPlayers()
         {
-            var cpy = new Dictionary<IPEndPoint, LightPlayer>(players);
-            var array = new LightPlayer[cpy.Count];
+            var cpy = new List<LightPlayer>(players.Values);
+            var array = new LightPlayer[freePlayerIDs.Count];
             
-            foreach (var player in cpy.Values) {
-                int id = player.ID;
-                
-                array[id] = (freePlayerIDs[id]) ?
-                    null:
-                    player;
+            foreach (var player in cpy) {
+                array[player.ID] = player;
             }
 
             return array;
