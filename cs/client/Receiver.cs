@@ -11,7 +11,6 @@ namespace shootingame
         {
 	        this.client = client;
             receiveTask = Task.Run(Reception);
-            Console.WriteLine($"Listening on {(IPEndPoint)client.Client.LocalEndPoint}");
         }
         public byte[] GetBytes(out IPEndPoint endPoint)
         {
