@@ -28,6 +28,7 @@ namespace shootingame
         public bool Hooked;
         public bool ReSpawn;
         public bool HasRespawned;
+	public int Deaths;
 
         public LightPlayer(Player player) {
             ID = player.ID;
