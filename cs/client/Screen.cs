@@ -125,7 +125,7 @@ namespace shootingame
             GameScene = new RenderTexture(Width, Height);
             
             Program.PauseMenu = new Menu(
-                "Game paused",
+                "Menu",
                 "Resume", "Toggle fullscreen", "Quit"
             );
             Program.AskQuit = new Popup(
