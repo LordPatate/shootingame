@@ -25,28 +25,24 @@ namespace server
             PlayerManager.level = new Level(Level.levelInfos[PlayerManager.levelID]);
             
             UdpClient client = new UdpClient(Const.ServerPort);
-            Receiver receiver = new Receiver(client);
             Console.WriteLine("Server ready to accept connections");
             
-            int turn = 0;
+            DateTime lastRefresh = DateTime.Now;
+            TimeSpan refreshPeriod = new TimeSpan(0, 0, 0, 0, Const.GameStepDuration);
             while (Prompt.ReadLine() != "quit")
             {
-                ++turn;
-                turn %= 500000;
-                if (turn == 0) {
+                if (DateTime.Now - lastRefresh >= refreshPeriod) {
+                    lastRefresh = DateTime.Now;
                     tasks.RemoveAll((task) => task.Status != TaskStatus.Running);
                     tasks.Add(Task.Run(PlayerManager.Refresh));
                 }
-
-                byte[] receivedBytes = receiver.GetBytes(out IPEndPoint endPoint);
-                if (receivedBytes is null)
-                    continue;
                 
+                IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
+                byte[] receivedBytes = client.Receive(ref endPoint);                
                 tasks.Add(Task.Run(() => ProcessData(receivedBytes, endPoint, client)));
             }
 
             Task.WaitAll(tasks.ToArray());
-            receiver.Close();
             client.Close();
         }
 
