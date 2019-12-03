@@ -54,7 +54,7 @@ namespace shootingame
                 left: Rect.Left + Rect.Width*5/100,
                 top: Rect.Top + Rect.Height*80/100,
                 width: Rect.Width * 90 / 100,
-                height: 60
+                height: Rect.Height * 10 / 100
             );
             int width = buttonRow.Width / options.Length;
             var buttonSpaces = new IntRect[options.Length];
@@ -183,7 +183,7 @@ namespace shootingame
 
             // buttons
             var buttonFG = new Color(255, 255, 255);
-            var buttonBG = new Color(0, 0, blue: 255);
+            var buttonBG = new Color(0, 0, blue: 200);
             foreach (PopupOption option in Options)
             {
                 option.Texture = new RenderTexture((uint)option.Rect.Width, (uint)option.Rect.Height);

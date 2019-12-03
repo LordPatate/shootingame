@@ -66,13 +66,12 @@ namespace shootingame
             foreach (ConvexShape shade in Shades)
             {
                 shade.FillColor = new Color(0, 0, 0);
-                shade.Position = Geometry.AdaptPoint(shade.Position);
                 GameScene.Draw(shade);
             }
         }
 
         public static void DrawScores() {
-            int lineHeight = 20;
+            int lineHeight = 20*(int)Screen.Height/600;
             Color bg = new Color(0, 0, 0, 100);
             Color fg = new Color(255, 255, 255);
             var rect = new IntRect(

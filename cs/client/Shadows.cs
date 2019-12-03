@@ -11,20 +11,20 @@ namespace shootingame
         {
             var shades = new List<ConvexShape>();
 
-            bounds = Game.Level.Bounds;
+            bounds = Game.Bounds;
             topLeft = new Vector2i(bounds.Left, bounds.Top);
             topRight = new Vector2i(bounds.Left + bounds.Width, bounds.Top);
             botLeft = new Vector2i(bounds.Left, bounds.Top + bounds.Height);
             botRight = new Vector2i(bounds.Left + bounds.Width, bounds.Top + bounds.Height);
             playerRect = Game.Player.Rect;
-            playerEye = new Vector2i(
+            playerEye = Geometry.AdaptPoint(new Vector2i(
                 x: playerRect.Left + playerRect.Width/2,
                 y: playerRect.Top + 10
-            );
+            ));
 
             foreach (var tile in Game.Level.Tiles)
             {
-                var rect = tile.Rect;
+                var rect = Geometry.AdaptRect(tile.Rect);
                 int x = rect.Left, y = rect.Top, w = rect.Width, h = rect.Height;
 
                 // TopLeft - BotRight diagonal

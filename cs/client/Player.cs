@@ -221,8 +221,8 @@ namespace shootingame
                 }
             }
             
-            hit.X -= Game.Bounds.Left;
-            hit.Y -= Game.Bounds.Top;
+            hit.X = (hit.X - Game.Bounds.Left)*level.Bounds.Width/Game.Bounds.Width;
+            hit.Y = (hit.Y - Game.Bounds.Top)*level.Bounds.Height/Game.Bounds.Height;
             return hit;
         }
 

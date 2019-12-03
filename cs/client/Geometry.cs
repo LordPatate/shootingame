@@ -8,24 +8,31 @@ namespace shootingame
     {
         public static IntRect AdaptRect(IntRect rect)
         {
+            var gameBounds = Game.Bounds;
+            var levelBounds = Game.Level.Bounds;
             return new IntRect(
-                left: Game.Bounds.Left + rect.Left,
-                top: Game.Bounds.Top + rect.Top,
-                width: rect.Width, height: rect.Height
+                left: Game.Bounds.Left + rect.Left * gameBounds.Width / levelBounds.Width,
+                top: Game.Bounds.Top + rect.Top * gameBounds.Height / levelBounds.Height,
+                width: rect.Width * gameBounds.Width / levelBounds.Width,
+                height: rect.Height * gameBounds.Height / levelBounds.Height
             );
         }
         public static Vector2i AdaptPoint(Vector2i point)
         {
+            var gameBounds = Game.Bounds;
+            var levelBounds = Game.Level.Bounds;
             return new Vector2i(
-                x: Game.Bounds.Left + point.X,
-                y: Game.Bounds.Top + point.Y
+                x: gameBounds.Left + point.X * gameBounds.Width / levelBounds.Width,
+                y: gameBounds.Top + point.Y * gameBounds.Height / levelBounds.Height
             );
         }
         public static Vector2f AdaptPoint(Vector2f point)
         {
+            var gameBounds = Game.Bounds;
+            var levelBounds = Game.Level.Bounds;
             return new Vector2f(
-                x: Game.Bounds.Left + point.X,
-                y: Game.Bounds.Top + point.Y
+                x: gameBounds.Left + point.X * gameBounds.Width / levelBounds.Width,
+                y: gameBounds.Top + point.Y * gameBounds.Height / levelBounds.Height
             );
         }
         public static IntRect ScaleRect(IntRect rect, int wPercent, int hPercent)

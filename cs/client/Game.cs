@@ -135,12 +135,7 @@ namespace shootingame
 
         public static void LoadLevel(LevelInfos infos)
         {
-            Bounds = new IntRect(
-                left: (int)Screen.Width/2 - Level.Bounds.Width/2,
-                top: (int)Screen.Height/2 - Level.Bounds.Height/2,
-                width: Level.Bounds.Width,
-                height: Level.Bounds.Height
-            );
+            Bounds = Geometry.ScaleRect(new IntRect(0, 0, (int)Screen.Width, (int)Screen.Height), 80, 80);
 
             DrawScene(infos.BackgroundImg, infos.ForegroundImg);
         }

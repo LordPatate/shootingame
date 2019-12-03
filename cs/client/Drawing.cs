@@ -55,7 +55,7 @@ namespace shootingame
             Color fg, Color bg, uint fontSize, TextAlignment alignment = TextAlignment.Center
         )
         {
-            Text text = new Text(line, Screen.Font, fontSize);
+            Text text = new Text(line, Screen.Font, fontSize*Screen.Height/600);
             text.FillColor = fg;
             text.OutlineColor = bg;
 
