@@ -55,7 +55,7 @@ namespace shootingame
             Color fg, Color bg, uint fontSize, TextAlignment alignment = TextAlignment.Center
         )
         {
-            Text text = new Text(line, Screen.Font, fontSize*Screen.Height/600);
+            Text text = new Text(line, Screen.Font, fontSize);
             text.FillColor = fg;
             text.OutlineColor = bg;
 
@@ -70,14 +70,14 @@ namespace shootingame
                     break;
                 case TextAlignment.Center:
                     text.Position = new Vector2f(
-                        x: frame.Left + frame.Width/2 - rect.Width/2,
-                        y: frame.Top + frame.Height/2 - rect.Height/2
+                        x: (int)(frame.Left + frame.Width/2 - rect.Width/2),
+                        y: (int)(frame.Top + frame.Height/2 - rect.Height/2)
                     );
                     break;
                 case TextAlignment.Right:
                     text.Position = new Vector2f(
-                        x: frame.Left + frame.Width - rect.Width,
-                        y: frame.Top + frame.Height - rect.Height
+                        x: (int)(frame.Left + frame.Width - rect.Width),
+                        y: (int)(frame.Top + frame.Height - rect.Height)
                     );
                     break;
             }
