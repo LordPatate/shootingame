@@ -121,7 +121,7 @@ namespace shootingame
             }
             Window.Closed += new EventHandler(OnClose);            
             Width = videoMode.Width; Height = videoMode.Height;
-            FontSize = Const.FontSize*Width/600;        
+            FontSize = Const.FontSize*Height/600;        
             GameScene = new RenderTexture(Width, Height);
             
             Program.PauseMenu = new Menu(
