@@ -20,7 +20,13 @@ namespace shootingame
             if (args.Length >= 2)
                 name = args[1];
             Screen.Init();
-            Game.Init(server, name);
+            GameState state = Client.ConnectToServer(server);
+            if (state == null) {
+                ConnectionError(server);
+                Screen.Quit();
+                return;
+            }
+            Game.Init(state, name);
 
             Shadows.Compute();
             while (Game.Running)
@@ -73,6 +79,24 @@ namespace shootingame
                     PauseMenu.Pop();
                     break;
             }
-        }  
+        }
+        private static void ConnectionError(string server)
+        {
+            var error = new Popup(
+                new string[] {
+                    $"Unable to connect to server {server}.",
+                    "Make sure you got the address right and try again later."
+                },
+                "Okay... =/"
+            );
+            error.Pop();
+            while (error.IsActive) {
+                Screen.Window.Clear();
+                error.Display();
+                Screen.Window.Display();
+                Screen.Window.DispatchEvents();
+                Thread.Sleep(Const.GameStepDuration);
+            }
+        }
     }
 }

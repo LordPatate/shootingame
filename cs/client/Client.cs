@@ -19,25 +19,27 @@ namespace shootingame
             GameState state = new GameState();
             state.Type = GameState.RequestType.Connect;
             data = state.ToBytes(formatter);
-            client.Send(data, data.Length);
-        
-            for (uint i = 0; i < 5; ++i) {
-                data = receiver.GetBytes(out IPEndPoint endPoint);
-                
-                if (data != null) {
-                    state = GameState.FromBytes(formatter, data);
-                    if (state.Type != GameState.RequestType.Connect)
-                        continue;
+            try {
+                client.Send(data, data.Length);
+            
+                for (uint i = 0; i < 5; ++i) {
+                    data = receiver.GetBytes(out IPEndPoint endPoint);
                     
-                    Connected = true;
-                    return state;
-                }
+                    if (data != null) {
+                        state = GameState.FromBytes(formatter, data);
+                        if (state.Type != GameState.RequestType.Connect)
+                            continue;
+                        
+                        Connected = true;
+                        return state;
+                    }
 
-                Thread.Sleep(1000);
-            }
+                    Thread.Sleep(1000);
+                }
+            } catch (SocketException) {}
             
             Disconnect();
-            throw new Exception($"Failed to connect to server {host}");
+            return null;
         }
 
         public static void SendUpdate(GameState state)
