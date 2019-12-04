@@ -12,11 +12,11 @@ namespace shootingame
             Rect = Geometry.ScaleRect(new IntRect(0, 0, width: (int)Screen.Width, height: (int)Screen.Height), 60, 80);
             Text = new PopupText() {
                 Lines = new string[] {title},
-                FontSize = Const.FontSize*2
+                FontSize = Screen.FontSize*2
             };
             Options = new PopupOption[options.Length];
 
-            Text.LineHeight = 30;
+            Text.LineHeight = Screen.FontSize*2 + 2;
             Text.SideMargin = 10;
             int textMaxHeight = Rect.Height*20/100;
             Text.TopSpace = textMaxHeight/2 - Text.LineHeight/2;
@@ -40,7 +40,7 @@ namespace shootingame
                 Options[i] = new PopupOption() {
                     Rect = Geometry.ScaleRect(space, 90, 60),
                     Text = options[i],
-                    FontSize = Const.FontSize
+                    FontSize = Screen.FontSize
                 };
             }
 

@@ -11,14 +11,11 @@ namespace shootingame
         private static bool fullscreen = false;
         public static RenderWindow Window;
         public static uint Width, Height;
+        public static uint FontSize;
         public static RenderTexture GameScene;
         public static Font Font;
         public static List<ConvexShape> Shades;
         public static List<VertexArray> Echoes = new List<VertexArray>();
-
-        public static int FontSize() {
-            return Const.FontSize*(int)Width/600;
-        }
 
         public static void Init()
         {
@@ -75,16 +72,15 @@ namespace shootingame
         }
 
         public static void DrawScores() {
-            int fontSize = FontSize();
             Color bg = new Color(0, 0, 0, 100);
             Color fg = new Color(255, 255, 255);
             var rect = new IntRect(
                 0, 0,
-                width: (int)Screen.Width, height: fontSize + 2
+                width: (int)Screen.Width, height: FontSize + 2
             );
             Drawing.DrawText(
                 Window, "# Scoreboard", rect,
-                fg, bg, fontSize, TextAlignment.Left
+                fg, bg, FontSize, TextAlignment.Left
             );
 
             foreach (var player in Game.Players)
@@ -98,7 +94,7 @@ namespace shootingame
                 
                 Drawing.DrawText(
                     Window, $"{player.Score} | {playerName}", rect,
-                    fg, bg, fontSize, TextAlignment.Left
+                    fg, bg, FontSize, TextAlignment.Left
                 );
             }
         }
@@ -124,7 +120,8 @@ namespace shootingame
                 );
             }
             Window.Closed += new EventHandler(OnClose);            
-            Width = videoMode.Width; Height = videoMode.Height;            
+            Width = videoMode.Width; Height = videoMode.Height;
+            FontSize = Const.FontSize*Width/600;        
             GameScene = new RenderTexture(Width, Height);
             
             Program.PauseMenu = new Menu(
