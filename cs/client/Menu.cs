@@ -16,7 +16,7 @@ namespace shootingame
             };
             Options = new PopupOption[options.Length];
 
-            Text.LineHeight = Screen.FontSize*2 + 2;
+            Text.LineHeight = (int)Screen.FontSize*2 + 2;
             Text.SideMargin = 10;
             int textMaxHeight = Rect.Height*20/100;
             Text.TopSpace = textMaxHeight/2 - Text.LineHeight/2;

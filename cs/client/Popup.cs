@@ -44,7 +44,7 @@ namespace shootingame
             IsActive = false;
             ChosenOption = null;
 
-            Text.LineHeight = Screen.FontSize + 2;
+            Text.LineHeight = (int)Screen.FontSize + 2;
             Text.SideMargin = 10;
             int maxHeight = Rect.Height*80/100;
             int paragraphSize = text.Length*Text.LineHeight;
@@ -164,21 +164,18 @@ namespace shootingame
             Texture.Clear(bgColor);
 
             // text body
-            int i = 0;
-            foreach (string line in Text.Lines)
-            {
-                var rect = new IntRect(
-                    left: Text.SideMargin,
-                    top: Text.TopSpace + i*Text.LineHeight, 
-                    width: Rect.Width - 2*Text.SideMargin,
-                    height: Text.LineHeight
-                );
+            var rect = new IntRect(
+                left: Text.SideMargin,
+                top: Text.TopSpace, 
+                width: Rect.Width - 2*Text.SideMargin,
+                height: Text.LineHeight
+            );
+            foreach (string line in Text.Lines) {
+                rect.Top += rect.Height;
                 Drawing.DrawText(
                     Texture, line, rect,
                     new Color(0, 0, 0), bgColor, Text.FontSize
                 );
-
-                ++i;
             }
 
             // buttons
@@ -189,7 +186,7 @@ namespace shootingame
                 option.Texture = new RenderTexture((uint)option.Rect.Width, (uint)option.Rect.Height);
                 option.Texture.Clear(buttonBG);
                 
-                var rect = new IntRect(0, 0, width: option.Rect.Width, height: option.Rect.Height);
+                rect = new IntRect(0, 0, width: option.Rect.Width, height: option.Rect.Height);
                 Drawing.DrawText(
                     option.Texture, option.Text, rect,
                     buttonFG, buttonBG, option.FontSize

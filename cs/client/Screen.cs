@@ -76,7 +76,7 @@ namespace shootingame
             Color fg = new Color(255, 255, 255);
             var rect = new IntRect(
                 0, 0,
-                width: (int)Screen.Width, height: FontSize + 2
+                width: (int)Screen.Width, height: (int)FontSize + 2
             );
             Drawing.DrawText(
                 Window, "# Scoreboard", rect,
