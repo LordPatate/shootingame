@@ -49,11 +49,8 @@ namespace shootingame
             try {
                 client.Send(data, data.Length);
             }
-            catch (SocketException e) {
-                if (e.SocketErrorCode == SocketError.ConnectionRefused) {
-                    Disconnect();
-                }
-                else throw e;
+            catch (SocketException) {
+                Disconnect();
             }
         }
 
@@ -77,10 +74,7 @@ namespace shootingame
                 
                 return state;
             }
-            catch (SocketException e) {
-                if (e.SocketErrorCode != SocketError.ConnectionRefused)
-                    throw e;
-                
+            catch (SocketException) {
                 Disconnect();
                 return null;
             }
@@ -95,10 +89,7 @@ namespace shootingame
             try {
                 client.Send(data, data.Length);
             }
-            catch (SocketException e) {
-                if (e.SocketErrorCode != SocketError.ConnectionRefused)
-                    throw e;
-            }
+            catch (SocketException) {}
             
             Disconnect();
         }
