@@ -16,6 +16,10 @@ namespace shootingame
         public static List<ConvexShape> Shades;
         public static List<VertexArray> Echoes = new List<VertexArray>();
 
+        public static int FontSize() {
+            return Const.FontSize*(int)Width/600;
+        }
+
         public static void Init()
         {
             Font = new Font(Const.FontFile);
@@ -71,16 +75,16 @@ namespace shootingame
         }
 
         public static void DrawScores() {
-            int lineHeight = 20*(int)Screen.Height/600;
+            int fontSize = FontSize();
             Color bg = new Color(0, 0, 0, 100);
             Color fg = new Color(255, 255, 255);
             var rect = new IntRect(
                 0, 0,
-                width: (int)Screen.Width, height: lineHeight
+                width: (int)Screen.Width, height: fontSize + 2
             );
             Drawing.DrawText(
                 Window, "# Scoreboard", rect,
-                fg, bg, Const.FontSize, TextAlignment.Left
+                fg, bg, fontSize, TextAlignment.Left
             );
 
             foreach (var player in Game.Players)
@@ -94,7 +98,7 @@ namespace shootingame
                 
                 Drawing.DrawText(
                     Window, $"{player.Score} | {playerName}", rect,
-                    fg, bg, Const.FontSize, TextAlignment.Left
+                    fg, bg, fontSize, TextAlignment.Left
                 );
             }
         }
