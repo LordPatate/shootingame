@@ -40,10 +40,7 @@ namespace shootingame
                 byte[] data = client.Receive(ref ep);
                 return new BytesAndEndPoint() { Data = data, EndPoint = ep };
             }
-            catch (SocketException e) {
-                if (e.SocketErrorCode != SocketError.ConnectionRefused)
-                    throw e;
-                
+            catch (SocketException) {                
                 return null;
             }
         }
