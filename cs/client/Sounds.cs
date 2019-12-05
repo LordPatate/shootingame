@@ -16,9 +16,9 @@ namespace shootingame
 
         public static void Init() {
             longSounds.AddRange(new Sound[] {
-                new Sound(makeSound(hook)),
-                new Sound(makeSound(run)),
-                new Sound(makeSound(slide))
+                new Sound(hook),
+                new Sound(run),
+                new Sound(slide)
             });
             foreach (var s in longSounds) {
                 s.Loop = true;

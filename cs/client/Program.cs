@@ -31,7 +31,7 @@ namespace shootingame
             Shadows.Compute();
             while (Game.Running)
             {
-                MySounds.Update();
+                Sounds.Update();
                 Screen.Update();
                 Screen.Window.DispatchEvents();
                 
