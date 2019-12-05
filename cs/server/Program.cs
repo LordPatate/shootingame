@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
@@ -25,25 +26,36 @@ namespace server
             PlayerManager.level = new Level(Level.levelInfos[PlayerManager.levelID]);
             
             UdpClient client = new UdpClient(Const.ServerPort);
+            Receiver receiver = new Receiver(client);
             Console.WriteLine("Server ready to accept connections");
             
             DateTime lastRefresh = DateTime.Now;
             TimeSpan refreshPeriod = new TimeSpan(0, 0, 0, 0, Const.GameStepDuration);
-            while (Prompt.ReadLine() != "quit")
+            string cmd = "";
+            while (cmd != "quit")
             {
+                cmd = Prompt.ReadLine();
+                
                 if (DateTime.Now - lastRefresh >= refreshPeriod) {
                     lastRefresh = DateTime.Now;
                     tasks.RemoveAll((task) => task.Status != TaskStatus.Running);
                     tasks.Add(Task.Run(PlayerManager.Refresh));
                 }
                 
-                IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
-                byte[] receivedBytes = client.Receive(ref endPoint);                
-                tasks.Add(Task.Run(() => ProcessData(receivedBytes, endPoint, client)));
+                byte[] receivedBytes = receiver.GetBytes(out IPEndPoint endPoint);
+                while (cmd != "quit" && PlayerManager.players.Count == 0 && receivedBytes == null) {
+                    Thread.Sleep(1000);
+                    cmd = Prompt.ReadLine();
+                    receivedBytes = receiver.GetBytes(out endPoint);
+                }
+                
+                if (receivedBytes != null)
+                    tasks.Add(Task.Run(() => ProcessData(receivedBytes, endPoint, client)));
             }
 
             Task.WaitAll(tasks.ToArray());
             client.Close();
+            receiver.Close();
         }
 
         static void ProcessData(byte[] receivedBytes, IPEndPoint endPoint, UdpClient client)
