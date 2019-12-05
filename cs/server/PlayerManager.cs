@@ -58,7 +58,7 @@ namespace server
                     LightShot shot = state.Shots[0];
                     shots.Add(shot);
                     
-                    var target = FindTarget(shot);
+                    var target = FindTarget(shot, id);
                     if (target != null) {
                         target.ReSpawn = true;
 			target.Deaths += 1;
@@ -132,10 +132,10 @@ namespace server
             }
         }
 
-        private static LightPlayer FindTarget(LightShot shot)
+        private static LightPlayer FindTarget(LightShot shot, int id)
         {
             foreach (var lightPlayer in players.Values) {
-                if (freePlayerIDs[lightPlayer.ID])
+                if (freePlayerIDs[lightPlayer.ID] || lightPlayer.ID == id)
                     continue;
                 
                 Player player = new Player(lightPlayer);
