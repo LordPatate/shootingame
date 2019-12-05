@@ -43,6 +43,9 @@ namespace shootingame
 
         public static void Update()
         {
+            if (!Client.Connected)
+                return;
+            
             Player.Update(Level);
 
             GameState state = MakeGameState();
