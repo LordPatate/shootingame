@@ -19,7 +19,9 @@ namespace shootingame
                 server = args[0];
             if (args.Length >= 2)
                 name = args[1];
+            
             Screen.Init();
+            Sounds.Init();
             GameState state = Client.ConnectToServer(server);
             if (state == null) {
                 ConnectionError(server);
@@ -54,6 +56,7 @@ namespace shootingame
             }
 
             Game.Quit();
+            Sounds.Quit();
             Screen.Quit();
         }
 

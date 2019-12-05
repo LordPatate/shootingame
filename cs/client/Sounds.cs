@@ -7,18 +7,18 @@ namespace shootingame
 {
     class Sounds
     {
-        public static SoundBuffer pop = makeSound("pop"),
-        shot = makeSound("shot"),
-        tic = makeSound("tic"),
-        hook = makeSound("hook"),
-        run = makeSound("run"),
-        slide = makeSound("slide");
-
         public static void Init() {
+            var soundNames = new string[] {
+                "pop", "shot", "tic", "hook", "run", "slide"
+            };
+            for (int i = 0; i < soundNames.Length; ++i) {
+                buffers.Add(soundNames[i], makeBuffer(soundNames[i]));
+            }
+
             longSounds.AddRange(new Sound[] {
-                new Sound(hook),
-                new Sound(run),
-                new Sound(slide)
+                new Sound(buffers["hook"]),
+                new Sound(buffers["run"]),
+                new Sound(buffers["slide"])
             });
             foreach (var s in longSounds) {
                 s.Loop = true;
@@ -27,22 +27,27 @@ namespace shootingame
         public static void Update() {
             shortSounds.RemoveAll((sound) => sound.Status == SoundStatus.Stopped);
         }
-        public static void PlayShort(SoundBuffer buf) {
-            Sound s = new Sound(buf);
+        public static void Quit() {
+            shortSounds.Clear();
+            longSounds.Clear();
+            buffers.Clear();
+        }
+        public static void PlayShort(string name) {
+            Sound s = new Sound(buffers[name]);
             shortSounds.Add(s);
             s.Play();
         }
-        public static void PlayLong(SoundBuffer buf) {
-            Sound s = longSounds.Find((sound) => sound.SoundBuffer == buf);
+        public static void PlayLong(string name) {
+            Sound s = longSounds.Find((sound) => sound.SoundBuffer == buffers[name]);
             if (s.Status != SoundStatus.Playing)
                 s.Play();
         }
-        public static void PauseLong(SoundBuffer buf) {
-            Sound s = longSounds.Find((sound) => sound.SoundBuffer == buf);
+        public static void PauseLong(string name) {
+            Sound s = longSounds.Find((sound) => sound.SoundBuffer == buffers[name]);
             s.Pause();
         }
-        public static void PlayFor(SoundBuffer buf, int duration) {
-            Sound s = longSounds.Find((sound) => sound.SoundBuffer == buf);
+        public static void PlayFor(string name, int duration) {
+            Sound s = longSounds.Find((sound) => sound.SoundBuffer == buffers[name]);
             if (s.Status != SoundStatus.Playing) {
                 Task.Run(() => {
                     s.Play();
@@ -52,9 +57,10 @@ namespace shootingame
             }
         }
         
-        private static SoundBuffer makeSound(string name) {
+        private static SoundBuffer makeBuffer(string name) {
             return new SoundBuffer(Const.SoundFolder + name + ".wav");
         }
+        private static Dictionary<string, SoundBuffer> buffers = new Dictionary<string, SoundBuffer>();
         private static List<Sound> shortSounds = new List<Sound>();
         private static List<Sound> longSounds = new List<Sound>();
     }
