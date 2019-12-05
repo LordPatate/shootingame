@@ -20,6 +20,7 @@ namespace shootingame
         public int ID;
         public string Name;
         public int Score;
+	    public int Deaths;
         public LightVect2 Pos;
         public PlayerState State;
         public uint Frame;
@@ -28,12 +29,10 @@ namespace shootingame
         public bool Hooked;
         public bool ReSpawn;
         public bool HasRespawned;
-	public int Deaths;
 
         public LightPlayer(Player player) {
             ID = player.ID;
             Name = player.Name;
-            Score = player.Score;
             Pos = new LightVect2() {
                 X = player.Rect.Left,
                 Y = player.Rect.Top
