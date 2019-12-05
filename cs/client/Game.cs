@@ -1,3 +1,4 @@
+using System.Threading.Tasks.Sources;
 using System.Threading;
 using System;
 using System.Collections.Generic;
@@ -97,7 +98,11 @@ namespace shootingame
                 Player.Deaths = lightPlayer.Deaths;
                 Sounds.PlayShort("pop");
             }
-            
+            if (lightPlayer.Score != Player.Score) {
+                Player.Score = lightPlayer.Score;
+                Sounds.PlayShort("tic");
+            }
+
             if (state.LevelID != LevelID) {
                 LevelID = state.LevelID;
                 var infos = Level.levelInfos[LevelID];

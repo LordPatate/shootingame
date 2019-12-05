@@ -8,6 +8,8 @@ namespace shootingame
 
         public const int GameStepDuration = 10,
         StepsPerFrame = 10,
+        WallJumpSoundDuration = 400,
+        HookSoundStep = 900,
         PlayerStep = 5,
         FramesBeforeFullSpeed = 30,
         Gravity = 30,

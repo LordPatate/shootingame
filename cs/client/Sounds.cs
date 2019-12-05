@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using SFML.Audio;
+using SFML.System;
 
 namespace shootingame
 {
@@ -22,10 +23,14 @@ namespace shootingame
             });
             foreach (var s in longSounds) {
                 s.Loop = true;
+                s.Play();
+                s.Pause();
             }
         }
         public static void Update() {
             shortSounds.RemoveAll((sound) => sound.Status == SoundStatus.Stopped);
+            foreach (var s in longSounds)
+                s.Pause();
         }
         public static void Quit() {
             shortSounds.Clear();
@@ -46,15 +51,26 @@ namespace shootingame
             Sound s = longSounds.Find((sound) => sound.SoundBuffer == buffers[name]);
             s.Pause();
         }
+        public static void PlayIrregularFor(string name, int duration) {
+            Sound l = longSounds.Find((sound) => sound.SoundBuffer == buffers[name]);
+            Sound s = new Sound(buffers[name]);
+            s.PlayingOffset = l.PlayingOffset;
+            shortSounds.Add(s);
+            Task.Run(() => {
+                s.Play();
+                Thread.Sleep(duration);
+                s.Stop();
+            });
+            l.PlayingOffset += Time.FromMilliseconds(duration);
+        }
         public static void PlayFor(string name, int duration) {
-            Sound s = longSounds.Find((sound) => sound.SoundBuffer == buffers[name]);
-            if (s.Status != SoundStatus.Playing) {
-                Task.Run(() => {
-                    s.Play();
-                    Thread.Sleep(duration);
-                    s.Pause();
-                });
-            }
+            Sound s = new Sound(buffers[name]);
+            shortSounds.Add(s);
+            Task.Run(() => {
+                s.Play();
+                Thread.Sleep(duration);
+                s.Stop();
+            });
         }
         
         private static SoundBuffer makeBuffer(string name) {

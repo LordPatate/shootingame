@@ -21,6 +21,7 @@ namespace shootingame
         public IntRect TextureArea;
         public int ID;
         public string Name;
+        public int Score;
         public int Deaths;
         public IntRect Rect;
         public PlayerState State;
@@ -37,7 +38,6 @@ namespace shootingame
 
         public void FromLightPlayer(LightPlayer player) {
             ID = player.ID;
-            Deaths = player.Deaths;
             Rect.Left = player.Pos.X;
             Rect.Top = player.Pos.Y;
             State = player.State;
@@ -59,6 +59,7 @@ namespace shootingame
             
             ID = id;
             Name = name;
+            Score = 0;
             Deaths = 0;
             Inertia =  new Vector2i();
             HookPoint = new Vector2i();
@@ -112,6 +113,7 @@ namespace shootingame
                     if (Geometry.Dist(GetCOM(), hookPoint) <= Const.HookMaxRange) {
                         Hooked = true;
                         HookPoint = hookPoint;
+                        Sounds.PlayIrregularFor("hook", Const.HookSoundStep);
                     }
                 } else {
                     if (Geometry.Dist(GetCOM(), HookPoint) <= Const.HookMaxRange) {
@@ -129,6 +131,7 @@ namespace shootingame
             if (GunCoolDown == 0 && Controls.LeftClick) {
                 ShotPoint = HitScan(level, true);
                 Shot = true;
+                Sounds.PlayShort("shot");
                 GunCoolDown = Const.GunCoolDown;
             }
 

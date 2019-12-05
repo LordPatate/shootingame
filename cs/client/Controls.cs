@@ -138,6 +138,7 @@ namespace shootingame
         private static void Step(Player player, bool direction, Level level)
         {
             player.SetState(PlayerState.Running);
+            Sounds.PlayLong("run");
             int inertiaDelta = Const.PlayerStep * Const.InertiaPerPixel / Const.FramesBeforeFullSpeed;
             int maxSpeed = Const.PlayerStep * Const.InertiaPerPixel * Const.FramesBeforeFullSpeed;
 
@@ -172,6 +173,7 @@ namespace shootingame
         private static void WallJump(Player player, bool direction)
         {
             player.SetState(PlayerState.WallJumping);
+            Sounds.PlayFor("run", Const.WallJumpSoundDuration);
             player.Inertia.Y = - Const.JumpPower;
             player.JumpEnabled = false;
             player.Direction = direction;
@@ -183,6 +185,7 @@ namespace shootingame
         private static void WallSlide(Player player, bool direction)
         {
             player.SetState(PlayerState.WallSliding);
+            Sounds.PlayLong("slide");
             player.Inertia.Y -= Const.WallFriction;
             player.Direction = direction;
         }
