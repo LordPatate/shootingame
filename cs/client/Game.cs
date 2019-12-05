@@ -95,7 +95,7 @@ namespace shootingame
             LightPlayer lightPlayer = Players[Player.ID];
             if (lightPlayer.Deaths != Player.Deaths) {
                 Player.Deaths = lightPlayer.Deaths;
-                Sounds.PlayShort(Sounds.pop);
+                Sounds.PlayShort("pop");
             }
             
             if (state.LevelID != LevelID) {
