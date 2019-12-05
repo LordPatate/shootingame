@@ -32,6 +32,7 @@ namespace shootingame
         public const uint FontSize = 18;
 
         public const string LevelFolder = "../../levels/";
+        public const string SoundFolder = "../../resources/sounds/";
 
         public const int ServerPort = 4242;
         public const int ClientPort = 4343;
