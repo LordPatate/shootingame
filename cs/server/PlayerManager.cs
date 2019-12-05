@@ -61,7 +61,7 @@ namespace server
                     var target = FindTarget(shot, id);
                     if (target != null) {
                         target.ReSpawn = true;
-			target.Deaths += 1;
+			            target.Deaths += 1;
                         players[endPoint].Score += 1;
                     }
                 }
