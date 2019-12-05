@@ -10,7 +10,8 @@ namespace shootingame
     class Program
     {
         public static Popup AskQuit;
-        public static Menu PauseMenu;   
+        public static Menu PauseMenu;
+        public static Popup Disconnected;
         static void Main(string[] args)
         {
             string server = "127.0.0.1";
@@ -36,6 +37,13 @@ namespace shootingame
                 Sounds.Update();
                 Screen.Update();
                 Screen.Window.DispatchEvents();
+
+                if (!Client.Connected && !Disconnected.IsActive) {
+                    if (Disconnected.GetChoice() != null)
+                        Game.Running = false;
+                    else
+                        Disconnected.Pop();
+                }
                 
                 PauseMenuDispatch();
                 AskQuitDispatch();

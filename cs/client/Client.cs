@@ -59,7 +59,7 @@ namespace shootingame
             try {
                 byte[] data = receiver.GetBytes(out IPEndPoint endPoint);
                 if (data is null) {
-                    if (turnsWaiting >= 1000) {
+                    if (turnsWaiting >= 100) {
                         SendDisconnect();
                     } else {
                         ++turnsWaiting;

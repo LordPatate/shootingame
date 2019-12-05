@@ -133,6 +133,11 @@ namespace shootingame
                     "Do you really want to quit?"
                 }, "Yes", "No"
             );
+            Program.Disconnected = new Popup(
+                new string[] {
+                    "You got disconnected from server."
+                }, "Okay... :("
+            );
 
             if (Game.Level != null) {
                 LevelInfos infos = Level.levelInfos[Game.LevelID];

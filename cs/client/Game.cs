@@ -43,21 +43,6 @@ namespace shootingame
 
         public static void Update()
         {
-            if (!Client.Connected) {
-                Running = false;
-                var disconnected = new Popup(
-                    new string[] {
-                        "You got disconnected from server."
-                    }, "Okay... :("
-                );
-                disconnected.Pop();
-                while (disconnected.IsActive) {
-                    Screen.Update();
-                    Screen.Window.DispatchEvents();
-                    Thread.Sleep(Const.GameStepDuration);
-                }
-                return;
-            }
             Player.Update(Level);
 
             GameState state = MakeGameState();
