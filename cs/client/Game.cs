@@ -93,6 +93,10 @@ namespace shootingame
             Players.AddRange(state.Players);
 
             LightPlayer lightPlayer = Players[Player.ID];
+            if (lightPlayer.Deaths != Player.Deaths) {
+                Player.Deaths = lightPlayer.Deaths;
+                Sounds.PlayShort(Sounds.pop);
+            }
             
             if (state.LevelID != LevelID) {
                 LevelID = state.LevelID;
