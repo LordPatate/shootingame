@@ -70,7 +70,7 @@ namespace shootingame
             Shot = false;
             HasRespawned = false;
 
-            Texture = new Texture(Const.PlayerSpriteSheet);
+            Texture = new Texture(Program.ResourceDir + Const.PlayerSpriteSheet);
 
             TextureArea = new IntRect(0, 0, width: Const.PlayerSpriteWidth, height: Const.PlayerSpriteHeight);
         }

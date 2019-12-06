@@ -19,7 +19,7 @@ namespace shootingame
 
         public static void Init()
         {
-            Font = new Font(Const.FontFile);
+            Font = new Font(Program.ResourceDir + Const.FontFile);
             NewWindow();
         }
         public static void ToggleFullscreen()
@@ -140,7 +140,7 @@ namespace shootingame
             );
 
             if (Game.Level != null) {
-                LevelInfos infos = Level.levelInfos[Game.LevelID];
+                LevelInfos infos = Game.Levels[Game.LevelID];
                 Game.LoadLevel(infos);
             }
         }

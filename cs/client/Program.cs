@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using SFML.Window;
@@ -9,11 +10,13 @@ namespace shootingame
 {
     class Program
     {
+	public static string ResourceDir;
         public static Popup AskQuit;
         public static Menu PauseMenu;
         public static Popup Disconnected;
         static void Main(string[] args)
         {
+	    ResourceDir = GetResourceDir();
             string server = "127.0.0.1";
             string name = null;
             if (args.Length >= 1)
@@ -110,5 +113,16 @@ namespace shootingame
                 Thread.Sleep(Const.GameStepDuration);
             }
         }
+	private static string GetResourceDir()
+	{
+	    var dir = new DirectoryInfo(".");
+	    for (int i = 0; i < 3; ++i)
+	    {
+		if (dir.GetDirectories(@"*resources").Length != 0)
+		    return dir.FullName + '/';
+		dir = dir.Parent;
+	    }
+	    throw new DirectoryNotFoundException("unable to locate 'resources' directory");
+	}
     }
 }

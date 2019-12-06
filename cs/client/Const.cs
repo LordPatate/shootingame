@@ -26,17 +26,15 @@ namespace shootingame
         public const int WindowWidth = 1120, WindowHeight = 630,
         TileWidth = 25, TileHeight = 25;
 
-        public const string PlayerSpriteSheet = "../../resources/sprites/player/adventurer-v1.5-Sheet.png"; // see playeranimations.go
+        public const string PlayerSpriteSheet = "resources/sprites/player/adventurer-v1.5-Sheet.png"; // see playeranimations.go
         public const int PlayerSpriteWidth = 50, PlayerSpriteHeight = 37,
         PlayerScalePercent = 120;
 
-        public const string FontFile = "../../resources/fonts/DejaVuSans.ttf";
+        public const string FontFile = "resources/fonts/DejaVuSans.ttf";
         public const uint FontSize = 18;
 
-        public const string LevelFolder = "../../levels/";
-        public const string SoundFolder = "../../resources/sounds/";
+        public const string SoundFolder = "resources/sounds/";
 
         public const int ServerPort = 4242;
-        public const int ClientPort = 4343;
     }
 }

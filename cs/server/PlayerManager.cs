@@ -8,9 +8,21 @@ namespace server
 {
     class PlayerManager
     {
+	public static readonly LevelInfos[] levels = LevelInfos.Init();
         public static Level level;
         public static int levelID;
         public static Dictionary<IPEndPoint, LightPlayer> players = new Dictionary<IPEndPoint, LightPlayer>();
+
+	public static void Init(string[] args)
+	{
+            levelID = 0;
+            if (args.Length >= 1) {
+                if (Int32.TryParse(args[0], out int i))
+                    levelID = i % levels.Length;
+            }
+            Console.WriteLine($"Starting server with level {levelID}");
+            level = new Level(levels[levelID].SourceFile);
+	}
 
         public static int Add(IPEndPoint endPoint)
         {

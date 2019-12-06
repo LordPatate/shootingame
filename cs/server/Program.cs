@@ -14,13 +14,7 @@ namespace server
         static List<Task> tasks = new List<Task>();
         static void Main(string[] args)
         {
-            PlayerManager.levelID = 0;
-            if (args.Length >= 1) {
-                if (Int32.TryParse(args[0], out int i))
-                    PlayerManager.levelID = i;
-            }
-            Console.WriteLine($"Starting server with level {PlayerManager.levelID}");
-            PlayerManager.level = new Level(Level.levelInfos[PlayerManager.levelID]);
+	    PlayerManager.Init(args);
             
             UdpClient client = new UdpClient(Const.ServerPort);
             Receiver receiver = new Receiver(client);

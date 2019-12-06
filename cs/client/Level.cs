@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
@@ -7,13 +8,39 @@ namespace shootingame
 {
     public struct LevelInfos
     {
+	public static LevelInfos[] Init()
+	{
+	    DirectoryInfo levelDir = null;
+	    var dir = new DirectoryInfo(@".");
+	    DirectoryInfo[] directories;
+	    for (int i = 0; i < 3; ++i)
+	    {
+		directories = dir.GetDirectories("*levels");
+		if (directories.Length != 0) {
+		    levelDir = directories[0];
+		    break;
+		}
+		dir = dir.Parent;
+	    }
+
+	    if (levelDir == null)
+		throw new DirectoryNotFoundException("unable to locate 'levels' folder");
+
+	    FileInfo[] levels = levelDir.GetFiles();
+	    LevelInfos[] infos = new LevelInfos[levels.Length];
+	    for (int i = 0; i < levels.Length; ++i)
+	    {
+		infos[i].SourceFile = levels[i].FullName;
+		infos[i].BackgroundImg = "";
+		infos[i].ForegroundImg = "";
+	    }
+
+	    return infos;
+	}	    
+
         public string SourceFile;
         public string BackgroundImg;
         public string ForegroundImg;
-
-        public LevelInfos(string src, string bg = "", string fg = "") {
-            SourceFile = Const.LevelFolder + src; BackgroundImg = bg; ForegroundImg = fg;
-        }
     }
 
     public class Tile
@@ -26,22 +53,13 @@ namespace shootingame
 
     public class Level
     {
-        public static readonly LevelInfos[] levelInfos = {
-            new LevelInfos( // Level 0
-                src: "level0.png"
-            ),
-            new LevelInfos( //level 1
-                src: "level1.png"
-            )
-        };
-
         public IntRect Bounds;
         public List<Vector2i> SpawnPoints;
         public List<Tile> Tiles;
 
-        public Level(LevelInfos infos)
+        public Level(string sourceFile)
         {
-            Image image = new Image(infos.SourceFile);
+            Image image = new Image(sourceFile);
             Vector2u size = image.Size;
             
             Bounds = new IntRect(
@@ -75,7 +93,7 @@ namespace shootingame
                     }
                 }
             if (SpawnPoints.Count == 0) {
-                throw new Exception($"Invalid file \"{infos.SourceFile}\": no player spawn point");
+                throw new Exception($"Invalid file \"{sourceFile}\": no player spawn point");
             }
         }
     }

@@ -74,7 +74,7 @@ namespace shootingame
         }
         
         private static SoundBuffer makeBuffer(string name) {
-            return new SoundBuffer(Const.SoundFolder + name + ".wav");
+            return new SoundBuffer(Program.ResourceDir + Const.SoundFolder + name + ".wav");
         }
         private static Dictionary<string, SoundBuffer> buffers = new Dictionary<string, SoundBuffer>();
         private static List<Sound> shortSounds = new List<Sound>();

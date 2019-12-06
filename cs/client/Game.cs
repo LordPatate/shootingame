@@ -18,6 +18,7 @@ namespace shootingame
         public static RenderTexture Background;
         public static RenderTexture Foreground;
         public static IntRect Bounds;
+	public static readonly LevelInfos[] Levels = LevelInfos.Init();
 
         public static void Init(GameState state, string name)
         {
@@ -25,8 +26,8 @@ namespace shootingame
             Player = new Player(state.PlayerID, name);
             
             LevelID = state.LevelID;
-            LevelInfos infos = Level.levelInfos[LevelID];
-            Level = new Level(infos);
+            LevelInfos infos = Levels[LevelID];
+            Level = new Level(infos.SourceFile);
             LoadLevel(infos);
             
             UpdateFromGameState(state);
@@ -93,8 +94,8 @@ namespace shootingame
 
             if (state.LevelID != LevelID) {
                 LevelID = state.LevelID;
-                var infos = Level.levelInfos[LevelID];
-                Level = new Level(infos);
+                var infos = Levels[LevelID];
+                Level = new Level(infos.SourceFile);
                 LoadLevel(infos);
                 lightPlayer.ReSpawn = true;
             }
@@ -169,7 +170,7 @@ namespace shootingame
             }
             else
             {
-                texture = new Texture(src);
+                texture = new Texture(Program.ResourceDir + src);
             }
 
             return texture;
