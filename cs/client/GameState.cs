@@ -1,34 +1,34 @@
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
 using System;
+using Newtonsoft.Json;
 using SFML.System;
 
 namespace shootingame
 {
-    [Serializable()]
     public struct LightVect2 {
-        public int X, Y;
+        public int X {get; set;}
+	public int Y {get; set;}
     }
-    [Serializable()]
     public struct LightShot {
-        public LightVect2 Origin, Dest;
-        public byte Alpha;
+        public LightVect2 Origin {get; set;}
+	public LightVect2 Dest {get; set;}
+        public byte Alpha {get; set;}
     }
-    [Serializable()]
     public class LightPlayer
     {
-        public int ID;
-        public string Name;
-        public int Score;
-	    public int Deaths;
-        public LightVect2 Pos;
-        public PlayerState State;
-        public uint Frame;
-        public bool Direction;
-        public LightVect2 HookPoint;
-        public bool Hooked;
-        public bool ReSpawn;
-        public bool HasRespawned;
+        public int ID {get; set;}
+        public string Name {get; set;}
+        public int Score {get; set;}
+        public int Deaths {get; set;}
+        public LightVect2 Pos {get; set;}
+        public PlayerState State {get; set;}
+        public uint Frame {get; set;}
+        public bool Direction {get; set;}
+        public LightVect2 HookPoint {get; set;}
+        public bool Hooked {get; set;}
+        public bool ReSpawn {get; set;}
+        public bool HasRespawned {get; set;}
+
+	public LightPlayer() {} // Used by Json deserialization
 
         public LightPlayer(Player player) {
             ID = player.ID;
@@ -50,12 +50,13 @@ namespace shootingame
         public LightPlayer(int id, Level level) {
             ID = id;
             Vector2i spawnPoint = level.SpawnPoints[id % level.SpawnPoints.Count];
-            Pos.X = spawnPoint.X;
-            Pos.Y = spawnPoint.Y;
+            Pos = new LightVect2() {
+		X = spawnPoint.X,
+		Y = spawnPoint.Y
+	    };
         }
     }
 
-    [Serializable()]
     public class GameState
     {
         public enum RequestType
@@ -64,32 +65,33 @@ namespace shootingame
             Connect,
             Disconnect
         }
-        public LightPlayer[] Players;
-        public LightShot[] Shots;
-        public int PlayerID;
-        public int LevelID;
+        public LightPlayer[] Players {get; set;}
+        public LightShot[] Shots {get; set;}
+        public int PlayerID {get; set;}
+        public int LevelID {get; set;}
 
-        public RequestType Type;
+        public RequestType Type {get; set;}
 
-        public byte[] ToBytes(BinaryFormatter formatter)
+        public byte[] ToBytes()
         {
-            MemoryStream stream = new MemoryStream();
+            string json = JsonConvert.SerializeObject(this);
 
-            formatter.Serialize(stream, this);
-            
-            byte[] data = new byte[stream.Length];
-            stream.Seek(0, SeekOrigin.Begin);
-            int nb = stream.Read(data, 0, data.Length);
-            stream.Close();
+            byte[] data = new byte[json.Length];
+	    for (int i = 0; i < json.Length; ++i)
+		data[i] = (byte)json[i];
 
-            return data;
+	    return data;
         }
 
-        public static GameState FromBytes(BinaryFormatter formatter, byte[] data)
-        {
-            using MemoryStream stream = new MemoryStream(data);
-            
-            return (GameState)formatter.Deserialize(stream);
+        public static GameState FromBytes(byte[] data)
+	{
+	    char[] chars = new char[data.Length];
+	    for (int i = 0; i < data.Length; ++i)
+		chars[i] = (char)data[i];
+
+	    string json = new string(chars);
+
+            return JsonConvert.DeserializeObject<GameState>(json);
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using System.Threading;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Linq;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Net.Sockets;
 using System.Net;
 using System;
@@ -13,7 +11,6 @@ namespace server
 {
     class Program
     {
-        static BinaryFormatter formatter = new BinaryFormatter();
         static List<Task> tasks = new List<Task>();
         static void Main(string[] args)
         {
@@ -60,7 +57,7 @@ namespace server
 
         static void ProcessData(byte[] receivedBytes, IPEndPoint endPoint, UdpClient client)
         {
-            GameState state = GameState.FromBytes(formatter, receivedBytes);
+            GameState state = GameState.FromBytes(receivedBytes);
             switch (state.Type)
             {
                 case GameState.RequestType.Connect:
@@ -90,7 +87,7 @@ namespace server
                 Shots = PlayerManager.shots.ToArray()
             };
 
-            byte[] data = state.ToBytes(formatter);
+            byte[] data = state.ToBytes();
             client.Send(data, data.Length,
 	        endPoint.Address.ToString(), endPoint.Port);
         }

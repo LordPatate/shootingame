@@ -1,7 +1,5 @@
 using System.Threading;
 using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Net.Sockets;
 using System.Net;
 namespace shootingame
@@ -18,7 +16,7 @@ namespace shootingame
 
             GameState state = new GameState();
             state.Type = GameState.RequestType.Connect;
-            data = state.ToBytes(formatter);
+            data = state.ToBytes();
             try {
                 client.Send(data, data.Length);
             
@@ -26,7 +24,7 @@ namespace shootingame
                     data = receiver.GetBytes(out IPEndPoint endPoint);
                     
                     if (data != null) {
-                        state = GameState.FromBytes(formatter, data);
+                        state = GameState.FromBytes(data);
                         if (state.Type != GameState.RequestType.Connect)
                             continue;
                         
@@ -44,7 +42,7 @@ namespace shootingame
 
         public static void SendUpdate(GameState state)
         {
-            byte[] data = state.ToBytes(formatter);
+            byte[] data = state.ToBytes();
 
             try {
                 client.Send(data, data.Length);
@@ -67,7 +65,7 @@ namespace shootingame
                     return null;
                 }
                 turnsWaiting = 0;
-                GameState state = GameState.FromBytes(formatter, data);
+                GameState state = GameState.FromBytes(data);
                 if (state.Type == GameState.RequestType.Disconnect) {
                     Disconnect();
                 }
@@ -84,7 +82,7 @@ namespace shootingame
         {
             GameState state = new GameState();
             state.Type = GameState.RequestType.Disconnect;
-            byte[] data = state.ToBytes(formatter);
+            byte[] data = state.ToBytes();
             
             try {
                 client.Send(data, data.Length);
@@ -102,7 +100,6 @@ namespace shootingame
 
         private static UdpClient client;
         private static Receiver receiver;
-        private static BinaryFormatter formatter = new BinaryFormatter();
         private static uint turnsWaiting = 0;
     }
 }
