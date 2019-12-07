@@ -43,9 +43,13 @@ namespace server
         {
             int id = players[endPoint].ID;
             string name = players[endPoint].Name;
+            
             freePlayerIDs[id] = true;
             players.Remove(endPoint);
             lastUpdated.Remove(endPoint);
+
+            // Remove all shots from this player
+            shots.RemoveAll((shot) => shot.ID >> sizeof(int)/2*8 == id);
             
             string msg = $"Player {id} has left";
             if (name != null) {
