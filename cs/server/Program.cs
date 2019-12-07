@@ -58,14 +58,14 @@ namespace server
                     {
                         int id = PlayerManager.Add(endPoint);
                         if (id != -1)
-                            SendGameState(state.Type, id, endPoint, client);
+                            SendGameState(GameState.RequestType.LevelUpdate, id, endPoint, client);
                     }
                     break;
                 case GameState.RequestType.Disconnect:
                     PlayerManager.Remove(endPoint);
                     break;
                 case GameState.RequestType.Update:
-                    if (PlayerManager.Update(endPoint, state))
+                    if (PlayerManager.Update(endPoint, (UpdateRequest)state))
                         SendGameState(state.Type, state.PlayerID, endPoint, client);
                     break;
             }
@@ -73,13 +73,29 @@ namespace server
 
         static void SendGameState(GameState.RequestType type, int playerID, IPEndPoint endPoint, UdpClient client)
         {
-            GameState state = new GameState() {
-                Type = type,
-                LevelID = PlayerManager.levelID,
-                PlayerID = playerID,
-                Players = PlayerManager.GetPlayers(),
-                Shots = PlayerManager.shots.ToArray()
-            };
+	    GameState state;
+	    switch (type)
+	    {
+		case GameState.RequestType.Update:
+		    state = new UpdateRequest(playerID) {
+			Players = PlayerManager.GetPlayers(),
+			Shots = PlayerManager.shots.ToArray()
+		    };
+		    break;
+		case GameState.RequestType.LevelUpdate:
+		    state = new LevelUpdateRequest(playerID) {
+			Dimensions = new LightVect2() {
+			    X = PlayerManager.level.Bounds.Width,
+			    Y = PlayerManager.level.Bounds.Height
+			},
+			TilePos = PlayerManager.GetTiles(),
+			SpawnPoints = PlayerManager.GetSpawnPoints()
+		    };
+		    break;
+		default:
+		    state = new GameState(type, playerID);
+		    break;
+	    }
 
             byte[] data = state.ToBytes();
             client.Send(data, data.Length,

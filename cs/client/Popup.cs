@@ -98,8 +98,6 @@ namespace shootingame
             foreach (PopupOption option in Options) {
                 Screen.Window.Draw(Drawing.SpriteOf(option.Texture, option.Rect));
             }
-
-            Screen.Window.Display();
         }
         public string GetChoice()
         {

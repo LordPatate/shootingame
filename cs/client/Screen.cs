@@ -56,7 +56,7 @@ namespace shootingame
             
             foreach (var popup in Popup.ActivePopups) {
                 popup.Display();
-                return;
+                break;
             }
 
             Window.Display();
@@ -140,8 +140,7 @@ namespace shootingame
             );
 
             if (Game.Level != null) {
-                LevelInfos infos = Game.Levels[Game.LevelID];
-                Game.LoadLevel(infos);
+                Game.LoadLevel();
             }
         }
         private static void OnClose(object sender, EventArgs e)

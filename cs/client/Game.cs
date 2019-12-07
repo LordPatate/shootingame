@@ -13,25 +13,37 @@ namespace shootingame
         public static bool Running;
         public static Player Player;
         public static List<LightPlayer> Players = new List<LightPlayer>();
-        public static int LevelID;
+	public static LevelUpdateRequest levelInfos;
         public static Level Level;
         public static RenderTexture Background;
         public static RenderTexture Foreground;
         public static IntRect Bounds;
-	public static readonly LevelInfos[] Levels = LevelInfos.Init();
 
         public static void Init(GameState state, string name)
         {
             Running = true;
             Player = new Player(state.PlayerID, name);
+	    levelInfos = (LevelUpdateRequest)state;
             
-            LevelID = state.LevelID;
-            LevelInfos infos = Levels[LevelID];
-            Level = new Level(infos.SourceFile);
-            LoadLevel(infos);
-            
-            UpdateFromGameState(state);
-            Player.FromLightPlayer(state.Players[(int)state.PlayerID]);
+            LoadLevel();
+
+	    state = MakeGameState();
+	    Client.SendUpdate(state);
+
+	    state = Client.ReceiveUpdate();
+	    for (int i = 0; i < 10 && state == null; ++i) {
+		Thread.Sleep(300);
+		state = Client.ReceiveUpdate();
+	    }
+	    if (state == null) {
+		Client.SendDisconnect();
+		return;
+	    }
+	    if (state.Type != GameState.RequestType.Update)
+		return;
+
+	    UpdateFromGameState((UpdateRequest)state);
+	    Respawn();
         }
 
         public static void Quit()
@@ -53,18 +65,24 @@ namespace shootingame
             Client.SendUpdate(state);
             state = Client.ReceiveUpdate();
             if (state != null) {
-                UpdateFromGameState(state);
+		switch (state.Type)
+		{
+		    case GameState.RequestType.Update:
+			UpdateFromGameState((UpdateRequest)state);
+			break;
+		    case GameState.RequestType.LevelUpdate:
+			levelInfos = (LevelUpdateRequest)state;
+			LoadLevel();
+			break;
+		}
             }
         }
         private static GameState MakeGameState()
         {
-            GameState state = new GameState() {
-                Type = GameState.RequestType.Update,
-                PlayerID = Player.ID,
+            UpdateRequest state = new UpdateRequest(Player.ID) {
                 Players = new LightPlayer[] { new LightPlayer(Player) },
             };
             
-            state.Shots = null;
             if (Player.Shot) {
                 state.Shots = new LightShot[] {
                     new LightShot() {
@@ -77,7 +95,7 @@ namespace shootingame
 
             return state;
         }
-        private static void UpdateFromGameState(GameState state)
+        private static void UpdateFromGameState(UpdateRequest state)
         {
             Players.Clear();
             Players.AddRange(state.Players);
@@ -91,21 +109,11 @@ namespace shootingame
                 Player.Score = lightPlayer.Score;
                 Sounds.PlayShort("tic");
             }
-
-            if (state.LevelID != LevelID) {
-                LevelID = state.LevelID;
-                var infos = Levels[LevelID];
-                Level = new Level(infos.SourceFile);
-                LoadLevel(infos);
-                lightPlayer.ReSpawn = true;
-            }
             
             Player.HasRespawned = lightPlayer.HasRespawned;
             if (lightPlayer.ReSpawn) {
-                Vector2i spawnPoint = Level.SpawnPoints[(Player.ID + lightPlayer.Deaths) % Level.SpawnPoints.Count];
-                Player.Rect.Left = spawnPoint.X;
-                Player.Rect.Top = spawnPoint.Y;
-                Player.HasRespawned = true;
+		Respawn();
+		Player.HasRespawned = true;
             }
 
             if (state.Shots == null) {
@@ -129,11 +137,20 @@ namespace shootingame
             }
         }
 
-        public static void LoadLevel(LevelInfos infos)
+	public static void Respawn()
+	{
+	    Vector2i spawnPoint = Level.SpawnPoints[(Player.ID + Player.Deaths) % Level.SpawnPoints.Count];
+	    Player.Rect.Left = spawnPoint.X;
+	    Player.Rect.Top = spawnPoint.Y;
+	}
+
+        public static void LoadLevel()
         {
             Bounds = Geometry.ScaleRect(new IntRect(0, 0, (int)Screen.Width, (int)Screen.Height), 80, 80);
 
-            DrawScene(infos.BackgroundImg, infos.ForegroundImg);
+	    Level = new Level(levelInfos);
+
+            DrawScene("", "");
         }
 
         private static void DrawScene(string bg, string fg)

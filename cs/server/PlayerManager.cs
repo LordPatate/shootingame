@@ -8,7 +8,7 @@ namespace server
 {
     class PlayerManager
     {
-	public static readonly LevelInfos[] levels = LevelInfos.Init();
+	public static readonly string[] levels = LevelInfos.Init();
         public static Level level;
         public static int levelID;
         public static Dictionary<IPEndPoint, LightPlayer> players = new Dictionary<IPEndPoint, LightPlayer>();
@@ -21,7 +21,7 @@ namespace server
                     levelID = i % levels.Length;
             }
             Console.WriteLine($"Starting server with level {levelID}");
-            level = new Level(levels[levelID].SourceFile);
+            level = new Level(levels[levelID]);
 	}
 
         public static int Add(IPEndPoint endPoint)
@@ -54,7 +54,7 @@ namespace server
             Console.WriteLine(msg);
         }
 
-        public static bool Update(IPEndPoint endPoint, GameState state)
+        public static bool Update(IPEndPoint endPoint, UpdateRequest state)
         {
             try {
                 lastUpdated[endPoint] = DateTime.Now;
@@ -126,6 +126,30 @@ namespace server
 
             return array;
         }
+
+	public static LightVect2[] GetTiles()
+	{
+	    var array = new LightVect2[level.Tiles.Count];
+
+	    for (int i = 0; i < level.Tiles.Count; ++i) {
+		var rect = level.Tiles[i].Rect;
+		array[i] = new LightVect2() { X = rect.Left, Y = rect.Top };
+	    }
+
+	    return array;
+	}
+
+	public static LightVect2[] GetSpawnPoints()
+	{
+	    var array = new LightVect2[level.SpawnPoints.Count];
+
+	    for (int i = 0; i < level.SpawnPoints.Count; ++i) {
+		var pos = level.SpawnPoints[i];
+		array[i] = new LightVect2() { X = pos.X, Y = pos.Y };
+	    }
+
+	    return array;
+	}
 
         private static void UpdatePlayer(IPEndPoint endPoint, LightPlayer clientPlayer)
         {

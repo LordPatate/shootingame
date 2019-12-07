@@ -25,7 +25,7 @@ namespace shootingame
                     
                     if (data != null) {
                         state = GameState.FromBytes(data);
-                        if (state.Type != GameState.RequestType.Connect)
+                        if (state.Type != GameState.RequestType.LevelUpdate)
                             continue;
                         
                         Connected = true;

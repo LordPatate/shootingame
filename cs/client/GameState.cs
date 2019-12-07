@@ -61,16 +61,21 @@ namespace shootingame
     {
         public enum RequestType
         {
-            Update,
             Connect,
-            Disconnect
+            Disconnect,
+            Update,
+	    LevelUpdate,
         }
-        public LightPlayer[] Players {get; set;}
-        public LightShot[] Shots {get; set;}
-        public int PlayerID {get; set;}
-        public int LevelID {get; set;}
-
         public RequestType Type {get; set;}
+        public int PlayerID {get; set;}
+
+	public GameState() {} // For deserialization
+
+	public GameState(RequestType type, int playerID)
+	{
+	    Type = type;
+	    PlayerID = playerID;
+	}
 
         public byte[] ToBytes()
         {
@@ -89,9 +94,36 @@ namespace shootingame
 	    for (int i = 0; i < data.Length; ++i)
 		chars[i] = (char)data[i];
 
-	    string json = new string(chars);
-
-            return JsonConvert.DeserializeObject<GameState>(json);
+	    string json =  new string(chars);
+            GameState state = JsonConvert.DeserializeObject<GameState>(json);
+	    switch (state.Type)
+	    {
+		case RequestType.Update:
+		    return JsonConvert.DeserializeObject<UpdateRequest>(json);
+		case RequestType.LevelUpdate:
+		    return JsonConvert.DeserializeObject<LevelUpdateRequest>(json);
+		default:
+		    return state;
+	    }
         }
+    }
+
+    public class LevelUpdateRequest : GameState
+    {
+	public LightVect2 Dimensions {get; set;}
+	public LightVect2[] TilePos {get; set;}
+	public LightVect2[] SpawnPoints {get; set;}
+
+	public LevelUpdateRequest(int playerID)
+	    : base(RequestType.LevelUpdate, playerID) {}
+    }
+
+    public class UpdateRequest : GameState
+    {
+        public LightPlayer[] Players {get; set;}
+        public LightShot[] Shots {get; set;}
+
+	public UpdateRequest(int playerID)
+	    : base(RequestType.Update, playerID) {}
     }
 }

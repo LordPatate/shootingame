@@ -6,9 +6,9 @@ using SFML.System;
 
 namespace shootingame
 {
-    public struct LevelInfos
+    public class LevelInfos
     {
-	public static LevelInfos[] Init()
+	public static string[] Init()
 	{
 	    DirectoryInfo levelDir = null;
 	    var dir = new DirectoryInfo(@".");
@@ -27,20 +27,13 @@ namespace shootingame
 		throw new DirectoryNotFoundException("unable to locate 'levels' folder");
 
 	    FileInfo[] levels = levelDir.GetFiles();
-	    LevelInfos[] infos = new LevelInfos[levels.Length];
-	    for (int i = 0; i < levels.Length; ++i)
-	    {
-		infos[i].SourceFile = levels[i].FullName;
-		infos[i].BackgroundImg = "";
-		infos[i].ForegroundImg = "";
+	    string[] sourceFiles = new string[levels.Length];
+	    for (int i = 0; i < levels.Length; ++i) {
+		sourceFiles[i] = levels[i].FullName;
 	    }
 
-	    return infos;
-	}	    
-
-        public string SourceFile;
-        public string BackgroundImg;
-        public string ForegroundImg;
+	    return sourceFiles;
+	}
     }
 
     public class Tile
@@ -56,6 +49,22 @@ namespace shootingame
         public IntRect Bounds;
         public List<Vector2i> SpawnPoints;
         public List<Tile> Tiles;
+
+	public Level(LevelUpdateRequest state)
+	{
+	    Bounds = new IntRect(
+		left: 0,
+		top: 0,
+		width: state.Dimensions.X,
+		height: state.Dimensions.Y
+	    );
+	    Tiles = new List<Tile>();
+	    for (int i = 0; i < state.TilePos.Length; ++i)
+		Tiles.Add(new Tile(state.TilePos[i].X, state.TilePos[i].Y));
+	    SpawnPoints = new List<Vector2i>();
+	    for (int i = 0; i < state.SpawnPoints.Length; ++i)
+		SpawnPoints.Add(new Vector2i(state.SpawnPoints[i].X, state.SpawnPoints[i].Y));
+	}
 
         public Level(string sourceFile)
         {
