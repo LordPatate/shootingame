@@ -131,7 +131,6 @@ namespace shootingame
             if (GunCoolDown == 0 && Controls.LeftClick) {
                 ShotPoint = HitScan(level, true);
                 Shot = true;
-                Sounds.PlayShort("shot");
                 GunCoolDown = Const.GunCoolDown;
             }
 

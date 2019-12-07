@@ -134,6 +134,9 @@ namespace shootingame
                 ));
                 
                 Screen.Echoes.Add(line);
+
+                if (shot.Alpha == 255)
+		    Sounds.PlayShort("shot");
             }
         }
 
