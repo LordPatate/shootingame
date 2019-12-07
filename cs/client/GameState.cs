@@ -11,7 +11,7 @@ namespace shootingame
     public struct LightShot {
         public LightVect2 Origin {get; set;}
 	public LightVect2 Dest {get; set;}
-        public byte Alpha {get; set;}
+        public int ID {get; set;}
     }
     public class LightPlayer
     {

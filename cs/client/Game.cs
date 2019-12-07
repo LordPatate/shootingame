@@ -88,7 +88,7 @@ namespace shootingame
                     new LightShot() {
                         Origin = new LightVect2() { X = Player.GetCOM().X, Y = Player.GetCOM().Y },
                         Dest = new LightVect2() { X = Player.ShotPoint.X, Y = Player.ShotPoint.Y },
-                        Alpha = 255
+                        ID = (Player.ID << sizeof(int)/2) | Player.ShotCount
                     }
                 };
             }
@@ -119,10 +119,14 @@ namespace shootingame
             if (state.Shots == null) {
                 return;
             }
-            Screen.Echoes.Clear();
             for (int i = 0; i < state.Shots.Length; ++i) {
                 LightShot shot = state.Shots[i];
-                Color color = new Color(255, 220, 200, alpha: shot.Alpha);
+                if (ShotLog.Contains(shot.ID))
+                    continue;
+                ShotLog.Add(shot.ID);
+		        Sounds.PlayShort("shot");
+                
+                Color color = new Color(255, 220, 200, 255);
                 VertexArray line = new VertexArray(PrimitiveType.Lines);                
                 line.Append(new Vertex(
                     Geometry.AdaptPoint(new Vector2f(shot.Origin.X, shot.Origin.Y)),
@@ -132,11 +136,7 @@ namespace shootingame
                     Geometry.AdaptPoint(new Vector2f(shot.Dest.X, shot.Dest.Y)),
                     color
                 ));
-                
                 Screen.Echoes.Add(line);
-
-                if (shot.Alpha == 255)
-		    Sounds.PlayShort("shot");
             }
         }
 
@@ -195,5 +195,7 @@ namespace shootingame
 
             return texture;
         }
+
+        private static HashSet<int> ShotLog = new HashSet<int>();
     }
 }

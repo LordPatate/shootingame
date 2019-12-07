@@ -43,9 +43,7 @@ namespace shootingame
                     player.Draw();
                 }
             }
-            foreach (var line in Echoes) {
-                GameScene.Draw(line);
-            }
+            DrawShots();
             CastShadows();
             GameScene.Draw(new Sprite(Game.Foreground.Texture));
 
@@ -69,6 +67,21 @@ namespace shootingame
                 shade.FillColor = new Color(0, 0, 0);
                 GameScene.Draw(shade);
             }
+        }
+
+        public static void DrawShots()
+        {
+            foreach (var line in Echoes) {
+                GameScene.Draw(line);
+                Vertex v = line[0];
+                Color color = v.Color;
+                color.A -= (byte)16;
+                v.Color = color;
+                line[0] = v;
+                line[1] = v;
+            }
+            
+            Echoes.RemoveAll((line) => line[0].Color.A < (byte)16);
         }
 
         public static void DrawScores() {

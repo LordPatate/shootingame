@@ -68,6 +68,9 @@ namespace server
                 
                 if (state.Shots != null) {
                     LightShot shot = state.Shots[0];
+                    if (shots.Any((x) => x.ID == shot.ID))
+                        return true;
+
                     shots.Add(shot);
                     
                     var target = FindTarget(shot, id);
@@ -104,15 +107,6 @@ namespace server
             foreach (var endPoint in toRemove) {
                 Remove(endPoint);
             }
-
-            for (int i = 0; i < shots.Count; ++i) {
-                byte alpha = (byte)(shots[i].Alpha - 16);
-                shots[i] = new LightShot() {
-                    Origin = shots[i].Origin, Dest = shots[i].Dest,
-                    Alpha = alpha
-                };
-            }
-            shots.RemoveAll((shot) => shot.Alpha < 16);
         }
 
         public static LightPlayer[] GetPlayers()
@@ -189,6 +183,6 @@ namespace server
         private static readonly TimeSpan timeout = new TimeSpan(0, 0, 30);
         private static List<bool> freePlayerIDs = new List<bool>();
         private static Dictionary<IPEndPoint, DateTime> lastUpdated = new Dictionary<IPEndPoint, DateTime>();
-        public static List<LightShot> shots = new List<LightShot>();        
+        public static List<LightShot> shots = new List<LightShot>();
     }
 }
