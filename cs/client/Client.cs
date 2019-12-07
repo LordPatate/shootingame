@@ -11,14 +11,18 @@ namespace shootingame
         {
             byte[] data;
             client = new UdpClient(0);
-            client.Connect(host, Const.ServerPort);
-            receiver = new Receiver(client);
-
-            GameState state = new GameState();
-            state.Type = GameState.RequestType.Connect;
-            data = state.ToBytes();
             try {
-                client.Send(data, data.Length);
+		client.Connect(host, Const.ServerPort);
+	    } catch (Exception) {
+		return null;
+	    }
+	    receiver = new Receiver(client);
+
+	    GameState state = new GameState();
+	    state.Type = GameState.RequestType.Connect;
+	    data = state.ToBytes();
+            try {
+		client.Send(data, data.Length);
             
                 for (uint i = 0; i < 5; ++i) {
                     data = receiver.GetBytes(out IPEndPoint endPoint);
