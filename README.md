@@ -63,6 +63,6 @@ Editing levels for shootingame is stupidly easy. You might have noticed that fil
 So grab you favorite image editor (good old Paint works just fine) and start adding / removing tiles or spawn points!
 You can also change the level size by changing the image dimensions.
 
-**Warning:** to be recognized as a black pixel, you must use full black color (#000000) for your tiles. Same goes for red pixels, use the reddest color (#FF0000) to mark spawn points. Alpha should be fully opaque.
+**Warning:** to be recognized as a black pixel, you must use full black color (`#000000`) for your tiles. Same goes for red pixels, use the reddest color (`#FF0000`) to mark spawn points. Alpha should be fully opaque.
 
 You can create as many different levels as you want. Refer to *Launch* section to see how to launch your server with the right file.
