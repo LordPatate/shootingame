@@ -73,12 +73,13 @@ namespace shootingame
         {
             foreach (var line in Echoes) {
                 GameScene.Draw(line);
-                Vertex v = line[0];
-                Color color = v.Color;
+                Vertex v0 = line[0], v1 = line[1];
+                Color color = v0.Color;
                 color.A -= (byte)16;
-                v.Color = color;
-                line[0] = v;
-                line[1] = v;
+                v0.Color = color;
+                v1.Color = color;
+                line[0] = v0;
+                line[1] = v1;
             }
             
             Echoes.RemoveAll((line) => line[0].Color.A < (byte)16);
