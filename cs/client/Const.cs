@@ -6,12 +6,12 @@ namespace shootingame
 
         public const bool Left = true, Right = false;
 
-        public const int GameStepDuration = 10,
-        StepsPerFrame = 10,
+        public const int GameStepDuration = 15,
+        StepsPerFrame = 7,
         WallJumpSoundDuration = 400,
         HookSoundStep = 900,
         PlayerStep = 5,
-        FramesBeforeFullSpeed = 30,
+        FramesBeforeFullSpeed = 15,
         Gravity = 30,
         JumpPower = 850,
         AirMovePower = 20,
@@ -19,7 +19,7 @@ namespace shootingame
         WallFriction = 10,
         InertiaPerPixel = 100,
         HookMaxRange = 170,
-        GunCoolDown = 50;
+        GunCoolDown = 30;
 
         public const int NormalStateDimX = 20, NormalStateDimY = 37;
 
