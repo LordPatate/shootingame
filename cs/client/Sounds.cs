@@ -61,7 +61,13 @@ namespace shootingame
                 Thread.Sleep(duration);
                 s.Stop();
             });
+            var oldOffset = l.PlayingOffset;
             l.PlayingOffset += Time.FromMilliseconds(duration);
+            if (oldOffset == l.PlayingOffset) {
+                l.Stop();
+                l.Play();
+                l.Pause();
+            }
         }
         public static void PlayFor(string name, int duration) {
             Sound s = new Sound(buffers[name]);
