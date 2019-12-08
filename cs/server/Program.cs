@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿
+using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
@@ -11,22 +12,30 @@ namespace server
 {
     class Program
     {
-        static List<Task> tasks = new List<Task>();
         static void Main(string[] args)
         {
 	    PlayerManager.Init(args);
-            
             UdpClient client = new UdpClient(Const.ServerPort);
             Receiver receiver = new Receiver(client);
-            Console.WriteLine("Server ready to accept connections");
+
+            Console.WriteLine(String.Join("\n", new string[] {
+                        "Server ready to accept connections.",
+                        "Type 'quit' to shut the server down, 'next' to load next level."
+                    }));
             
-            DateTime lastRefresh = DateTime.Now;
             TimeSpan refreshPeriod = new TimeSpan(0, 0, 0, 0, Const.GameStepDuration);
+            List<Task> tasks = new List<Task>();
+
+            DateTime lastRefresh = DateTime.Now;
             string cmd = "";
             while (cmd != "quit")
             {
                 cmd = Prompt.ReadLine();
-                
+
+                if (PlayerManager.players.Count == 0) {
+                    Thread.Sleep(1000);
+                }
+
                 if (DateTime.Now - lastRefresh >= refreshPeriod) {
                     lastRefresh = DateTime.Now;
                     tasks.RemoveAll((task) => task.Status != TaskStatus.Running);
@@ -39,13 +48,7 @@ namespace server
 			SendGameState(GameState.RequestType.LevelUpdate, keyVal.Value.ID, keyVal.Key, client);
 		}
                 
-                byte[] receivedBytes = receiver.GetBytes(out IPEndPoint endPoint);
-                while (cmd != "quit" && PlayerManager.players.Count == 0 && receivedBytes == null) {
-                    Thread.Sleep(1000);
-                    cmd = Prompt.ReadLine();
-                    receivedBytes = receiver.GetBytes(out endPoint);
-                }
-                
+                byte[] receivedBytes = receiver.GetBytes(out IPEndPoint endPoint);                
                 if (receivedBytes != null)
                     tasks.Add(Task.Run(() => ProcessData(receivedBytes, endPoint, client)));
             }
