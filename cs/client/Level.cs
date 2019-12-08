@@ -11,19 +11,25 @@ namespace shootingame
 	public static string[] Init()
 	{
 	    DirectoryInfo levelDir = null;
-	    var dir = new DirectoryInfo(@".");
 	    DirectoryInfo[] directories;
-	    for (int i = 0; i < 3; ++i)
-	    {
-		directories = dir.GetDirectories("*levels");
-		if (directories.Length != 0) {
-		    levelDir = directories[0];
-		    break;
-		}
-		dir = dir.Parent;
-	    }
+	    var dir = new DirectoryInfo(@".");
+            for (int j = 0; j < 2; ++j)
+            {
+                for (int i = 0; i < 3; ++i)
+                {
+                    directories = dir.GetDirectories("*levels");
+                    if (directories.Length != 0) {
+                        levelDir = directories[0];
+                        break;
+                    }
+                    dir = dir.Parent;
+                }
+   
+                string path = AppDomain.CurrentDomain.BaseDirectory;
+                dir = new DirectoryInfo(path);
+            }
 
-	    if (levelDir == null)
+	    if (levelDir == null)                
 		throw new DirectoryNotFoundException("unable to locate 'levels' folder");
 
 	    FileInfo[] levels = levelDir.GetFiles();
