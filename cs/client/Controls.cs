@@ -15,9 +15,9 @@ namespace shootingame
         public static void Update()
         {
             // Keys
-            Left = IsKeyPressed(Key.A) || IsKeyPressed(Key.Q);
-            Right = IsKeyPressed(Key.D);
-            Jump = IsKeyPressed(Key.W) || IsKeyPressed(Key.Z);
+            Left = IsKeyPressed(Key.A) || IsKeyPressed(Key.Q) || IsKeyPressed(Key.Left);
+            Right = IsKeyPressed(Key.D) || IsKeyPressed(Key.Right);
+            Jump = IsKeyPressed(Key.W) || IsKeyPressed(Key.Z) || IsKeyPressed(Key.Up) || IsKeyPressed(Key.Space);
 
             // Mouse
             MousePos = Mouse.GetPosition(Screen.Window);
