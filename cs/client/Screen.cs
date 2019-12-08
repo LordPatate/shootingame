@@ -151,7 +151,17 @@ namespace shootingame
             
             Program.PauseMenu = new Menu(
                 "Menu",
-                "Resume", "Toggle fullscreen", "Quit"
+                "Resume", "Toggle fullscreen", "Help", "Quit"
+            );
+            Program.Help = new Popup(
+                new string[] {
+                    "Left clic: shoot",
+                    "Right clic (hold): grappling hook",
+                    "WASD / ZQSD / Arrow keys: Move arround",
+                    "You can use right click to close all popups.",
+                    "",
+                    "Have fun!",
+                }, "Got it"
             );
             Program.AskQuit = new Popup(
                 new string[] {

@@ -19,13 +19,13 @@ namespace shootingame
             Text.LineHeight = (int)Screen.FontSize*2 + 2;
             Text.SideMargin = 10;
             int textMaxHeight = Rect.Height*20/100;
-            Text.TopSpace = textMaxHeight/2 - Text.LineHeight/2;
+            Text.TopSpace = 0;
 
             var buttonBox = new IntRect(
                 left: Rect.Left + Rect.Width*10/100,
-                top: Rect.Top + textMaxHeight,
+                top: Rect.Top + textMaxHeight + 10,
                 width: Rect.Width * 80 / 100,
-                height: Rect.Height*80/100 - 10
+                height: Rect.Height*80/100 - 20
             );
             int height = buttonBox.Height / options.Length;
             var buttonSpaces = new IntRect[options.Length];

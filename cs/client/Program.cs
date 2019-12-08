@@ -13,6 +13,7 @@ namespace shootingame
 	public static string ResourceDir;
         public static Popup AskQuit;
         public static Menu PauseMenu;
+        public static Popup Help;
         public static Popup Disconnected;
         static void Main(string[] args)
         {
@@ -80,6 +81,9 @@ namespace shootingame
                     break;
                 case "Toggle fullscreen":
                     Screen.ToggleFullscreen();
+                    break;
+                case "Help":
+                    Help.Pop();
                     break;
             }
         }

@@ -178,7 +178,7 @@ namespace shootingame
 
             // buttons
             var buttonFG = new Color(255, 255, 255);
-            var buttonBG = new Color(0, 0, blue: 200);
+            var buttonBG = new Color(0, 0, blue: 175);
             foreach (PopupOption option in Options)
             {
                 option.Texture = new RenderTexture((uint)option.Rect.Width, (uint)option.Rect.Height);
