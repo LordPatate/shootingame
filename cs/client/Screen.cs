@@ -55,6 +55,11 @@ namespace shootingame
             Window.Draw(new Sprite(GameScene.Texture));
 
             DrawScores();
+	    Drawing.DrawText(
+                Window, new Text("[ESC] Menu", Font, FontSize),
+                new IntRect(0, 0, (int)Width, (int)Height),
+                alignment: TextAlignment.Left, position: TextPosition.Bottom
+	    );
             
             foreach (var popup in Popup.ActivePopups) {
                 popup.Display();
@@ -98,7 +103,8 @@ namespace shootingame
             );
             Drawing.DrawText(
                 Window, "# Scoreboard", rect,
-                fg, bg, FontSize, TextAlignment.Left
+                fg, bg,
+                alignment: TextAlignment.Left
             );
 
             foreach (var player in Game.Players)
@@ -112,7 +118,8 @@ namespace shootingame
                 
                 Drawing.DrawText(
                     Window, $"{player.Score} | {playerName}", rect,
-                    fg, bg, FontSize, TextAlignment.Left
+                    fg, bg,
+                    alignment: TextAlignment.Left
                 );
             }
         }

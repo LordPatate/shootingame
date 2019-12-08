@@ -7,6 +7,10 @@ namespace shootingame
     {
         Left, Center, Right
     }
+    enum TextPosition
+    {
+	Top, Middle, Bottom
+    }
     class Drawing
     {
         public static RectangleShape SpriteOf(Texture texture, IntRect rect)
@@ -49,38 +53,52 @@ namespace shootingame
             return shape;
         }
 
-
         public static void DrawText(
             RenderTarget dst, string line, IntRect frame,
-            Color fg, Color bg, uint fontSize, TextAlignment alignment = TextAlignment.Center
+            Color fg, Color bg, uint fontSize = 0,
+	    TextAlignment alignment = TextAlignment.Center, TextPosition position = TextPosition.Middle
         )
         {
-            Text text = new Text(line, Screen.Font, fontSize);
-            text.FillColor = fg;
-            text.OutlineColor = bg;
+	    if (fontSize == 0)
+		fontSize = Screen.FontSize;
 
+            Text text = new Text(line, Screen.Font, fontSize);
+	    text.FillColor = fg;
+	    text.OutlineColor = bg;
+
+	    DrawText(dst, text, frame, alignment, position);
+	}
+	public static void DrawText(RenderTarget dst, Text text, IntRect frame,
+	    TextAlignment alignment = TextAlignment.Center, TextPosition position = TextPosition.Middle
+	)
+	{
             FloatRect rect = text.GetLocalBounds();
+	    float x = 0, y = 0;
             switch (alignment)
             {
                 case TextAlignment.Left:
-                    text.Position = new Vector2f(
-                        x: frame.Left,
-                        y: frame.Top
-                    );
+                    x = frame.Left;
                     break;
                 case TextAlignment.Center:
-                    text.Position = new Vector2f(
-                        x: (int)(frame.Left + frame.Width/2 - rect.Width/2),
-                        y: (int)(frame.Top + frame.Height/2 - rect.Height/2)
-                    );
+                    x = (int)(frame.Left + frame.Width/2 - rect.Width/2);
                     break;
                 case TextAlignment.Right:
-                    text.Position = new Vector2f(
-                        x: (int)(frame.Left + frame.Width - rect.Width),
-                        y: (int)(frame.Top + frame.Height - rect.Height)
-                    );
+                    x = (int)(frame.Left + frame.Width - rect.Width);
                     break;
             }
+	    switch (position)
+	    {
+		case TextPosition.Top:
+		    y = frame.Top;
+		    break;
+		case TextPosition.Middle:
+		    y = (int)(frame.Top + frame.Height/2 - rect.Height/2);
+		    break;
+		case TextPosition.Bottom:
+		    y = (int)(frame.Top + frame.Height - rect.Height) - 10;
+		    break;
+	    }
+	    text.Position = new Vector2f(x, y);
             
             dst.Draw(text);
         }
