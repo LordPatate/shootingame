@@ -35,6 +35,15 @@ namespace shootingame
                 y: gameBounds.Top + point.Y * gameBounds.Height / levelBounds.Height
             );
         }
+	public static Vector2i UnadaptPoint(Vector2i point)
+	{
+	    var gameBounds = Game.Bounds;
+            var levelBounds = Game.Level.Bounds;
+            return new Vector2i(
+		x: (point.X - gameBounds.Left) * levelBounds.Width / gameBounds.Width,
+                y: (point.Y - gameBounds.Top) * levelBounds.Height / gameBounds.Height
+            );
+	}
         public static IntRect ScaleRect(IntRect rect, int wPercent, int hPercent)
         {
             int width = rect.Width * wPercent / 100;

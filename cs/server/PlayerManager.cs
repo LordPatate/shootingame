@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Net;
+using SFML.System;
 using shootingame;
 
 namespace server
@@ -12,6 +13,16 @@ namespace server
         public static Level level;
         public static int levelID;
         public static Dictionary<IPEndPoint, LightPlayer> players = new Dictionary<IPEndPoint, LightPlayer>();
+        public static List<LightShot> shots = new List<LightShot>();
+
+	public static void Print(string str)
+	{
+	    Console.WriteLine($"[{DateTime.Now}] " + str);
+	}
+	public static void PrintErr(string str)
+	{
+	    Console.Error.WriteLine($"[{DateTime.Now}] Error: " + str);
+	}
 
 	public static void Init(string[] args)
 	{
@@ -20,7 +31,7 @@ namespace server
                 if (Int32.TryParse(args[0], out int i))
                     levelID = i % levels.Length;
             }
-            Console.WriteLine($"Starting server with level {levelID}");
+            Print($"Starting server with level {levelID}");
             level = new Level(levels[levelID]);
 	}
 
@@ -36,7 +47,7 @@ namespace server
             }
             lastUpdated.Add(endPoint, DateTime.Now);
             players.Add(endPoint, new LightPlayer(id, level));
-            Console.WriteLine($"Player {id} has joined");
+            Print($"Player {id} has joined");
             return id;
         }
         public static void Remove(IPEndPoint endPoint)
@@ -55,15 +66,16 @@ namespace server
             if (name != null) {
                 msg += $" (was {name})";
             }
-            Console.WriteLine(msg);
+            Print(msg);
         }
 
         public static bool Update(IPEndPoint endPoint, UpdateRequest state)
         {
             try {
                 lastUpdated[endPoint] = DateTime.Now;
-                
-                int id = players[endPoint].ID;
+
+		LightPlayer player = players[endPoint];
+                int id = player.ID;
                 if (id != state.PlayerID) {
                     return false;
                 }
@@ -75,19 +87,25 @@ namespace server
                     if (shots.Any((x) => x.ID == shot.ID))
                         return true;
 
+		    Vector2i mousePos = new Vector2i(shot.Dest.X, shot.Dest.Y);
+		    Vector2i hit = new Player(player).HitScan(level, mousePos, players.Values);
+		    shot.Dest = new LightVect2(hit);
                     shots.Add(shot);
                     
-                    var target = FindTarget(shot, id);
+                    LightPlayer target = FindTarget(shot, id);
                     if (target != null) {
                         target.ReSpawn = true;
 			            target.Deaths += 1;
-                        players[endPoint].Score += 1;
+                        player.Score += 1;
                     }
                 }
                 return true;
             }
             catch (KeyNotFoundException) {
-                Console.Error.WriteLine($"Error: update request: unknown player from {endPoint}");
+		if (endPoint != lastUnkownEP) {
+		    PrintErr($"update request: unknown player from {endPoint}");
+		    lastUnkownEP = endPoint;
+		}
                 return false;
             }
         }
@@ -111,6 +129,8 @@ namespace server
             foreach (var endPoint in toRemove) {
                 Remove(endPoint);
             }
+
+	    shots.Clear();
         }
 
         public static LightPlayer[] GetPlayers()
@@ -173,9 +193,9 @@ namespace server
                     continue;
                 
                 Player player = new Player(lightPlayer);
-                player.MakeRect();
-                player.Rect.Left = lightPlayer.Pos.X;
-                player.Rect.Top = lightPlayer.Pos.Y;
+                //player.MakeRect();
+                //player.Rect.Left = lightPlayer.Pos.X;
+                //player.Rect.Top = lightPlayer.Pos.Y;
                 if (Geometry.ScaleRect(player.Rect, 120, 120).Contains(shot.Dest.X, shot.Dest.Y)) {
                     return lightPlayer;
                 }
@@ -187,6 +207,6 @@ namespace server
         private static readonly TimeSpan timeout = new TimeSpan(0, 0, 30);
         private static List<bool> freePlayerIDs = new List<bool>();
         private static Dictionary<IPEndPoint, DateTime> lastUpdated = new Dictionary<IPEndPoint, DateTime>();
-        public static List<LightShot> shots = new List<LightShot>();
+	private static IPEndPoint lastUnkownEP = null;
     }
 }

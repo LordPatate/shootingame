@@ -86,8 +86,8 @@ namespace shootingame
             if (Player.Shot) {
                 state.Shots = new LightShot[] {
                     new LightShot() {
-                        Origin = new LightVect2() { X = Player.GetCOM().X, Y = Player.GetCOM().Y },
-                        Dest = new LightVect2() { X = Player.ShotPoint.X, Y = Player.ShotPoint.Y },
+                        Origin = new LightVect2(Player.GetCOM()),
+                        Dest = new LightVect2(Player.ShotPoint),
                         ID = (Player.ID << sizeof(int)/2*8) | Player.ShotCount
                     }
                 };

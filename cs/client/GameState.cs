@@ -7,6 +7,10 @@ namespace shootingame
     public struct LightVect2 {
         public int X {get; set;}
 	public int Y {get; set;}
+	public LightVect2(Vector2i v) {
+	    X = v.X;
+	    Y = v.Y;
+	}
     }
     public struct LightShot {
         public LightVect2 Origin {get; set;}

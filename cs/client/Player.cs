@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 
@@ -111,7 +112,8 @@ namespace shootingame
 
             if (Controls.RightClick) {
                 if (!Hooked) {
-                    Vector2i hookPoint = HitScan(level, false);
+		    Vector2i mousePos = Geometry.UnadaptPoint(Controls.MousePos);
+                    Vector2i hookPoint = HitScan(level, mousePos, new List<LightPlayer>());
                     if (Geometry.Dist(GetCOM(), hookPoint) <= Const.HookMaxRange) {
                         Hooked = true;
                         HookPoint = hookPoint;
@@ -131,7 +133,7 @@ namespace shootingame
             Shot = false;
             if (GunCoolDown > 0) --GunCoolDown;
             if (GunCoolDown == 0 && Controls.LeftClick) {
-                ShotPoint = HitScan(level, true);
+		ShotPoint = Geometry.UnadaptPoint(Controls.MousePos);
                 Shot = true;
                 ShotCount += 1;
                 GunCoolDown = Const.GunCoolDown;
@@ -187,12 +189,12 @@ namespace shootingame
             Rect = new IntRect(0, 0, width: scale(Const.NormalStateDimX), height: scale(Const.NormalStateDimY));
         }
 
-        private Vector2i HitScan(Level level, bool hitPlayers)
+        public Vector2i HitScan(Level level, Vector2i mousePos, IEnumerable<LightPlayer> players)
         {
             Vector2i hit = new Vector2i();
             
-            Vector2i playerCOM = Geometry.AdaptPoint(GetCOM());
-            Vector2i proj = Geometry.PointShade(Game.Bounds, playerCOM, Controls.MousePos.X, Controls.MousePos.Y);
+            Vector2i playerCOM = GetCOM();
+            Vector2i proj = Geometry.PointShade(level.Bounds, playerCOM, mousePos.X, mousePos.Y);
             double minDist = Double.PositiveInfinity;
             
             Action<Vector2i> minimize = (point) => {
@@ -206,29 +208,26 @@ namespace shootingame
 
             foreach (var tile in level.Tiles)
             {
-                var rect = Geometry.AdaptRect(tile.Rect);
+                var rect = tile.Rect;
                 if (Geometry.IntersectLine(rect, playerCOM, proj)) {
                     var point = Geometry.HitPoint(rect, playerCOM, proj);
                     minimize(point);
                 }
             }
-            if (hitPlayers) {
-                foreach (var lightPlayer in Game.Players)
-                {
-                    if (lightPlayer == null || lightPlayer.ID == ID)
-                        continue;
-                    var player = new Player(lightPlayer);
-                    var rect = Geometry.AdaptRect(player.Rect);
-                    if (Geometry.IntersectLine(rect, playerCOM, proj)) {
-                        var point = Geometry.HitPoint(rect, playerCOM, proj);
-                        minimize(point);
-                    }
-                }
-            }
-            
-            hit.X = (hit.X - Game.Bounds.Left)*level.Bounds.Width/Game.Bounds.Width;
-            hit.Y = (hit.Y - Game.Bounds.Top)*level.Bounds.Height/Game.Bounds.Height;
-            return hit;
+
+	    foreach (var lightPlayer in players)
+	    {
+		if (lightPlayer == null || lightPlayer.ID == ID)
+		    continue;
+		var player = new Player(lightPlayer);
+		var rect = player.Rect;
+		if (Geometry.IntersectLine(rect, playerCOM, proj)) {
+		    var point = Geometry.HitPoint(rect, playerCOM, proj);
+		    minimize(point);
+		}
+	    }
+
+	    return hit;
         }
 
         public void MoveX(int delta, Level level)
