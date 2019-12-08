@@ -32,6 +32,12 @@ namespace server
                     tasks.RemoveAll((task) => task.Status != TaskStatus.Running);
                     tasks.Add(Task.Run(PlayerManager.Refresh));
                 }
+
+		if (cmd == "next") {
+		    PlayerManager.NextLevel();
+		    foreach (var keyVal in PlayerManager.players)
+			SendGameState(GameState.RequestType.LevelUpdate, keyVal.Value.ID, keyVal.Key, client);
+		}
                 
                 byte[] receivedBytes = receiver.GetBytes(out IPEndPoint endPoint);
                 while (cmd != "quit" && PlayerManager.players.Count == 0 && receivedBytes == null) {

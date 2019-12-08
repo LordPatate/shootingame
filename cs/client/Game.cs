@@ -18,6 +18,7 @@ namespace shootingame
         public static RenderTexture Background;
         public static RenderTexture Foreground;
         public static IntRect Bounds;
+	public static bool TextureUpdated = false;
 
         public static void Init(GameState state, string name)
         {
@@ -73,6 +74,7 @@ namespace shootingame
 		    case GameState.RequestType.LevelUpdate:
 			levelInfos = (LevelUpdateRequest)state;
 			LoadLevel();
+			TextureUpdated = true;
 			break;
 		}
             }

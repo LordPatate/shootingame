@@ -35,6 +35,13 @@ namespace server
             level = new Level(levels[levelID]);
 	}
 
+	public static void NextLevel()
+	{
+	    levelID = (levelID + 1) % levels.Length;
+	    level = new Level(levels[levelID]);
+	    Print($"Moved to level {levelID}");
+	}
+
         public static int Add(IPEndPoint endPoint)
         {
             int id = freePlayerIDs.FindIndex((x) => x);

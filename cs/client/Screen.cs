@@ -35,6 +35,10 @@ namespace shootingame
 
         public static void Update()
         {
+	    if (Game.TextureUpdated) {
+		NewWindow();
+		Game.TextureUpdated = false;
+	    }
             GameScene.Draw(new Sprite(Game.Background.Texture));
             foreach (var lightPlayer in Game.Players) {
                 if (lightPlayer != null) {
@@ -113,7 +117,7 @@ namespace shootingame
             }
         }
 
-        private static void NewWindow() {
+        public static void NewWindow() {
             if (Window != null) {
                 Window.Close();
             }
