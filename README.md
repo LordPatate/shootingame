@@ -8,6 +8,8 @@ A small dumb 2D game where you get to shoot people.
 
 ## Install
 
+**On linux, you might have to install csfml library. The package can be `csfml` or `libcsfml-*`.** More: https://repology.org/project/csfml/packages
+
 * Find the release that you need depending on your OS.
 
     See release page: https://github.com/LordPatate/shootingame/releases.
