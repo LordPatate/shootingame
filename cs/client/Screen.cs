@@ -40,8 +40,9 @@ namespace shootingame
 		Game.TextureUpdated = false;
 	    }
             GameScene.Draw(new Sprite(Game.Background.Texture));
+            Game.Player.Draw();
             foreach (var lightPlayer in Game.Players) {
-                if (lightPlayer != null) {
+                if (lightPlayer != null && lightPlayer.ID != Game.Player.ID) {
                     Player player = new Player(lightPlayer);
                     player.Texture = Game.Player.Texture;
                     player.Draw();
