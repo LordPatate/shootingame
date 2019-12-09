@@ -75,6 +75,7 @@ namespace shootingame
 			levelInfos = (LevelUpdateRequest)state;
 			LoadLevel();
 			TextureUpdated = true;
+                        Respawn();
 			break;
 		}
             }
@@ -151,9 +152,10 @@ namespace shootingame
 
         public static void LoadLevel()
         {
-            Bounds = Geometry.ScaleRect(new IntRect(0, 0, (int)Screen.Width, (int)Screen.Height), 80, 80);
-
 	    Level = new Level(levelInfos);
+
+            Bounds = Geometry.ScaleRect(new IntRect(0, 0, (int)Screen.Width, (int)Screen.Height), 80, 80);
+            Bounds = Geometry.AdaptRect(Level.Bounds);
 
             DrawScene("", "");
         }
