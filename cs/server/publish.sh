@@ -4,11 +4,12 @@ for ostype in linux win osx; do
     dotnet publish -c Release -r ${ostype}-x64 --self-contained true
 done
 
-cd bin/Release/netcoreapp3.0
+BINDIR=cs/server/bin/Release/netcoreapp3.0
+cd ../..
 for ostype in linux win osx; do
-    cd ${ostype}-x64
+    cd ${BINDIR}/${ostype}-x64
     zip -r shootingame-server-${ostype} publish > /dev/null && echo "zipped ${ostype} successfully"
-    mv shootingame-server-${ostype}.zip ../../../../../../
-
     cd -
+    mv ${BINDIR}/${ostype}-x64/shootingame-server-${ostype}.zip .
+    zip shootingame-server-${ostype}.zip -r levels
 done
